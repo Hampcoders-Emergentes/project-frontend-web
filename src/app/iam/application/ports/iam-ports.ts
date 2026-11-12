@@ -5,6 +5,7 @@ import type {
   PasswordResetInput,
   PersistedSession,
   SignInCredential,
+  SignUpInput,
 } from '@iam/application/contracts/iam-contracts';
 
 /**
@@ -13,6 +14,8 @@ import type {
  */
 export abstract class AuthenticationPort {
   abstract signIn(credential: SignInCredential): Observable<AuthenticationResult>;
+  /** Creates a `User` account and returns its first token pair; a `400` rejects invalid input. */
+  abstract signUp(input: SignUpInput): Observable<AuthenticationResult>;
   /** Rotates both tokens; the given refresh token is single-use. */
   abstract refresh(refreshToken: string): Observable<AuthenticationResult>;
   /** Always succeeds for well-formed input (no account enumeration). */

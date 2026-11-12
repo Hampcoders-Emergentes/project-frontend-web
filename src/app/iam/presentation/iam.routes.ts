@@ -10,6 +10,12 @@ export const IamPublicRoutes: Routes = [
     loadComponent: () => import('./views/sign-in/sign-in').then((m) => m.SignInView),
   },
   {
+    path: 'sign-up',
+    title: 'ElectroLink',
+    canActivate: [anonymousOnlyGuard],
+    loadComponent: () => import('./views/sign-up/sign-up').then((m) => m.SignUpView),
+  },
+  {
     path: 'forgot-password',
     title: 'ElectroLink',
     canActivate: [anonymousOnlyGuard],

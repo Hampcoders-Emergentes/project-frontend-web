@@ -7,6 +7,7 @@ import type {
   PasswordChangeInput,
   PasswordResetInput,
   SignInCredential,
+  SignUpInput,
 } from '@iam/application/contracts/iam-contracts';
 import type { AuthenticationPort } from '@iam/application/ports/iam-ports';
 
@@ -39,6 +40,22 @@ export class IamApi implements AuthenticationPort {
   signIn(credential: SignInCredential): Observable<AuthenticationResult> {
     return this.api
       .post<AuthenticatedUserResponse>('/auth/sign-in', { email: credential.email, password: credential.password }, { anonymous: true })
+      .pipe(map(toResult));
+  }
+
+  signUp(input: SignUpInput): Observable<AuthenticationResult> {
+    return this.api
+      .post<AuthenticatedUserResponse>(
+        '/auth/sign-up',
+        {
+          email: input.email,
+          password: input.password,
+          passwordConfirmation: input.passwordConfirmation,
+          // The API accepts only `User` on public sign-up (docs: api/enums.md, AccessRole).
+          role: 'User',
+        },
+        { anonymous: true },
+      )
       .pipe(map(toResult));
   }
 

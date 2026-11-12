@@ -2,11 +2,12 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, type Observable, of, type Subscription, take, tap, timer } from 'rxjs';
 import { MutationState } from '@shared/application/async-resource';
-import { toAppError } from '@shared/application/app-error';
+import { type AppError, toAppError } from '@shared/application/app-error';
 import type {
   PasswordChangeInput,
   PasswordResetInput,
   SignInCredential,
+  SignUpInput,
 } from '@iam/application/contracts/iam-contracts';
 import {
   type ClientSession,
@@ -24,6 +25,7 @@ import {
   RestoreSessionUseCase,
   SignInUseCase,
   SignOutUseCase,
+  SignUpUseCase,
 } from '@iam/application/use-cases/session-use-cases';
 
 /**
@@ -45,6 +47,7 @@ export class IamStore {
   private readonly restoreUseCase = inject(RestoreSessionUseCase);
   private readonly refreshUseCase = inject(RefreshSessionUseCase);
   private readonly signInUseCase = inject(SignInUseCase);
+  private readonly signUpUseCase = inject(SignUpUseCase);
   private readonly signOutUseCase = inject(SignOutUseCase);
   private readonly acceptRefreshedTokenUseCase = inject(AcceptRefreshedTokenUseCase);
   private readonly requestPasswordResetUseCase = inject(RequestPasswordResetUseCase);
@@ -64,6 +67,7 @@ export class IamStore {
   private readonly status$ = toObservable(this.statusSignal);
 
   readonly signInState = new MutationState();
+  readonly signUpState = new MutationState();
   readonly passwordResetRequestState = new MutationState();
   readonly passwordResetState = new MutationState();
   readonly passwordChangeState = new MutationState();
@@ -100,6 +104,19 @@ export class IamStore {
         this.statusSignal.set('inactive');
       }
     });
+  }
+
+  /** Creates the account and, on success, starts its session (the same token pair as sign-in). */
+  signUp(input: SignUpInput, onSuccess: () => void, onError?: (error: AppError) => void): void {
+    this.signUpState.run(
+      this.signUpUseCase.execute(input),
+      (session) => {
+        this.endReasonSignal.set(null);
+        this.startSession(session);
+        onSuccess();
+      },
+      onError,
+    );
   }
 
   /**

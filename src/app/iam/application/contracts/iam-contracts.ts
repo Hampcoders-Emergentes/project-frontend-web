@@ -13,6 +13,13 @@ export interface AuthenticationResult {
   readonly refreshToken: string;
 }
 
+/** Input of `POST /auth/sign-up`. Public sign-up always creates a `User` (the role is not chosen here). */
+export interface SignUpInput {
+  readonly email: string;
+  readonly password: string;
+  readonly passwordConfirmation: string;
+}
+
 /** Input of the password reset that completes the emailed link. */
 export interface PasswordResetInput {
   readonly resetToken: string;

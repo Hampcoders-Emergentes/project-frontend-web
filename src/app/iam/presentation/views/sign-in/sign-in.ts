@@ -36,11 +36,14 @@ export class SignInView {
   protected readonly error = this.store.signInState.error;
   /** 401 and 403 have specific sign-in meanings; other failures use the generic notice. */
   protected readonly specificErrorKey = computed(() => {
-    const status = this.error()?.status;
-    if (status === 401) {
+    const failure = this.error();
+    if (failure?.status === 401) {
       return 'iam.signIn.errors.invalidCredentials';
     }
-    return status === 403 ? 'iam.signIn.errors.inactive' : null;
+    if (failure?.status === 403) {
+      return failure.code === 'ACCOUNT_NOT_ACTIVE' ? 'iam.errorCodes.ACCOUNT_NOT_ACTIVE' : 'iam.signIn.errors.inactive';
+    }
+    return null;
   });
 
   constructor() {

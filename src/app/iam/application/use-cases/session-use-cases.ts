@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { catchError, defer, finalize, map, type Observable, of, shareReplay, throwError } from 'rxjs';
 import { AppErrorException, toAppError } from '@shared/application/app-error';
-import type { AuthenticationResult, SignInCredential } from '@iam/application/contracts/iam-contracts';
+import type {
+  AuthenticationResult,
+  SignInCredential,
+  SignUpInput,
+} from '@iam/application/contracts/iam-contracts';
 import {
   AuthenticationPort,
   RefreshLockPort,
@@ -36,6 +40,17 @@ export class SignInUseCase {
 
   execute(credential: SignInCredential): Observable<ClientSession> {
     return this.authentication.signIn(credential).pipe(map((result) => this.establish.execute(result)));
+  }
+}
+
+/** Creates a store-manager account and starts its session (sign-up issues the same token pair). */
+@Injectable({ providedIn: 'root' })
+export class SignUpUseCase {
+  private readonly authentication = inject(AuthenticationPort);
+  private readonly establish = inject(EstablishSessionUseCase);
+
+  execute(input: SignUpInput): Observable<ClientSession> {
+    return this.authentication.signUp(input).pipe(map((result) => this.establish.execute(result)));
   }
 }
 

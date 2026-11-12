@@ -34,7 +34,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
           <div class="ui-kpi"><p class="ui-kpi__label">{{ 'monitoring.connectivity.disconnected' | translate }}</p><p class="ui-kpi__value">{{ data.disconnected }}</p></div>
           <div class="ui-kpi">
             <p class="ui-kpi__label">{{ 'monitoring.connectivity.lastEdgeSync' | translate }}</p>
-            <p style="margin: 0">{{ data.lastEdgeSyncAt ? (data.lastEdgeSyncAt | localizedDate: 'dateTime') : ('monitoring.connectivity.never' | translate) }}</p>
+            <p class="ui-flush">{{ data.lastEdgeSyncAt ? (data.lastEdgeSyncAt | localizedDate: 'dateTime') : ('monitoring.connectivity.never' | translate) }}</p>
           </div>
         </div>
         @if (data.sensors.length === 0) {

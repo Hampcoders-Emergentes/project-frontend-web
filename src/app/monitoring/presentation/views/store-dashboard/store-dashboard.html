@@ -16,7 +16,7 @@
   </header>
 
   @if (summary.initialLoading()) {
-    <app-state-panel kind="loading" [heading]="'monitoring.dashboard.loading' | translate" />
+    <app-skeleton [count]="4" [label]="'monitoring.dashboard.loading' | translate" />
   } @else if (summary.error() && !summary.data()) {
     <app-error-notice [error]="summary.error()!" [retryable]="false" />
   } @else if (summary.data(); as data) {
@@ -30,24 +30,24 @@
           <p class="ui-kpi__label">{{ 'monitoring.dashboard.gridStatus' | translate }}</p>
           @if (grid.data(); as g) {
             <app-status-tag [label]="'monitoring.grid.' + g.status | translate" [appearance]="gridAppearance[g.status]" />
-            <p class="text-meta" style="margin: 0">{{ 'monitoring.dashboard.reporting' | translate: { reporting: g.reportingEquipment, total: g.totalEquipment } }}</p>
+            <p class="ui-kpi__meta">{{ 'monitoring.dashboard.reporting' | translate: { reporting: g.reportingEquipment, total: g.totalEquipment } }}</p>
           } @else if (grid.error()) {
-            <p class="text-meta" style="margin: 0">{{ 'monitoring.dashboard.gridUnavailable' | translate }}</p>
+            <p class="ui-kpi__meta">{{ 'monitoring.dashboard.gridUnavailable' | translate }}</p>
           } @else {
-            <p class="text-meta" style="margin: 0">{{ 'shared.states.loading' | translate }}</p>
+            <p class="ui-kpi__meta">{{ 'shared.states.loading' | translate }}</p>
           }
         </div>
         <div class="ui-kpi">
           <p class="ui-kpi__label">{{ 'monitoring.dashboard.monitored' | translate }}</p>
           <p class="ui-kpi__value">{{ data.monitoredEquipment }}/{{ data.totalEquipment }}</p>
-          <p class="text-meta" style="margin: 0">
+          <p class="ui-kpi__meta">
             {{ 'monitoring.dashboard.offlineUnmonitored' | translate: { offline: data.offlineEquipment, unmonitored: data.unmonitoredEquipment } }}
           </p>
         </div>
         <div class="ui-kpi">
           <p class="ui-kpi__label">{{ 'monitoring.dashboard.activeAlerts' | translate }}</p>
           <p class="ui-kpi__value">{{ data.activeCriticalAlerts + data.activeNonCriticalAlerts }}</p>
-          <p class="text-meta" style="margin: 0">
+          <p class="ui-kpi__meta">
             {{ 'monitoring.dashboard.alertSplit' | translate: { critical: data.activeCriticalAlerts, nonCritical: data.activeNonCriticalAlerts } }}
           </p>
         </div>
@@ -56,7 +56,7 @@
           @if (grid.data(); as g) {
             @if (g.reportingEquipment > 0) {
               <p class="ui-kpi__value">{{ g.totalActivePowerKw | localizedNumber: 1 }} kW</p>
-              <p class="text-meta" style="margin: 0">
+              <p class="ui-kpi__meta">
                 {{ 'monitoring.dashboard.gridAverages' | translate: {
                   current: (g.totalCurrentAmps | localizedNumber: 1),
                   voltage: g.averageVoltage === null ? '—' : (g.averageVoltage | localizedNumber: 0),
@@ -64,13 +64,13 @@
                 } }}
               </p>
               @if (g.maxLeakageCurrentAmps !== null) {
-                <p class="text-meta" style="margin: 0">{{ 'monitoring.dashboard.maxLeakage' | translate: { value: (g.maxLeakageCurrentAmps * 1000 | localizedNumber: 1) } }}</p>
+                <p class="ui-kpi__meta">{{ 'monitoring.dashboard.maxLeakage' | translate: { value: (g.maxLeakageCurrentAmps * 1000 | localizedNumber: 1) } }}</p>
               }
             } @else {
-              <p class="text-meta" style="margin: 0">{{ 'monitoring.reading.noFreshData' | translate }}</p>
+              <p class="ui-kpi__meta">{{ 'monitoring.reading.noFreshData' | translate }}</p>
             }
           } @else {
-            <p class="text-meta" style="margin: 0">—</p>
+            <p class="ui-kpi__meta">—</p>
           }
         </div>
       </div>
@@ -79,7 +79,7 @@
     @if (grid.data(); as g) {
       <section aria-labelledby="risk-counts-title">
         <h2 id="risk-counts-title" class="sr-only">{{ 'monitoring.dashboard.riskCounts' | translate }}</h2>
-        <ul class="ui-actions" style="list-style: none; margin: 0; padding: 0">
+        <ul class="ui-actions ui-list">
           @for (level of riskLevels; track level) {
             <li><app-status-tag [label]="('monitoring.risk.' + level | translate) + ': ' + g.riskLevelCounts[level]" [appearance]="riskAppearance[level]" /></li>
           }
@@ -96,10 +96,10 @@
           <a class="ui-button" [routerLink]="['/stores', storeId(), 'setup', 'areas']">{{ 'monitoring.dashboard.configure' | translate }}</a>
         </app-state-panel>
       } @else {
-        <ul class="ui-grid" style="list-style: none; margin: 0; padding: 0">
+        <ul class="ui-grid ui-list">
           @for (card of cards(); track card.equipmentId) {
-            <li class="ui-card ui-stack" style="gap: var(--space-1); padding: var(--space-2)">
-              <p class="text-meta" style="margin: 0">{{ card.areaName }}</p>
+            <li class="ui-card ui-card--interactive ui-stack ui-stack--tight ui-card--compact">
+              <p class="text-meta ui-flush">{{ card.areaName }}</p>
               <h3>{{ card.name }}</h3>
               <div class="ui-actions">
                 <app-status-tag [label]="'monitoring.risk.' + card.riskLevel | translate" [appearance]="riskAppearance[card.riskLevel]" />
@@ -107,7 +107,7 @@
               </div>
               <app-reading-values [reading]="card.reading" [state]="card.state" />
               @if (card.openCriticalAlerts + card.openNonCriticalAlerts > 0) {
-                <p class="ui-tag ui-tag--critical" style="margin: 0; justify-self: start">
+                <p class="ui-tag ui-tag--critical ui-flush ui-self-start">
                   <app-icon class="ui-tag__icon" name="bell-ringing" />
                   {{ 'monitoring.dashboard.openAlerts' | translate: { critical: card.openCriticalAlerts, nonCritical: card.openNonCriticalAlerts } }}
                 </p>

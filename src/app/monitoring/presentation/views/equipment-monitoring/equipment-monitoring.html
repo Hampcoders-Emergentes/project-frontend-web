@@ -1,7 +1,7 @@
 <div class="ui-stack">
   <header class="ui-page-header">
     <div>
-      <p class="text-meta" style="margin: 0"><a [routerLink]="['/stores', storeId(), 'dashboard']">{{ 'monitoring.dashboard.title' | translate }}</a></p>
+      <p class="text-meta ui-flush"><a [routerLink]="['/stores', storeId(), 'dashboard']">{{ 'monitoring.dashboard.title' | translate }}</a></p>
       <h1 class="ui-page-header__title">{{ risk.data()?.name ?? ('monitoring.equipment.title' | translate) }}</h1>
       @if (risk.data(); as r) {
         <p class="ui-page-header__subtitle">{{ r.areaName }}</p>
@@ -18,7 +18,7 @@
   </header>
 
   <div class="ui-grid">
-    <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="risk-title">
+    <section class="ui-card ui-stack ui-stack--tight" aria-labelledby="risk-title">
       <h2 id="risk-title">{{ 'monitoring.equipment.risk' | translate }}</h2>
       @if (risk.initialLoading()) {
         <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
@@ -37,14 +37,14 @@
             }
           </ul>
         }
-        <p class="text-meta" style="margin: 0">
+        <p class="text-meta ui-flush">
           {{ 'monitoring.dashboard.openAlerts' | translate: { critical: r.openCriticalAlerts, nonCritical: r.openNonCriticalAlerts } }}
         </p>
         <app-freshness [lastUpdatedAt]="risk.lastUpdatedAt()" [stale]="risk.stale()" [refreshing]="risk.loading()" />
       }
     </section>
 
-    <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="telemetry-title">
+    <section class="ui-card ui-stack ui-stack--tight" aria-labelledby="telemetry-title">
       <h2 id="telemetry-title">{{ 'monitoring.equipment.telemetry' | translate }}</h2>
       @if (telemetry.initialLoading()) {
         <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
@@ -53,9 +53,9 @@
       } @else if (telemetry.data(); as t) {
         <app-status-tag [label]="'monitoring.state.' + t.state | translate" [appearance]="stateAppearance[t.state]" />
         @if (t.sensorSerialNumber; as serial) {
-          <p class="text-meta" style="margin: 0">{{ 'monitoring.equipment.sensor' | translate: { serial } }}</p>
+          <p class="text-meta ui-flush">{{ 'monitoring.equipment.sensor' | translate: { serial } }}</p>
         } @else {
-          <p class="text-meta" style="margin: 0">{{ 'monitoring.equipment.noSensor' | translate }}</p>
+          <p class="text-meta ui-flush">{{ 'monitoring.equipment.noSensor' | translate }}</p>
         }
         <app-reading-values [reading]="t.lastMeasurement" [state]="t.state" />
         <app-freshness [lastUpdatedAt]="telemetry.lastUpdatedAt()" [stale]="telemetry.stale()" [refreshing]="telemetry.loading()" />
@@ -74,7 +74,7 @@
         <label class="ui-field__label" for="hist-to">{{ 'shared.labels.to' | translate }}</label>
         <input class="ui-input" id="hist-to" type="datetime-local" formControlName="to" />
       </div>
-      <button class="ui-button ui-button--secondary" type="submit" style="align-self: end">{{ 'shared.actions.apply' | translate }}</button>
+      <button class="ui-button ui-button--secondary ui-align-end" type="submit">{{ 'shared.actions.apply' | translate }}</button>
     </form>
     <p class="ui-field__hint">{{ 'shared.dateRange.hint' | translate }}</p>
     @if (rangeProblem(); as key) {
@@ -115,7 +115,7 @@
             </tbody>
           </table>
         </div>
-        <div class="ui-actions" style="justify-content: flex-end">
+        <div class="ui-actions ui-actions--end">
           <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
           <span class="text-meta">{{ 'shared.pagination.page' | translate: { page: page() } }}</span>
           <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>

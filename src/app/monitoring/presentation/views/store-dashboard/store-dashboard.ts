@@ -14,6 +14,7 @@ import { GRID_APPEARANCE, RISK_APPEARANCE, STATE_APPEARANCE } from '@monitoring/
 import { ErrorNotice } from '@shared/presentation/components/error-notice/error-notice';
 import { Freshness } from '@shared/presentation/components/freshness/freshness';
 import { Icon } from '@shared/presentation/components/icon/icon';
+import { Skeleton } from '@shared/presentation/components/skeleton/skeleton';
 import { StatePanel } from '@shared/presentation/components/state-panel/state-panel';
 import { StatusTag } from '@shared/presentation/components/status-tag/status-tag';
 import { LocalizedNumberPipe } from '@shared/presentation/pipes/localized-number.pipe';
@@ -35,7 +36,7 @@ interface EquipmentCard {
 
 /** Store monitoring dashboard (US08, US16, US21): counts, grid KPIs and equipment risk cards. */
 @Component({
-  imports: [RouterLink, TranslatePipe, ErrorNotice, Freshness, Icon, StatePanel, StatusTag, ReadingValues, LocalizedNumberPipe],
+  imports: [RouterLink, TranslatePipe, ErrorNotice, Freshness, Icon, Skeleton, StatePanel, StatusTag, ReadingValues, LocalizedNumberPipe],
   selector: 'app-store-dashboard-view',
   templateUrl: './store-dashboard.html',
 })

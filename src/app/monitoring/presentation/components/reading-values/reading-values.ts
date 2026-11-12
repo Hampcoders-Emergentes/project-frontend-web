@@ -33,15 +33,15 @@ import { LocalizedNumberPipe } from '@shared/presentation/pipes/localized-number
             <dt>{{ 'monitoring.reading.leakage' | translate }}</dt><dd>{{ value.leakageCurrentAmps * 1000 | localizedNumber: 1 }} mA</dd>
           }
         </dl>
-        <p class="text-meta" style="margin: 0">{{ 'monitoring.reading.capturedAt' | translate: { time: (value.capturedAt | localizedDate: 'dateTime') } }}</p>
+        <p class="text-meta ui-flush">{{ 'monitoring.reading.capturedAt' | translate: { time: (value.capturedAt | localizedDate: 'dateTime') } }}</p>
       } @else {
-        <p class="ui-tag ui-tag--warning" style="margin: 0; justify-self: start">
+        <p class="ui-tag ui-tag--warning ui-flush ui-self-start">
           <app-icon class="ui-tag__icon" name="clock" />{{ 'monitoring.reading.noFreshData' | translate }}
         </p>
-        <p class="text-meta" style="margin: 0">{{ 'monitoring.reading.lastCaptured' | translate: { time: (value.capturedAt | localizedDate: 'dateTime') } }}</p>
+        <p class="text-meta ui-flush">{{ 'monitoring.reading.lastCaptured' | translate: { time: (value.capturedAt | localizedDate: 'dateTime') } }}</p>
       }
     } @else {
-      <p class="ui-tag" style="margin: 0; justify-self: start">
+      <p class="ui-tag ui-flush ui-self-start">
         <app-icon class="ui-tag__icon" name="wifi-off" />{{ 'monitoring.reading.noData' | translate }}
       </p>
     }

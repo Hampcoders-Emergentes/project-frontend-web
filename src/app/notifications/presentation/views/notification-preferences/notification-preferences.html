@@ -15,7 +15,7 @@
   } @else if (store.preferences.error(); as failure) {
     <app-error-notice [error]="failure" [retryable]="true" (retry)="store.load(storeId())" />
   } @else if (store.preferences.data(); as prefs) {
-    <p class="text-meta" style="margin: 0">
+    <p class="text-meta ui-flush">
       @if (prefs.isDefault) { {{ 'notifications.isDefault' | translate }} }
       @else if (prefs.updatedAt; as updated) { {{ 'notifications.updatedAt' | translate: { time: (updated | localizedDate: 'dateTime') } }} }
     </p>
@@ -27,7 +27,7 @@
         <app-state-panel kind="empty" [heading]="'notifications.noRoutes' | translate" [message]="'notifications.noRoutesMessage' | translate" />
       }
       @for (group of routes.controls; track group; let i = $index) {
-        <fieldset class="ui-fieldset ui-stack" style="gap: var(--space-1)" [formGroup]="group">
+        <fieldset class="ui-fieldset ui-stack ui-stack--tight" [formGroup]="group">
           <legend>{{ 'notifications.route' | translate: { n: i + 1 } }}</legend>
           <div class="ui-form-grid">
             <div class="ui-field">

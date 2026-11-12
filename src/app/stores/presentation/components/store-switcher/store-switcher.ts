@@ -1,24 +1,30 @@
 import { Component, computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { StoreDirectoryStore } from '@stores/application/store-directory.store';
 import { Icon } from '@shared/presentation/components/icon/icon';
 
 /**
- * Header store selector and live-update status. Switching navigates to the other store's dashboard
+ * Header link back to the store list, store selector and live-update status. Switching navigates to the other store's dashboard
  * (the route guard verifies ownership and moves the realtime membership); the store list is loaded
  * lazily the first time the selector is rendered.
  */
 @Component({
-  imports: [TranslatePipe, Icon],
+  imports: [RouterLink, TranslatePipe, Icon],
   selector: 'app-store-switcher',
   styles: `
     :host { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
     .switcher { display: flex; align-items: center; gap: 0.5rem; }
     .switcher select { min-width: 12rem; max-width: 18rem; }
-    @media (max-width: 640px) { .switcher select { min-width: 0; max-width: 11rem; } .live span { display: none; } }
+    .all-stores { color: var(--text-secondary); }
+    @media (max-width: 640px) { .switcher select { min-width: 0; max-width: 11rem; } .live span, .all-stores span { display: none; } }
   `,
   template: `
+    <a class="ui-button ui-button--ghost ui-button--small all-stores" routerLink="/stores"
+      [attr.aria-label]="'stores.switcher.allStores' | translate">
+      <app-icon class="ui-button__icon" name="chevron-left" />
+      <span>{{ 'stores.switcher.allStores' | translate }}</span>
+    </a>
     @if (directory.activeStore(); as active) {
       <label class="switcher">
         <app-icon name="building-store" />

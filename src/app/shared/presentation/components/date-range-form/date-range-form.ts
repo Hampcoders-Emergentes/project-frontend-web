@@ -26,7 +26,7 @@ const DAY_MS = 86_400_000;
           [attr.aria-describedby]="problem() ? idPrefix() + '-error' : null" />
       </div>
       <ng-content />
-      <button class="ui-button ui-button--secondary" type="submit" style="align-self: end" [disabled]="disabled()">{{ submitLabel() ?? ('shared.actions.apply' | translate) }}</button>
+      <button class="ui-button ui-button--secondary ui-align-end" type="submit" [disabled]="disabled()">{{ submitLabel() ?? ('shared.actions.apply' | translate) }}</button>
     </form>
     @if (problem(); as key) {
       <p class="ui-field__error" role="alert" [id]="idPrefix() + '-error'">{{ key | translate }}</p>

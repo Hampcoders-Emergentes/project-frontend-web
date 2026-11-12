@@ -1,6 +1,7 @@
 <div
   class="state-panel"
   [class.state-panel--error]="kind() === 'error'"
+  [class.state-panel--empty]="kind() === 'empty'"
   [attr.role]="kind() === 'error' ? 'alert' : 'status'"
   [attr.aria-busy]="kind() === 'loading' || null"
 >

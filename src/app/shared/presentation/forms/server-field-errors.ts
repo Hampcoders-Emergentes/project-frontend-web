@@ -25,7 +25,8 @@ export function applyServerFieldErrors(
       unmatched.push(field);
       continue;
     }
-    control.setErrors({ ...(control.errors ?? {}), server: messages.join(' ') });
+    // The `server` error holds the field's first machine code (never backend text); views translate it.
+    control.setErrors({ ...(control.errors ?? {}), server: messages[0] ?? 'VALIDATION_FAILED' });
     control.markAsTouched();
   }
   return unmatched;

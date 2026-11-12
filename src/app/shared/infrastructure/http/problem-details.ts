@@ -26,10 +26,20 @@ function readFields(record: Record<string, unknown>): Record<string, string[]> |
   return Object.keys(fields).length > 0 ? fields : undefined;
 }
 
+/** Seconds from the `Retry-After` header (preferred) or the problem's `retryAfterSeconds`. */
+function readRetryAfter(error: HttpErrorResponse, body: Record<string, unknown> | null): number | null {
+  const header = Number(error.headers.get('Retry-After'));
+  if (Number.isFinite(header) && header > 0) {
+    return header;
+  }
+  const value = body?.['retryAfterSeconds'];
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
+}
+
 /**
- * Normalises any HTTP failure into the RFC 7807 application error `{ status, title, detail, traceId,
- * fields?, raw }`. This is the only place where backend error payloads are read. A status-0 error is a
- * network/CORS failure without a body.
+ * Normalises any HTTP failure into the RFC 7807 application error. This is the only place where backend
+ * error payloads are read: `errorCode` and `Retry-After` are kept, `detail` is kept for diagnostics only.
+ * A status-0 error is a network/CORS failure without a body.
  * @param error - The thrown value.
  */
 export function normalizeHttpError(error: unknown): AppErrorException {
@@ -41,7 +51,16 @@ export function normalizeHttpError(error: unknown): AppErrorException {
   }
   const body: unknown = error.error;
   if (!isRecord(body)) {
-    return new AppErrorException(error.status, error.statusText || 'Error', '', null, body);
+    return new AppErrorException(
+      error.status,
+      error.statusText || 'Error',
+      '',
+      null,
+      body,
+      undefined,
+      null,
+      readRetryAfter(error, null),
+    );
   }
   return new AppErrorException(
     error.status,
@@ -50,6 +69,8 @@ export function normalizeHttpError(error: unknown): AppErrorException {
     readString(body, 'traceId'),
     body,
     readFields(body),
+    readString(body, 'errorCode'),
+    readRetryAfter(error, body),
   );
 }
 

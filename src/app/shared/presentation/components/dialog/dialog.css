@@ -12,10 +12,25 @@
 .dialog[open] {
   display: flex;
   flex-direction: column;
+  animation: dialog-enter 180ms ease-out;
 }
 
 .dialog::backdrop {
   background-color: rgb(10 37 64 / 0.6);
+  animation: dialog-fade 180ms ease-out;
+}
+
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@keyframes dialog-fade {
+  from {
+    opacity: 0;
+  }
 }
 
 .dialog__header {

@@ -24,7 +24,7 @@ export interface BarDatum {
     details summary { cursor: pointer; color: var(--color-primary); font-weight: var(--font-weight-semibold); }
   `,
   template: `
-    <figure style="margin: 0">
+    <figure class="ui-flush">
       <figcaption class="text-meta">{{ caption() }} ({{ unit() }})</figcaption>
       <svg role="img" [attr.aria-label]="caption() + ' (' + unit() + ')'" [attr.viewBox]="'0 0 ' + width + ' ' + height" preserveAspectRatio="none">
         <line class="axis" x1="0" [attr.y1]="height - 1" [attr.x2]="width" [attr.y2]="height - 1" />

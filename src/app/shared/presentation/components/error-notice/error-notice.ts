@@ -1,6 +1,12 @@
 import { Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { type AppError, errorKindOf, errorMessageKey } from '@shared/application/app-error';
+import {
+  type AppError,
+  type ErrorCodeMessages,
+  errorKindOf,
+  errorMessageKeyFor,
+} from '@shared/application/app-error';
+import { SHARED_ERROR_CODE_MESSAGES } from '@shared/presentation/errors/shared-error-codes';
 import { Icon } from '@shared/presentation/components/icon/icon';
 
 /**
@@ -35,8 +41,12 @@ export class ErrorNotice {
   readonly message = input<string | null>(null);
   /** Whether to offer the retry/reload action. */
   readonly retryable = input(false);
+  /** Context-specific translations per `errorCode`; shared codes always apply. */
+  readonly codeMessages = input<ErrorCodeMessages>({});
   readonly retry = output<void>();
 
   protected readonly kind = computed(() => errorKindOf(this.error()));
-  protected readonly messageKey = computed(() => errorMessageKey(this.error()));
+  protected readonly messageKey = computed(() =>
+    errorMessageKeyFor(this.error(), { ...SHARED_ERROR_CODE_MESSAGES, ...this.codeMessages() }),
+  );
 }

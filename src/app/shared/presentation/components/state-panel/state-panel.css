@@ -16,6 +16,26 @@
   color: var(--text-secondary);
 }
 
+/* Empty states are a guided call to action: a framed area with a branded badge. */
+.state-panel--empty {
+  gap: 0.75rem;
+  padding: var(--space-5) var(--space-3);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-card);
+  background-color: var(--surface-card);
+}
+
+.state-panel--empty .state-panel__badge {
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.state-panel--empty .state-panel__actions {
+  margin-block-start: var(--space-1);
+}
+
 /* Request errors are not electrical emergencies: they use the error tone, not danger red. */
 .state-panel--error .state-panel__badge {
   background-color: var(--tone-error-bg);

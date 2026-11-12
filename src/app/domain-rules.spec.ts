@@ -47,7 +47,7 @@ describe('alerts domain', () => {
     id: 'alert-1', equipmentId: 'e1', anomalyType: 'CURRENT_LEAKAGE', severity: 'CRITICAL', detectionSeverity: 'Critical', status: 'OPEN',
     source: 'TELEMETRY', capturedAt: new Date(), createdAt: new Date(), isCriticalLeakage: true, reportCategory: null, description: null,
     reportedBy: null, onDutyWorker: null, acknowledgedAt: null, assignedTechnicianId: null, assignedTechnicianName: null, assignedAt: null,
-    resolvedAt: null, resolutionNotes: null,
+    resolvedAt: null, resolutionNotes: null, sequence: 1,
   };
 
   it('follows the linear workflow OPEN -> ACKNOWLEDGED -> ASSIGNED -> RESOLVED', () => {
@@ -58,7 +58,7 @@ describe('alerts domain', () => {
   });
 
   it('merges a realtime alert once and updates counters', () => {
-    const active: ActiveAlerts = { generatedAt: new Date(), openCritical: 0, openNonCritical: 0, hasCriticalLeakage: false, items: [] };
+    const active: ActiveAlerts = { generatedAt: new Date(), openCritical: 0, openNonCritical: 0, hasCriticalLeakage: false, latestSequence: 0, items: [] };
     const merged = withReceivedAlert(active, alert);
     expect(merged.openCritical).toBe(1);
     expect(merged.hasCriticalLeakage).toBe(true);

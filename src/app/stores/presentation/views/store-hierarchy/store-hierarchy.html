@@ -39,7 +39,7 @@
     }
     @for (node of nodes; track node.area.id) {
       <section class="ui-card ui-stack" [attr.aria-labelledby]="'area-' + node.area.id">
-        <div class="ui-section-header" style="margin: 0">
+        <div class="ui-section-header ui-flush">
           <h2 [id]="'area-' + node.area.id">{{ node.area.name }}</h2>
           <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="openEquipmentForm(node.area.id)">
             {{ 'stores.hierarchy.addEquipment' | translate }}
@@ -67,7 +67,7 @@
         }
 
         @if (node.equipment.length === 0) {
-          <p class="text-meta" style="margin: 0">{{ 'stores.hierarchy.noEquipment' | translate }}</p>
+          <p class="text-meta ui-flush">{{ 'stores.hierarchy.noEquipment' | translate }}</p>
         } @else {
           <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="node.area.name">
             <table class="ui-table">

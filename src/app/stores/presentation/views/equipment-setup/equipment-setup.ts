@@ -26,7 +26,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
     <div class="ui-stack">
       <header class="ui-page-header">
         <div>
-          <p class="text-meta" style="margin: 0">
+          <p class="text-meta ui-flush">
             <a [routerLink]="['/stores', storeId(), 'setup', 'areas']">{{ 'stores.hierarchy.title' | translate }}</a>
           </p>
           <h1 class="ui-page-header__title">{{ setup.equipment.data()?.name ?? ('stores.setup.title' | translate) }}</h1>

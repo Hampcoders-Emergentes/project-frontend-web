@@ -2,7 +2,7 @@
   <h2 id="binding-title">{{ 'stores.binding.title' | translate }}</h2>
 
   @if (binding(); as linked) {
-    <span class="ui-tag ui-tag--info" style="justify-self: start">
+    <span class="ui-tag ui-tag--info ui-self-start">
       <app-icon class="ui-tag__icon" name="wifi" />
       {{ 'stores.binding.linked' | translate }}
     </span>
@@ -35,7 +35,7 @@
             [attr.aria-invalid]="(form.controls.deviceId.invalid && form.controls.deviceId.touched) || null" />
           <p class="ui-field__hint" id="binding-device-hint">{{ 'stores.binding.deviceHint' | translate }}</p>
           @if (form.controls.deviceId.invalid && form.controls.deviceId.touched) {
-            <p class="ui-field__error">{{ form.controls.deviceId.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+            <p class="ui-field__error">{{ (form.controls.deviceId.hasError('server') ? 'shared.validation.serverRejected' : 'shared.validation.required') | translate }}</p>
           }
         </div>
         <div class="ui-field">
@@ -43,7 +43,7 @@
           <input class="ui-input" id="binding-edge" formControlName="edgeDeviceId"
             [attr.aria-invalid]="(form.controls.edgeDeviceId.invalid && form.controls.edgeDeviceId.touched) || null" />
           @if (form.controls.edgeDeviceId.invalid && form.controls.edgeDeviceId.touched) {
-            <p class="ui-field__error">{{ form.controls.edgeDeviceId.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+            <p class="ui-field__error">{{ (form.controls.edgeDeviceId.hasError('server') ? 'shared.validation.serverRejected' : 'shared.validation.required') | translate }}</p>
           }
         </div>
       </div>

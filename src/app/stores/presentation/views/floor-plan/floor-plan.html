@@ -30,7 +30,7 @@
     } @else {
       <p class="ui-field__hint">{{ 'stores.layout.keyboardHint' | translate }}</p>
       <div class="floor-plan">
-        <div class="ui-stack" style="gap: var(--space-1)">
+        <div class="ui-stack ui-stack--tight">
           <div class="ui-actions" role="group" [attr.aria-label]="'stores.layout.zoom' | translate">
             <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="setZoom(-1)" [disabled]="zoomIndex() === 0">−</button>
             <span class="text-meta tnum" aria-live="polite">{{ zoom() * 100 }}%</span>
@@ -66,10 +66,10 @@
         </div>
 
         <aside class="floor-plan__side">
-          <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="fp-selected-title">
+          <section class="ui-card ui-stack ui-stack--tight" aria-labelledby="fp-selected-title">
             <h2 id="fp-selected-title">{{ 'stores.layout.selected' | translate }}</h2>
             @if (selected(); as item) {
-              <p style="margin: 0"><strong>{{ item.name }}</strong> · <span class="text-meta">{{ item.areaName }}</span></p>
+              <p class="ui-flush"><strong>{{ item.name }}</strong> · <span class="text-meta">{{ item.areaName }}</span></p>
               @if (item.box; as box) {
                 <div class="ui-form-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr))">
                   @for (field of boxFields; track field) {
@@ -84,14 +84,14 @@
                 </button>
               }
             } @else {
-              <p class="text-meta" style="margin: 0">{{ 'stores.layout.noSelection' | translate }}</p>
+              <p class="text-meta ui-flush">{{ 'stores.layout.noSelection' | translate }}</p>
             }
           </section>
 
-          <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="fp-unplaced-title">
+          <section class="ui-card ui-stack ui-stack--tight" aria-labelledby="fp-unplaced-title">
             <h2 id="fp-unplaced-title">{{ 'stores.layout.unplaced' | translate: { count: unplaced().length } }}</h2>
             @if (unplaced().length === 0) {
-              <p class="text-meta" style="margin: 0">{{ 'stores.layout.allPlaced' | translate }}</p>
+              <p class="text-meta ui-flush">{{ 'stores.layout.allPlaced' | translate }}</p>
             } @else {
               <ul class="floor-plan__list">
                 @for (item of unplaced(); track item.equipmentId) {

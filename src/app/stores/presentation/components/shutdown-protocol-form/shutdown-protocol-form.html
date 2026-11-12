@@ -20,7 +20,7 @@
 
   <form class="ui-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     @for (list of lists; track list) {
-      <fieldset class="ui-fieldset ui-stack" style="gap: var(--space-1)">
+      <fieldset class="ui-fieldset ui-stack ui-stack--tight">
         <legend>{{ 'stores.protocol.' + list | translate }}</legend>
         <p class="ui-field__hint">{{ 'stores.protocol.stepsHint' | translate: { min: limits.minSteps, max: limits.maxSteps } }}</p>
         <ol class="ui-stack" style="gap: var(--space-1); margin: 0; padding-inline-start: 1.5rem">

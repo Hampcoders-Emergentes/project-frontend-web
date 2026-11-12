@@ -14,7 +14,7 @@
   }
 
   <section class="ui-card ui-stack" aria-labelledby="on-duty-title">
-    <div class="ui-section-header" style="margin: 0">
+    <div class="ui-section-header ui-flush">
       <h2 id="on-duty-title">{{ 'stores.shifts.onDuty' | translate }}</h2>
       <app-freshness [lastUpdatedAt]="roster.onDuty.lastUpdatedAt()" [stale]="roster.onDuty.stale()" [refreshing]="roster.onDuty.loading()" />
     </div>
@@ -24,7 +24,7 @@
       <app-error-notice [error]="failure" [retryable]="true" (retry)="roster.loadOnDuty(storeId())" />
     } @else if (roster.onDuty.data(); as duty) {
       @if (duty.onDuty.length === 0) {
-        <p class="text-meta" style="margin: 0">{{ 'stores.shifts.nobodyOnDuty' | translate }}</p>
+        <p class="text-meta ui-flush">{{ 'stores.shifts.nobodyOnDuty' | translate }}</p>
       } @else {
         <dl class="ui-dl">
           <dt>{{ 'stores.shifts.accountable' | translate }}</dt>
@@ -56,7 +56,7 @@
             <input class="ui-input" [id]="'shift-' + field" [formControlName]="field"
               [attr.aria-invalid]="(shiftForm.get(field)?.invalid && shiftForm.get(field)?.touched) || null" />
             @if (shiftForm.get(field)?.invalid && shiftForm.get(field)?.touched) {
-              <p class="ui-field__error">{{ shiftForm.get(field)?.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+              <p class="ui-field__error">{{ (shiftForm.get(field)?.hasError('server') ? 'shared.validation.serverRejected' : 'shared.validation.required') | translate }}</p>
             }
           </div>
         }
@@ -82,7 +82,7 @@
   </section>
 
   <section class="ui-stack" aria-labelledby="roster-title">
-    <div class="ui-section-header" style="margin: 0">
+    <div class="ui-section-header ui-flush">
       <h2 id="roster-title">{{ 'stores.shifts.rosterTitle' | translate }}</h2>
     </div>
     <form class="ui-actions" [formGroup]="windowForm" (ngSubmit)="applyWindow()">
@@ -94,7 +94,7 @@
         <label class="ui-field__label" for="roster-to">{{ 'shared.labels.to' | translate }}</label>
         <input class="ui-input" id="roster-to" type="date" formControlName="to" />
       </div>
-      <button class="ui-button ui-button--secondary" type="submit" style="align-self: end">{{ 'shared.actions.apply' | translate }}</button>
+      <button class="ui-button ui-button--secondary ui-align-end" type="submit">{{ 'shared.actions.apply' | translate }}</button>
     </form>
     @if (rangeError(); as key) {
       <p class="ui-field__error" role="alert">{{ key | translate }}</p>

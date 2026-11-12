@@ -27,7 +27,7 @@ const blankToNull = (value: string): string | null => (value.trim() === '' ? nul
         </div>
       </header>
 
-      <form class="ui-card ui-form" style="padding: var(--space-2)" [formGroup]="form" (ngSubmit)="apply()">
+      <form class="ui-card ui-form ui-card--compact" [formGroup]="form" (ngSubmit)="apply()">
         <div class="ui-form-grid">
           @for (field of textFields; track field) {
             <div class="ui-field">
@@ -76,7 +76,7 @@ const blankToNull = (value: string): string | null => (value.trim() === '' ? nul
               </tbody>
             </table>
           </div>
-          <div class="ui-actions" style="justify-content: flex-end">
+          <div class="ui-actions ui-actions--end">
             <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
             <span class="text-meta">{{ 'shared.pagination.page' | translate: { page: page() } }}</span>
             <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>

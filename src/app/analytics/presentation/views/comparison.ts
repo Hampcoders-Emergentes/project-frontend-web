@@ -3,6 +3,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import type { DateRange } from '@shared/domain/date-range';
 import { AnalyticsStore } from '@analytics/application/analytics.store';
 import { DateRangeForm } from '@shared/presentation/components/date-range-form/date-range-form';
+import { DataQualityTag } from '@shared/presentation/components/data-quality/data-quality';
 import { ErrorNotice } from '@shared/presentation/components/error-notice/error-notice';
 import { StatePanel } from '@shared/presentation/components/state-panel/state-panel';
 import { LocalizedCurrencyPipe } from '@shared/presentation/pipes/localized-currency.pipe';
@@ -14,17 +15,17 @@ const DAY = 86_400_000;
 
 /** Compares two periods (US25). A zero baseline shows the change as "not available". */
 @Component({
-  imports: [TranslatePipe, DateRangeForm, ErrorNotice, StatePanel, LocalizedCurrencyPipe, LocalizedDatePipe, LocalizedNumberPipe],
+  imports: [TranslatePipe, DateRangeForm, DataQualityTag, ErrorNotice, StatePanel, LocalizedCurrencyPipe, LocalizedDatePipe, LocalizedNumberPipe],
   selector: 'app-comparison-view',
   template: `
     <section class="ui-stack" aria-labelledby="cmp-title">
       <h2 id="cmp-title">{{ 'analytics.comparison.title' | translate }}</h2>
       <div class="ui-form-grid">
-        <div class="ui-card ui-stack" style="gap: var(--space-1); padding: var(--space-2)">
+        <div class="ui-card ui-stack ui-stack--tight ui-card--compact">
           <h3>{{ 'analytics.comparison.period1' | translate }}</h3>
           <app-date-range-form idPrefix="cmp1" [initial]="period1()" [legend]="'analytics.comparison.period1' | translate" (rangeChange)="period1.set($event); compare()" />
         </div>
-        <div class="ui-card ui-stack" style="gap: var(--space-1); padding: var(--space-2)">
+        <div class="ui-card ui-stack ui-stack--tight ui-card--compact">
           <h3>{{ 'analytics.comparison.period2' | translate }}</h3>
           <app-date-range-form idPrefix="cmp2" [initial]="period2()" [legend]="'analytics.comparison.period2' | translate" (rangeChange)="period2.set($event); compare()" />
         </div>
@@ -35,20 +36,24 @@ const DAY = 86_400_000;
       } @else if (store.comparison.error(); as failure) {
         <app-error-notice [error]="failure" [retryable]="true" (retry)="compare()" />
       } @else if (store.comparison.data(); as c) {
+        @if (c.insufficientData) {
+          <app-data-quality quality="insufficient" />
+          <p class="text-meta ui-flush">{{ 'analytics.insufficientTelemetry' | translate }}</p>
+        } @else {
         <div class="ui-grid">
           @for (p of [c.period1, c.period2]; track $index) {
             <div class="ui-kpi">
               <p class="ui-kpi__label">{{ ($index === 0 ? 'analytics.comparison.period1' : 'analytics.comparison.period2') | translate }}</p>
               <p class="ui-kpi__value">{{ p.kwh | localizedNumber: 1 }} kWh</p>
-              <p class="text-meta" style="margin: 0">{{ p.cost | localizedCurrency: c.currency }} · {{ 'analytics.comparison.perDay' | translate: { value: (p.averageDailyKwh | localizedNumber: 1) } }}</p>
-              <p class="text-meta" style="margin: 0">{{ p.from | localizedDate: 'date' }} – {{ p.to | localizedDate: 'date' }} ({{ p.days }} {{ 'analytics.days' | translate }})</p>
+              <p class="text-meta ui-flush">{{ p.cost | localizedCurrency: c.currency }} · {{ 'analytics.comparison.perDay' | translate: { value: (p.averageDailyKwh | localizedNumber: 1) } }}</p>
+              <p class="text-meta ui-flush">{{ p.from | localizedDate: 'date' }} – {{ p.to | localizedDate: 'date' }} ({{ p.days }} {{ 'analytics.days' | translate }})</p>
             </div>
           }
           <div class="ui-kpi">
             <p class="ui-kpi__label">{{ 'analytics.comparison.change' | translate }}</p>
             <p class="ui-kpi__value">{{ c.kwhChangePercent === null ? ('analytics.notAvailable' | translate) : (c.kwhChangePercent | localizedNumber: 1) + ' %' }}</p>
-            <p class="text-meta" style="margin: 0">{{ c.kwhDifference | localizedNumber: 1 }} kWh · {{ c.costDifference | localizedCurrency: c.currency }}</p>
-            @if (c.kwhChangePercent === null) { <p class="text-meta" style="margin: 0">{{ 'analytics.comparison.zeroBaseline' | translate }}</p> }
+            <p class="text-meta ui-flush">{{ c.kwhDifference | localizedNumber: 1 }} kWh · {{ c.costDifference | localizedCurrency: c.currency }}</p>
+            @if (c.kwhChangePercent === null) { <p class="text-meta ui-flush">{{ 'analytics.comparison.zeroBaseline' | translate }}</p> }
           </div>
         </div>
         @if (c.period1.kwh === 0 || c.period2.kwh === 0) {
@@ -74,6 +79,7 @@ const DAY = 86_400_000;
             </tbody>
           </table>
         </div>
+        }
       }
     </section>
   `,

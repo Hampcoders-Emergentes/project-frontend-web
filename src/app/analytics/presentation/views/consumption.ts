@@ -47,7 +47,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
           <div class="ui-kpi" style="max-width: 20rem">
             <p class="ui-kpi__label">{{ 'analytics.consumption.total' | translate }}</p>
             <p class="ui-kpi__value">{{ data.totalKwh | localizedNumber: 1 }} kWh</p>
-            <p class="text-meta" style="margin: 0">{{ 'analytics.granularity.' + data.granularity | translate }}</p>
+            <p class="text-meta ui-flush">{{ 'analytics.granularity.' + data.granularity | translate }}</p>
           </div>
           <app-bar-chart [data]="chart()" [caption]="'analytics.consumption.chart' | translate" unit="kWh"
             [labelHeader]="'analytics.period' | translate" [tableLabel]="'shared.chart.showTable' | translate" [gapLabel]="'shared.chart.noData' | translate" />
@@ -76,7 +76,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
 
     <section class="ui-card ui-stack" aria-labelledby="eq-cons-title">
       <h2 id="eq-cons-title">{{ 'analytics.consumption.equipmentTitle' | translate }}</h2>
-      <div class="ui-field" style="max-width: 24rem">
+      <div class="ui-field ui-field--narrow">
         <label class="ui-field__label" for="eq-cons-select">{{ 'analytics.equipment' | translate }}</label>
         <select class="ui-input" id="eq-cons-select" (change)="selectEquipment($event)">
           <option value="">{{ 'analytics.selectEquipment' | translate }}</option>

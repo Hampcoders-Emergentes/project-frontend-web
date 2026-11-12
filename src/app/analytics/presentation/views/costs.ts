@@ -25,13 +25,13 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
         <div class="ui-grid">
           <div class="ui-kpi"><p class="ui-kpi__label">{{ 'analytics.costs.monthToDate' | translate }}</p>
             <p class="ui-kpi__value">{{ p.monthToDateCost | localizedCurrency: p.currency }}</p>
-            <p class="text-meta" style="margin: 0">{{ p.monthToDateKwh | localizedNumber: 1 }} kWh · {{ 'analytics.costs.elapsed' | translate: { elapsed: p.elapsedDays, total: p.daysInMonth } }}</p></div>
+            <p class="text-meta ui-flush">{{ p.monthToDateKwh | localizedNumber: 1 }} kWh · {{ 'analytics.costs.elapsed' | translate: { elapsed: p.elapsedDays, total: p.daysInMonth } }}</p></div>
           <div class="ui-kpi"><p class="ui-kpi__label">{{ 'analytics.costs.projected' | translate }}</p>
             @if (p.elapsedDays === 0 || p.monthToDateKwh === 0) {
-              <p style="margin: 0">{{ 'analytics.insufficientTelemetry' | translate }}</p>
+              <p class="ui-flush">{{ 'analytics.insufficientTelemetry' | translate }}</p>
             } @else {
               <p class="ui-kpi__value">{{ p.projectedCost | localizedCurrency: p.currency }}</p>
-              <p class="text-meta" style="margin: 0">{{ p.projectedKwh | localizedNumber: 1 }} kWh · {{ 'analytics.costs.method' | translate: { method: p.method } }}</p>
+              <p class="text-meta ui-flush">{{ p.projectedKwh | localizedNumber: 1 }} kWh · {{ 'analytics.costs.method' | translate: { method: p.method } }}</p>
             }</div>
         </div>
         <p class="text-meta">{{ 'analytics.costs.generated' | translate: { time: (p.generatedAt | localizedDate: 'dateTime'), zone: p.timeZone } }}</p>
@@ -46,11 +46,11 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
         @if (!b.hasBudget) {
           <p class="ui-notice">{{ 'analytics.costs.noBudget' | translate }}</p>
         } @else {
-          <div class="ui-card ui-stack" style="gap: var(--space-1)">
+          <div class="ui-card ui-stack ui-stack--tight">
             @if (b.isWarning) {
-              <p class="ui-tag ui-tag--warning" style="margin: 0; justify-self: start">{{ 'analytics.costs.warning' | translate }}</p>
+              <p class="ui-tag ui-tag--warning ui-flush ui-self-start">{{ 'analytics.costs.warning' | translate }}</p>
             } @else {
-              <p class="ui-tag ui-tag--success" style="margin: 0; justify-self: start">{{ 'analytics.costs.onTrack' | translate }}</p>
+              <p class="ui-tag ui-tag--success ui-flush ui-self-start">{{ 'analytics.costs.onTrack' | translate }}</p>
             }
             <label class="text-meta" for="budget-progress">{{ 'analytics.costs.consumedOf' | translate: { consumed: (b.consumedKwh | localizedNumber: 1), target: (b.targetKWh | localizedNumber: 1) } }}</label>
             <progress class="ui-progress" id="budget-progress" max="100" [value]="b.consumedPercentage ?? 0">{{ b.consumedPercentage ?? 0 }}%</progress>
@@ -76,7 +76,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
           <div class="ui-field"><label class="ui-field__label" for="b-target">{{ 'analytics.costs.target' | translate }} (kWh)</label>
             <input class="ui-input tnum" id="b-target" type="number" min="0" step="any" formControlName="targetKWh"
               [attr.aria-invalid]="(form.controls.targetKWh.invalid && form.controls.targetKWh.touched) || null" />
-            @if (form.controls.targetKWh.invalid && form.controls.targetKWh.touched) { <p class="ui-field__error">{{ form.controls.targetKWh.getError('server') ?? ('analytics.costs.targetInvalid' | translate) }}</p> }</div>
+            @if (form.controls.targetKWh.invalid && form.controls.targetKWh.touched) { <p class="ui-field__error">{{ (form.controls.targetKWh.hasError('server') ? 'shared.validation.serverRejected' : 'analytics.costs.targetInvalid') | translate }}</p> }</div>
           <div class="ui-field"><label class="ui-field__label" for="b-alert">{{ 'analytics.costs.alertAt' | translate }} (%)</label>
             <input class="ui-input tnum" id="b-alert" type="number" min="0" max="100" step="any" formControlName="alertThresholdPercentage" />
             <p class="ui-field__hint">{{ 'shared.validation.optional' | translate }}</p></div>

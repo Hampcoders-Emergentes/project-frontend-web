@@ -40,7 +40,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
       } @else if (store.offHours.data(); as data) {
         <div class="ui-grid">
           <div class="ui-kpi"><p class="ui-kpi__label">{{ 'analytics.offHours.total' | translate }}</p><p class="ui-kpi__value">{{ data.totalKwh | localizedNumber: 2 }} kWh</p>
-            <p class="text-meta" style="margin: 0">{{ data.totalCost | localizedCurrency: data.currency }} · {{ data.timeZone }}</p></div>
+            <p class="text-meta ui-flush">{{ data.totalCost | localizedCurrency: data.currency }} · {{ data.timeZone }}</p></div>
         </div>
         @if (data.episodes.length === 0) {
           <app-state-panel kind="empty" [heading]="'analytics.offHours.none' | translate" [message]="'analytics.offHours.noneMessage' | translate" />

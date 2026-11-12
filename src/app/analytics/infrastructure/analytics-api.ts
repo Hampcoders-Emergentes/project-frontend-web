@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { defer, map, type Observable } from 'rxjs';
 import type { DownloadedFile } from '@shared/application/file-saver.port';
 import type { DateRange } from '@shared/domain/date-range';
+import { isInsufficientDataQuality } from '@shared/domain/data-quality';
 import { ApiClient } from '@shared/infrastructure/api/api-client';
 import { apiPath } from '@shared/infrastructure/api/api-url';
 import { serializeRange } from '@shared/infrastructure/api/date-serialization';
@@ -103,6 +104,7 @@ export class AnalyticsApi implements AnalyticsPort {
         kwhChangePercent: r.kwhChangePercent,
         costChangePercent: r.costChangePercent,
         averageDailyKwhChangePercent: r.averageDailyKwhChangePercent,
+        insufficientData: isInsufficientDataQuality(r.dataQuality),
         equipment: r.equipment.map((e) => ({
           equipmentId: e.equipmentId,
           equipmentName: e.equipmentName,

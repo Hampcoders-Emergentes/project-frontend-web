@@ -96,6 +96,8 @@ export interface ConsumptionComparison {
   readonly kwhChangePercent: number | null;
   readonly costChangePercent: number | null;
   readonly averageDailyKwhChangePercent: number | null;
+  /** True when either period has too few power samples: the numbers are not a measurement (show "not enough data"). */
+  readonly insufficientData: boolean;
   readonly equipment: readonly {
     readonly equipmentId: string;
     readonly equipmentName: string;

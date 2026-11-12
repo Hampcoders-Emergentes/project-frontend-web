@@ -46,6 +46,8 @@ export interface ConsumptionComparisonResponse {
   kwhChangePercent: number | null;
   costChangePercent: number | null;
   averageDailyKwhChangePercent: number | null;
+  /** `SUFFICIENT` or `INSUFFICIENT_DATA`; absent on older responses. */
+  dataQuality?: string;
   equipment: { equipmentId: string; equipmentName: string; period1Kwh: number; period2Kwh: number; kwhChangePercent: number | null }[];
 }
 

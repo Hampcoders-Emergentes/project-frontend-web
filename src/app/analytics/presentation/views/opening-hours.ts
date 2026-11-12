@@ -24,7 +24,7 @@ function dayValidator(group: AbstractControl): ValidationErrors | null {
       } @else if (store.openingHours.error(); as failure) {
         <app-error-notice [error]="failure" [retryable]="true" (retry)="store.loadOpeningHours(storeId())" />
       } @else if (store.openingHours.data(); as hours) {
-        <p class="text-meta" style="margin: 0">{{ 'analytics.timeZone' | translate }}: {{ hours.timeZone }}</p>
+        <p class="text-meta ui-flush">{{ 'analytics.timeZone' | translate }}: {{ hours.timeZone }}</p>
         @if (!hours.isConfigured) { <p class="ui-notice ui-notice--warning">{{ 'analytics.openingHours.notConfigured' | translate }}</p> }
         @if (store.openingHoursState.error(); as failure) { <app-error-notice [error]="failure" /> }
         @if (store.openingHoursState.succeededAt()) { <p class="ui-notice ui-notice--success" role="status">{{ 'analytics.openingHours.saved' | translate }}</p> }

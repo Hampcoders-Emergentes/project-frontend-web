@@ -29,6 +29,15 @@ yarn-error.log
 !.vscode/mcp.json
 .history/*
 
+# Environment: local secrets/overrides and the production config generated from API_ORIGIN
+.env
+.env.*
+!.env.example
+/src/environments/environment.generated.ts
+
+# Types generated from the API's OpenAPI document (npm run generate:api-types)
+/src/app/shared/infrastructure/api/generated/
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/

@@ -1,0 +1,45 @@
+# Local containers for the ElectroLink store web app.
+#
+#   Development (Angular dev server with hot reload, http://localhost:4200):
+#     docker compose --profile dev up web-dev --build
+#
+#   Production-like (static bundle served by nginx, http://localhost:8081):
+#     API_ORIGIN=http://localhost:8080 docker compose --profile prod up web --build
+#
+# The browser calls the API directly, so the API must be reachable from the host (the backend
+# repository's Compose stack publishes it on http://localhost:8080). The API must also list the
+# web origin in Cors:AllowedOrigins (localhost:4200 is the default; add http://localhost:8081 for prod).
+name: electrolink-web
+
+services:
+  web-dev:
+    profiles: ["dev"]
+    build:
+      context: .
+      target: dev
+    image: electrolink-web:dev
+    ports:
+      - "${WEB_DEV_PORT:-4200}:4200"
+    volumes:
+      - .:/app
+      # Keep the Linux-installed dependencies inside the container instead of the host's node_modules.
+      - web_dev_node_modules:/app/node_modules
+    command: >
+      sh -c "pnpm install --frozen-lockfile && pnpm exec ng serve --configuration development --host 0.0.0.0 --port 4200 --poll 1000"
+
+  web:
+    profiles: ["prod"]
+    build:
+      context: .
+      target: runtime
+      args:
+        # Empty is rejected by the Dockerfile build (ELECTROLINK_REQUIRE_API_ORIGIN). It is not a
+        # compose-level required variable, so the dev profile still works without it.
+        API_ORIGIN: ${API_ORIGIN:-}
+    image: electrolink-web:prod
+    ports:
+      - "${WEB_PORT:-8081}:8080"
+    restart: unless-stopped
+
+volumes:
+  web_dev_node_modules:

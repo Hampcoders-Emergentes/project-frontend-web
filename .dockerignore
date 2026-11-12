@@ -1,0 +1,29 @@
+# Version control, editor and agent tooling
+.git
+.gitignore
+.idea
+.vscode
+.claude
+.agents
+.mcp.json
+docs
+
+# Local dependency and build output (the image installs its own dependencies)
+node_modules
+dist
+.angular
+coverage
+out-tsc
+
+# Generated per build; the Docker build writes it from API_ORIGIN
+src/environments/environment.generated.ts
+
+# Secrets and local overrides
+.env
+.env.*
+!.env.example
+
+# Container definitions are not part of the build context
+Dockerfile
+compose.yaml
+.dockerignore

@@ -3,6 +3,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -12,12 +13,25 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "paths": {
+      "@env/*": ["./src/environments/*"],
+      "@shared/*": ["./src/app/shared/*"],
+      "@iam/*": ["./src/app/iam/*"],
+      "@stores/*": ["./src/app/stores/*"],
+      "@monitoring/*": ["./src/app/monitoring/*"],
+      "@alerts/*": ["./src/app/alerts/*"],
+      "@analytics/*": ["./src/app/analytics/*"],
+      "@compliance/*": ["./src/app/compliance/*"],
+      "@notifications/*": ["./src/app/notifications/*"],
+      "@audit/*": ["./src/app/audit/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   },
   "files": [],
   "references": [

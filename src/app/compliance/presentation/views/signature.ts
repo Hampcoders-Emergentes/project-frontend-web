@@ -21,7 +21,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
       } @else if (store.signature.error(); as failure) {
         <app-error-notice [error]="failure" [retryable]="true" (retry)="load()" />
       } @else if (store.signature.data(); as sig) {
-        <div class="ui-card ui-stack" style="gap: var(--space-1)">
+        <div class="ui-card ui-stack ui-stack--tight">
           <dl class="ui-dl">
             <dt>{{ 'compliance.signature.signerName' | translate }}</dt><dd>{{ sig.signerName }}</dd>
             <dt>{{ 'compliance.signature.signerTitle' | translate }}</dt><dd>{{ sig.signerTitle }}</dd>

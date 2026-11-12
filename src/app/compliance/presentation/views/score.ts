@@ -23,7 +23,7 @@ import { whenChanged } from '@shared/presentation/routing/when-changed';
           <div class="ui-kpi"><p class="ui-kpi__label">{{ 'compliance.score.score' | translate }}</p><p class="ui-kpi__value">{{ s.score | localizedNumber: 0 }}/100</p></div>
           <div class="ui-kpi"><p class="ui-kpi__label">{{ 'compliance.score.grade' | translate }}</p><p class="ui-kpi__value">{{ s.grade }}</p></div>
         </div>
-        <p class="text-meta" style="margin: 0">{{ 'compliance.score.evaluated' | translate: { time: (s.evaluatedAt | localizedDate: 'dateTime') } }}</p>
+        <p class="text-meta ui-flush">{{ 'compliance.score.evaluated' | translate: { time: (s.evaluatedAt | localizedDate: 'dateTime') } }}</p>
         <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="'compliance.score.components' | translate">
           <table class="ui-table">
             <caption>{{ 'compliance.score.components' | translate }}</caption>

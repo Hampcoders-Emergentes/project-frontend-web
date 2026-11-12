@@ -39,7 +39,7 @@
       <ol class="ui-stack" style="gap: var(--space-2); margin: 0; padding: 0; list-style: none" formArrayName="items">
         @for (group of form.controls.items.controls; track group.controls.code.value; let i = $index) {
           <li [formGroupName]="i">
-            <fieldset class="ui-fieldset ui-stack" style="gap: var(--space-1)" [attr.aria-describedby]="showItemProblem(group) ? 'cl-item-error-' + i : null">
+            <fieldset class="ui-fieldset ui-stack ui-stack--tight" [attr.aria-describedby]="showItemProblem(group) ? 'cl-item-error-' + i : null">
               <legend>{{ i + 1 }}. {{ group.controls.label.value }}</legend>
               <div class="ui-actions" role="radiogroup" [attr.aria-label]="group.controls.label.value">
                 @for (result of results; track result) {
@@ -116,7 +116,7 @@
           </tbody>
         </table>
       </div>
-      <div class="ui-actions" style="justify-content: flex-end">
+      <div class="ui-actions ui-actions--end">
         <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
         <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>
       </div>

@@ -13,7 +13,7 @@
       </div>
     }
     @if (exp.items.length === 0) {
-      <p class="text-meta" style="margin: 0">{{ 'compliance.certificates.noExpirations' | translate }}</p>
+      <p class="text-meta ui-flush">{{ 'compliance.certificates.noExpirations' | translate }}</p>
     } @else {
       <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="'compliance.certificates.expirationsShort' | translate">
         <table class="ui-table">
@@ -34,7 +34,7 @@
 
 <section class="ui-stack" aria-labelledby="cert-title">
   <h2 id="cert-title">{{ 'compliance.certificates.title' | translate }}</h2>
-  <div class="ui-field" style="max-width: 24rem">
+  <div class="ui-field ui-field--narrow">
     <label class="ui-field__label" for="cert-equipment">{{ 'compliance.certificates.equipment' | translate }}</label>
     <select class="ui-input" id="cert-equipment" [value]="selectedEquipmentId()" (change)="selectEquipment($event)">
       <option value="">{{ 'compliance.certificates.selectEquipment' | translate }}</option>
@@ -50,7 +50,7 @@
       <app-error-notice [error]="failure" />
     } @else if (store.certificates.data(); as page) {
       @if (page.items.length === 0) {
-        <p class="text-meta" style="margin: 0">{{ 'compliance.certificates.none' | translate }}</p>
+        <p class="text-meta ui-flush">{{ 'compliance.certificates.none' | translate }}</p>
       } @else {
         <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="'compliance.certificates.title' | translate">
           <table class="ui-table">
@@ -84,7 +84,7 @@
           <div class="ui-field">
             <label class="ui-field__label" [for]="'cert-' + field">{{ 'compliance.certificates.fields.' + field | translate }}</label>
             <input class="ui-input" [id]="'cert-' + field" [formControlName]="field" [attr.aria-invalid]="(form.get(field)?.invalid && form.get(field)?.touched) || null" />
-            @if (form.get(field)?.invalid && form.get(field)?.touched) { <p class="ui-field__error">{{ form.get(field)?.getError('server') ?? ('shared.validation.required' | translate) }}</p> }
+            @if (form.get(field)?.invalid && form.get(field)?.touched) { <p class="ui-field__error">{{ (form.get(field)?.hasError('server') ? 'shared.validation.serverRejected' : 'shared.validation.required') | translate }}</p> }
           </div>
         }
         <div class="ui-field">

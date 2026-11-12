@@ -4,24 +4,29 @@
     {{ 'shared.appName' | translate }}
   </p>
 
-  <nav [attr.aria-label]="'shared.navigation.label' | translate">
-    <ul class="side-bar__list">
-      @for (item of items(); track item.path) {
-        <li>
-          <a
-            class="side-bar__link"
-            [routerLink]="item.path"
-            routerLinkActive="side-bar__link--active"
-            ariaCurrentWhenActive="page"
-            [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-            (click)="navigated.emit()"
-          >
-            <app-icon class="side-bar__icon" [name]="item.icon" />
-            <span>{{ item.labelKey | translate }}</span>
-          </a>
-        </li>
-      }
-    </ul>
+  <nav class="side-bar__nav" [attr.aria-label]="'shared.navigation.label' | translate">
+    @for (group of groups(); track group.labelKey; let index = $index) {
+      <div class="side-bar__group">
+        <p class="side-bar__group-label" [id]="'side-bar-group-' + index">{{ group.labelKey | translate }}</p>
+        <ul class="side-bar__list" [attr.aria-labelledby]="'side-bar-group-' + index">
+          @for (item of group.items; track item.path) {
+            <li>
+              <a
+                class="side-bar__link"
+                [routerLink]="item.path"
+                routerLinkActive="side-bar__link--active"
+                ariaCurrentWhenActive="page"
+                [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+                (click)="navigated.emit()"
+              >
+                <app-icon class="side-bar__icon" [name]="item.icon" />
+                <span>{{ item.labelKey | translate }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
   </nav>
 
   <div class="side-bar__footer">

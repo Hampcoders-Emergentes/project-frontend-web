@@ -2,36 +2,65 @@
   {{ 'shared.privateLayout.skipToContent' | translate }}
 </a>
 
-<div class="private-layout">
-  <div
-    class="private-layout__navigation"
-    id="private-layout-navigation"
-    [class.private-layout__navigation--open]="menuOpen()"
-  >
-    <app-side-bar
-      [items]="navigation()"
-      [account]="account()"
-      (navigated)="menuOpen.set(false)"
-      (signOut)="signOut()"
-    />
-  </div>
+<div class="private-layout" [class.private-layout--launcher]="!workspace()">
+  @if (workspace()) {
+    <div
+      class="private-layout__navigation"
+      id="private-layout-navigation"
+      [class.private-layout__navigation--open]="menuOpen()"
+    >
+      <app-side-bar
+        [groups]="navigation()"
+        [account]="account()"
+        (navigated)="menuOpen.set(false)"
+        (signOut)="signOut()"
+      />
+    </div>
+  }
 
   <div class="private-layout__column">
     <header class="private-layout__header">
-      <button
-        class="ui-button ui-button--ghost ui-button--icon private-layout__menu-toggle"
-        type="button"
-        aria-controls="private-layout-navigation"
-        [attr.aria-expanded]="menuOpen()"
-        [attr.aria-label]="'shared.privateLayout.toggleNavigation' | translate"
-        (click)="menuOpen.set(!menuOpen())"
-      >
-        <app-icon class="ui-button__icon" [name]="menuOpen() ? 'x' : 'menu-2'" />
-      </button>
-      <span class="private-layout__brand">{{ 'shared.appName' | translate }}</span>
-      <div class="private-layout__actions">
-        <router-outlet [name]="headerActionsOutlet" />
-      </div>
+      @if (workspace()) {
+        <button
+          class="ui-button ui-button--ghost ui-button--icon private-layout__menu-toggle"
+          type="button"
+          aria-controls="private-layout-navigation"
+          [attr.aria-expanded]="menuOpen()"
+          [attr.aria-label]="'shared.privateLayout.toggleNavigation' | translate"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          <app-icon class="ui-button__icon" [name]="menuOpen() ? 'x' : 'menu-2'" />
+        </button>
+        <span class="private-layout__brand private-layout__brand--compact">{{ 'shared.appName' | translate }}</span>
+        <div class="private-layout__actions">
+          <router-outlet [name]="headerActionsOutlet" />
+        </div>
+      } @else {
+        <a class="private-layout__brand" routerLink="/stores">
+          <img class="private-layout__logo" src="favicon.svg" width="32" height="32" alt="" />
+          {{ 'shared.appName' | translate }}
+        </a>
+        <div class="private-layout__actions">
+          <app-language-switcher class="private-layout__language" />
+          @if (account(); as current) {
+            <a
+              class="private-layout__account"
+              [routerLink]="current.settingsPath"
+              routerLinkActive="private-layout__account--active"
+              ariaCurrentWhenActive="page"
+            >
+              <span class="private-layout__avatar" aria-hidden="true">{{ initial() }}</span>
+              <span class="private-layout__username">{{ current.username }}</span>
+              <span class="sr-only">{{ 'shared.navigation.settings' | translate }}</span>
+            </a>
+          }
+          <button class="ui-button ui-button--ghost ui-button--small" type="button"
+            [attr.aria-label]="'shared.actions.signOut' | translate" (click)="signOut()">
+            <app-icon class="ui-button__icon" name="logout" />
+            <span class="private-layout__sign-out-label">{{ 'shared.actions.signOut' | translate }}</span>
+          </button>
+        </div>
+      }
     </header>
 
     <main #main class="private-layout__main" id="main-content" tabindex="-1">
@@ -39,3 +68,5 @@
     </main>
   </div>
 </div>
+
+<app-toast-host />

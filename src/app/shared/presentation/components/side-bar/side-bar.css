@@ -28,9 +28,29 @@
   background-color: var(--color-light);
 }
 
+.side-bar__nav {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.side-bar__group {
+  display: grid;
+  gap: 6px;
+}
+
+.side-bar__group-label {
+  margin: 0;
+  padding-inline: 15px;
+  color: var(--color-on-night-muted);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .side-bar__list {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -48,6 +68,7 @@
   font-size: 0.9375rem;
   font-weight: var(--font-weight-control);
   text-decoration: none;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
 .side-bar__link:hover {

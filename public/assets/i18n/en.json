@@ -379,6 +379,11 @@
       "submit": "Change password",
       "title": "Change password"
     },
+    "errorCodes": {
+      "ACCOUNT_NOT_ACTIVE": "This account is not active. Contact support to restore access.",
+      "EMAIL_ALREADY_REGISTERED": "This email is already registered. Sign in or use another email.",
+      "PASSWORD_REJECTED": "This password is not accepted."
+    },
     "fields": {
       "confirmPassword": "Confirm the new password",
       "currentPassword": "Current password",
@@ -404,6 +409,7 @@
       "title": "Set a new password"
     },
     "signIn": {
+      "createAccount": "Create an account",
       "errors": {
         "inactive": "This account is not active. Contact support to restore access.",
         "invalidCredentials": "Invalid email or password."
@@ -420,6 +426,16 @@
       "submitting": "Signing in…",
       "subtitle": "Monitor the electrical safety of your stores.",
       "title": "Sign in"
+    },
+    "signUp": {
+      "errors": {
+        "rejected": "We could not create the account. The email may already be registered, or a field is not valid. Check the details and try again."
+      },
+      "haveAccount": "Already have an account? Sign in",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "subtitle": "Create a store-manager account to start monitoring your stores.",
+      "title": "Create your account"
     },
     "validation": {
       "email": "Enter a valid email address.",
@@ -587,12 +603,24 @@
       "noData": "No data",
       "showTable": "Show data table"
     },
+    "dataQuality": {
+      "fresh": "Up to date",
+      "insufficient": "Insufficient data",
+      "noData": "No data",
+      "partial": "Partial data",
+      "stale": "Outdated"
+    },
     "dateRange": {
       "bothOrNeither": "Enter both dates or leave both empty.",
       "hint": "Ranges cover at most 31 days.",
       "invalid": "Enter a valid start and end.",
       "notOrdered": "The end must be after the start.",
       "tooLong": "The range cannot exceed 31 days."
+    },
+    "errorCodes": {
+      "RATE_LIMITED": "Too many requests. Try again in a few moments.",
+      "REPORT_IN_PROGRESS": "A report is already being generated. Wait for it to finish, then try again.",
+      "STALE_STATE": "This data changed in the meantime. Reload to see the current version."
     },
     "errors": {
       "businessRule": "The request could not be completed because of a business rule.",
@@ -641,7 +669,12 @@
       "notifications": "Notifications",
       "settings": "Account settings",
       "shifts": "Shift roster",
-      "stores": "My stores"
+      "stores": "My stores",
+      "groups": {
+        "monitoring": "Monitoring & alerts",
+        "insights": "Energy & OHS compliance",
+        "configuration": "Store configuration"
+      }
     },
     "pageNotFound": {
       "action": "Go to the start page",
@@ -673,7 +706,8 @@
       "maxLength": "At most {{max}} characters.",
       "optional": "Optional.",
       "required": "This field is required.",
-      "requiredShort": "required"
+      "requiredShort": "required",
+      "serverRejected": "This value was rejected. Check it and try again."
     }
   },
   "stores": {
@@ -714,7 +748,10 @@
       },
       "open": "Open",
       "subtitle": "Choose a store to monitor or create a new one.",
-      "title": "My stores"
+      "title": "My stores",
+      "addStore": "Add new store",
+      "openDashboard": "Open dashboard",
+      "created": "“{{name}}” is ready. Start by adding its areas and equipment."
     },
     "fields": {
       "address": "Address",
@@ -823,7 +860,8 @@
       "label": "Active store",
       "live": "Live updates",
       "polling": "Auto-refresh",
-      "reconnecting": "Reconnecting live updates…"
+      "reconnecting": "Reconnecting live updates…",
+      "allStores": "All stores"
     },
     "thresholds": {
       "fields": {
@@ -843,6 +881,28 @@
       "saved": "Thresholds saved.",
       "serverRejected": "The value is outside the accepted range.",
       "title": "Electrical thresholds"
+    },
+    "onboarding": {
+      "eyebrow": "Welcome to ElectroLink",
+      "title": "Set up your first kitchen",
+      "subtitle": "Register your store to start monitoring the electrical safety of its kitchen equipment.",
+      "stepsLabel": "Setup steps",
+      "steps": {
+        "register": {
+          "title": "Register your store",
+          "text": "Name and address of the location."
+        },
+        "configure": {
+          "title": "Configure areas & equipment",
+          "text": "Map kitchen zones and their appliances."
+        },
+        "bind": {
+          "title": "Bind IoT sensors",
+          "text": "Link each appliance to its sensor to receive readings."
+        }
+      },
+      "formTitle": "Create your first store",
+      "formHint": "You can add more stores later from this page."
     }
   }
 }

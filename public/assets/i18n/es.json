@@ -379,6 +379,11 @@
       "submit": "Cambiar contraseña",
       "title": "Cambiar contraseña"
     },
+    "errorCodes": {
+      "ACCOUNT_NOT_ACTIVE": "Esta cuenta no está activa. Contacta a soporte para recuperar el acceso.",
+      "EMAIL_ALREADY_REGISTERED": "Este correo ya está registrado. Inicia sesión o usa otro correo.",
+      "PASSWORD_REJECTED": "Esta contraseña no es aceptada."
+    },
     "fields": {
       "confirmPassword": "Confirma la nueva contraseña",
       "currentPassword": "Contraseña actual",
@@ -404,6 +409,7 @@
       "title": "Define una nueva contraseña"
     },
     "signIn": {
+      "createAccount": "Crear una cuenta",
       "errors": {
         "inactive": "Esta cuenta no está activa. Contacta a soporte para recuperar el acceso.",
         "invalidCredentials": "Correo o contraseña incorrectos."
@@ -420,6 +426,16 @@
       "submitting": "Iniciando sesión…",
       "subtitle": "Monitorea la seguridad eléctrica de tus locales.",
       "title": "Iniciar sesión"
+    },
+    "signUp": {
+      "errors": {
+        "rejected": "No pudimos crear la cuenta. Es posible que el correo ya esté registrado o que algún campo no sea válido. Revisa los datos e inténtalo de nuevo."
+      },
+      "haveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+      "submit": "Crear cuenta",
+      "submitting": "Creando cuenta…",
+      "subtitle": "Crea una cuenta de gestor de locales para empezar a monitorear tus locales.",
+      "title": "Crea tu cuenta"
     },
     "validation": {
       "email": "Ingresa un correo electrónico válido.",
@@ -587,12 +603,24 @@
       "noData": "Sin datos",
       "showTable": "Ver tabla de datos"
     },
+    "dataQuality": {
+      "fresh": "Actualizado",
+      "insufficient": "Datos insuficientes",
+      "noData": "Sin datos",
+      "partial": "Datos parciales",
+      "stale": "Desactualizado"
+    },
     "dateRange": {
       "bothOrNeither": "Ingresa ambas fechas o deja ambas vacías.",
       "hint": "Los rangos abarcan como máximo 31 días.",
       "invalid": "Ingresa un inicio y un fin válidos.",
       "notOrdered": "El fin debe ser posterior al inicio.",
       "tooLong": "El rango no puede superar los 31 días."
+    },
+    "errorCodes": {
+      "RATE_LIMITED": "Demasiadas solicitudes. Inténtalo de nuevo en unos minutos.",
+      "REPORT_IN_PROGRESS": "Ya se está generando un informe. Espera a que termine e inténtalo de nuevo.",
+      "STALE_STATE": "Estos datos cambiaron mientras tanto. Recarga para ver la versión actual."
     },
     "errors": {
       "businessRule": "No se pudo completar la solicitud por una regla de negocio.",
@@ -641,7 +669,12 @@
       "notifications": "Notificaciones",
       "settings": "Ajustes de la cuenta",
       "shifts": "Turnos",
-      "stores": "Mis locales"
+      "stores": "Mis locales",
+      "groups": {
+        "monitoring": "Monitoreo y alertas",
+        "insights": "Energía y cumplimiento SST",
+        "configuration": "Configuración de la tienda"
+      }
     },
     "pageNotFound": {
       "action": "Ir a la página de inicio",
@@ -673,7 +706,8 @@
       "maxLength": "Máximo {{max}} caracteres.",
       "optional": "Opcional.",
       "required": "Este campo es obligatorio.",
-      "requiredShort": "obligatorio"
+      "requiredShort": "obligatorio",
+      "serverRejected": "Este valor fue rechazado. Revísalo e inténtalo de nuevo."
     }
   },
   "stores": {
@@ -714,7 +748,10 @@
       },
       "open": "Abrir",
       "subtitle": "Elige un local para monitorear o crea uno nuevo.",
-      "title": "Mis locales"
+      "title": "Mis locales",
+      "addStore": "Agregar tienda",
+      "openDashboard": "Abrir panel",
+      "created": "«{{name}}» está lista. Empieza agregando sus áreas y equipos."
     },
     "fields": {
       "address": "Dirección",
@@ -823,7 +860,8 @@
       "label": "Local activo",
       "live": "Actualización en vivo",
       "polling": "Actualización automática",
-      "reconnecting": "Reconectando actualización en vivo…"
+      "reconnecting": "Reconectando actualización en vivo…",
+      "allStores": "Todas las tiendas"
     },
     "thresholds": {
       "fields": {
@@ -843,6 +881,28 @@
       "saved": "Umbrales guardados.",
       "serverRejected": "El valor está fuera del rango aceptado.",
       "title": "Umbrales eléctricos"
+    },
+    "onboarding": {
+      "eyebrow": "Bienvenido a ElectroLink",
+      "title": "Configura tu primera cocina",
+      "subtitle": "Registra tu tienda para empezar a monitorear la seguridad eléctrica de los equipos de su cocina.",
+      "stepsLabel": "Pasos de configuración",
+      "steps": {
+        "register": {
+          "title": "Registra tu tienda",
+          "text": "Nombre y dirección del local."
+        },
+        "configure": {
+          "title": "Configura áreas y equipos",
+          "text": "Define las zonas de la cocina y sus equipos."
+        },
+        "bind": {
+          "title": "Vincula sensores IoT",
+          "text": "Asocia cada equipo a su sensor para recibir lecturas."
+        }
+      },
+      "formTitle": "Crea tu primera tienda",
+      "formHint": "Puedes agregar más tiendas después desde esta página."
     }
   }
 }

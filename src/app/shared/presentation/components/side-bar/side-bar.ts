@@ -16,6 +16,13 @@ export interface NavigationItem {
   readonly exact?: boolean;
 }
 
+/** A labelled group of navigation entries. */
+export interface NavigationGroup {
+  /** The translation key of the group heading. */
+  readonly labelKey: string;
+  readonly items: readonly NavigationItem[];
+}
+
 /** The signed-in account shown at the bottom of the sidebar. */
 export interface SideBarAccount {
   readonly username: string;
@@ -24,7 +31,7 @@ export interface SideBarAccount {
 }
 
 /**
- * Sidebar of the authenticated shell: the brand, the primary navigation, marking the current entry with
+ * Sidebar of the authenticated shell: the brand, the grouped primary navigation, marking the current entry with
  * `aria-current="page"`, and below it the signed-in account, linking to its settings, the language
  * switcher and the sign-out button.
  */
@@ -35,7 +42,7 @@ export interface SideBarAccount {
   templateUrl: './side-bar.html',
 })
 export class SideBar {
-  readonly items = input.required<readonly NavigationItem[]>();
+  readonly groups = input.required<readonly NavigationGroup[]>();
   /** The signed-in account, or null when it is not known. */
   readonly account = input<SideBarAccount | null>(null);
   protected readonly initial = computed(

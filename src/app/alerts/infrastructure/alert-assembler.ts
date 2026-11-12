@@ -1,6 +1,16 @@
-import { ALERT_STATUSES, type Alert, type AlertSeverity, type Worker } from '@alerts/domain/model/alert';
+import {
+  ALERT_STATUSES,
+  type Alert,
+  type AlertChanges,
+  type AlertSeverity,
+  type Worker,
+} from '@alerts/domain/model/alert';
 
-/** `AlertResponse` (also the `ReceiveAlert` realtime payload). */
+/**
+ * `AlertResponse` (also the `ReceiveAlert` realtime payload). Additive fields are tolerated: only the
+ * members mapped below are read, so unknown properties are ignored. `sequence` is optional because alerts
+ * changed before sequencing was deployed may not carry it.
+ */
 export interface AlertResponse {
   id: string;
   equipmentId: string;
@@ -22,6 +32,14 @@ export interface AlertResponse {
   assignedAtUtc: string | null;
   resolvedAtUtc: string | null;
   resolutionNotes: string | null;
+  sequence?: number;
+}
+
+/** `AlertChangesResponse`. */
+export interface AlertChangesResponse {
+  items: AlertResponse[];
+  latestSequence: number;
+  hasMore: boolean;
 }
 
 const date = (value: string | null): Date | null => (value === null ? null : new Date(value));
@@ -50,7 +68,13 @@ export function toAlert(r: AlertResponse): Alert {
     assignedAt: date(r.assignedAtUtc),
     resolvedAt: date(r.resolvedAtUtc),
     resolutionNotes: r.resolutionNotes,
+    sequence: r.sequence ?? 0,
   };
+}
+
+/** Maps one page of `alerts/changes`. */
+export function toAlertChanges(r: AlertChangesResponse): AlertChanges {
+  return { items: r.items.map(toAlert), latestSequence: r.latestSequence, hasMore: r.hasMore };
 }
 
 /** Narrows an untrusted realtime payload to an alert resource. */

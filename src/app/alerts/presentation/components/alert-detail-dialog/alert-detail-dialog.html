@@ -4,7 +4,7 @@
     <app-status-tag [label]="'alerts.status.' + alert().status | translate" [appearance]="statusAppearance[alert().status]" />
   </div>
   @if (alert().isCriticalLeakage) {
-    <p class="ui-notice ui-notice--warning" style="margin: 0">{{ 'alerts.criticalLeakageNote' | translate }}</p>
+    <p class="ui-notice ui-notice--warning ui-flush">{{ 'alerts.criticalLeakageNote' | translate }}</p>
   }
   <dl class="ui-dl">
     <dt>{{ 'alerts.fields.equipment' | translate }}</dt>
@@ -87,7 +87,7 @@
       </form>
     }
     @default {
-      <p class="text-meta" style="margin: 0">{{ 'alerts.closedWorkflow' | translate }}</p>
+      <p class="text-meta ui-flush">{{ 'alerts.closedWorkflow' | translate }}</p>
     }
   }
 

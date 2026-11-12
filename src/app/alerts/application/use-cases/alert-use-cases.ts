@@ -1,7 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import type { Observable } from 'rxjs';
+import { EMPTY, expand, of, type Observable, switchMap, toArray } from 'rxjs';
 import type { Page } from '@shared/application/page';
-import type { ActiveAlerts, Alert, AlertHistoryFilter } from '@alerts/domain/model/alert';
+import {
+  type ActiveAlerts,
+  type Alert,
+  type AlertHistoryFilter,
+  mergeAlertChanges,
+} from '@alerts/domain/model/alert';
 import { AlertsPort } from '@alerts/application/ports/alerts.port';
 import {
   AlertEquipmentDirectoryPort,
@@ -13,6 +18,33 @@ export class GetActiveAlertsUseCase {
   private readonly alerts = inject(AlertsPort);
   execute(storeId: string): Observable<ActiveAlerts> {
     return this.alerts.getActive(storeId);
+  }
+}
+
+/**
+ * Brings the active list up to date. The first load (no current list) is a full read. Later loads fetch
+ * only the changes after the cursor (`latestSequence`), page by page, and merge them by alert id. If the
+ * server's latest sequence is below the cursor it no longer knows it, so the full list is read instead.
+ */
+@Injectable({ providedIn: 'root' })
+export class SyncActiveAlertsUseCase {
+  private readonly alerts = inject(AlertsPort);
+
+  execute(storeId: string, current: ActiveAlerts | null): Observable<ActiveAlerts> {
+    if (current === null) {
+      return this.alerts.getActive(storeId);
+    }
+    const cursor = current.latestSequence;
+    return this.alerts.getChanges(storeId, cursor).pipe(
+      expand((page) => (page.hasMore ? this.alerts.getChanges(storeId, page.latestSequence) : EMPTY)),
+      toArray(),
+      switchMap((pages) => {
+        if (pages.some((page) => page.latestSequence < cursor)) {
+          return this.alerts.getActive(storeId);
+        }
+        return of(pages.reduce((active, page) => mergeAlertChanges(active, page), current));
+      }),
+    );
   }
 }
 

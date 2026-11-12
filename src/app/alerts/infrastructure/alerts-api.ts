@@ -6,15 +6,21 @@ import { apiPath } from '@shared/infrastructure/api/api-url';
 import { serializeRange } from '@shared/infrastructure/api/date-serialization';
 import { type HasMorePageResponse, toPage } from '@shared/infrastructure/api/paging';
 import { clientValidationError } from '@shared/infrastructure/http/problem-details';
-import type { ActiveAlerts, Alert, AlertHistoryFilter } from '@alerts/domain/model/alert';
+import type { ActiveAlerts, Alert, AlertChanges, AlertHistoryFilter } from '@alerts/domain/model/alert';
 import type { AlertsPort } from '@alerts/application/ports/alerts.port';
-import { type AlertResponse, toAlert } from '@alerts/infrastructure/alert-assembler';
+import {
+  type AlertChangesResponse,
+  type AlertResponse,
+  toAlert,
+  toAlertChanges,
+} from '@alerts/infrastructure/alert-assembler';
 
 interface ActiveAlertsResponse {
   generatedAtUtc: string;
   openCritical: number;
   openNonCritical: number;
   hasCriticalLeakage: boolean;
+  latestSequence?: number;
   items: AlertResponse[];
 }
 
@@ -30,9 +36,16 @@ export class AlertsApi implements AlertsPort {
         openCritical: r.openCritical,
         openNonCritical: r.openNonCritical,
         hasCriticalLeakage: r.hasCriticalLeakage,
+        latestSequence: r.latestSequence ?? 0,
         items: r.items.map(toAlert),
       })),
     );
+  }
+
+  getChanges(storeId: string, afterSequence: number): Observable<AlertChanges> {
+    return this.api
+      .get<AlertChangesResponse>(apiPath('stores', storeId, 'alerts', 'changes'), { afterSequence })
+      .pipe(map(toAlertChanges));
   }
 
   getHistory(storeId: string, filter: AlertHistoryFilter, page: number): Observable<Page<Alert>> {

@@ -20,6 +20,7 @@ import {
   GetAlertHistoryUseCase,
   ListAlertEquipmentUseCase,
   ResolveAlertUseCase,
+  SyncActiveAlertsUseCase,
 } from '@alerts/application/use-cases/alert-use-cases';
 
 /** Active alerts are polled about every 30 s, only while realtime updates are not live. */
@@ -33,6 +34,7 @@ export const ACTIVE_ALERTS_POLL_MS = 30_000;
 export class AlertsStore {
   private readonly visibility = inject(PageVisibilityPort);
   private readonly activeUseCase = inject(GetActiveAlertsUseCase);
+  private readonly syncActiveUseCase = inject(SyncActiveAlertsUseCase);
   private readonly historyUseCase = inject(GetAlertHistoryUseCase);
   private readonly detailUseCase = inject(GetAlertDetailUseCase);
   private readonly acknowledgeUseCase = inject(AcknowledgeAlertUseCase);
@@ -60,8 +62,8 @@ export class AlertsStore {
         this.active.patch((current) => withReceivedAlert(current, alert));
       }
     });
-    // Events are not replayed: the fallback poll reloads once whenever the connection becomes live
-    // again (initial connect and every reconnect), so no separate reconnect handler is needed.
+    // Events are not replayed: whenever the connection becomes live again (initial connect and every
+    // reconnect) the fallback loader runs once and fetches only the changes after the cursor.
   }
 
   watchActive(storeId: string): Subscription {
@@ -70,7 +72,7 @@ export class AlertsStore {
     return this.active.follow(
       storeId,
       pollWithRealtimeFallback(this.visibility, this.stream.live$, ACTIVE_ALERTS_POLL_MS, () =>
-        this.activeUseCase.execute(storeId),
+        this.syncActiveUseCase.execute(storeId, this.active.key() === storeId ? this.active.data() : null),
       ),
     );
   }

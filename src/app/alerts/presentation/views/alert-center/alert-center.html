@@ -11,7 +11,7 @@
   }
 
   <section class="ui-stack" aria-labelledby="active-title">
-    <div class="ui-section-header" style="margin: 0">
+    <div class="ui-section-header ui-flush">
       <h2 id="active-title">{{ 'alerts.active' | translate }}</h2>
       <app-freshness [lastUpdatedAt]="alerts.active.lastUpdatedAt()" [stale]="alerts.active.stale()" [refreshing]="alerts.active.loading()"
         [note]="'shared.freshness.every' | translate: { seconds: pollSeconds }" />
@@ -38,7 +38,7 @@
 
   <section class="ui-stack" aria-labelledby="history-title">
     <h2 id="history-title">{{ 'alerts.history' | translate }}</h2>
-    <form class="ui-card ui-form" style="padding: var(--space-2)" [formGroup]="filterForm" (ngSubmit)="applyFilter()">
+    <form class="ui-card ui-form ui-card--compact" [formGroup]="filterForm" (ngSubmit)="applyFilter()">
       <div class="ui-form-grid">
         <div class="ui-field">
           <label class="ui-field__label" for="f-status">{{ 'alerts.fields.status' | translate }}</label>
@@ -91,7 +91,7 @@
         <app-state-panel kind="empty" [heading]="'alerts.noHistory' | translate" [message]="'alerts.noHistoryMessage' | translate" />
       } @else {
         <app-alert-table [alerts]="result.items" [equipment]="alerts.equipmentById()" [caption]="'alerts.history' | translate" (selected)="open($event)" />
-        <div class="ui-actions" style="justify-content: flex-end">
+        <div class="ui-actions ui-actions--end">
           <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
           <span class="text-meta">{{ 'shared.pagination.page' | translate: { page: page() } }}</span>
           <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>

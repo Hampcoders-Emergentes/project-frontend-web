@@ -1,0 +1,11 @@
+{
+  "_description": "HTTP 400 - domain/validation failure raised by a controller. Returned e.g. by GET /api/v1/stores/{storeId}/analytics/consumption?from=2026-01-01&to=2026-01-02 (timestamps without offset). Same envelope for every 400 that is not automatic model validation.",
+  "_status": 400,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "from and to require an ISO timestamp with explicit offset and at most 6 fractional digits.",
+  "instance": "/api/v1/stores/st-123/analytics/consumption",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00"
+}

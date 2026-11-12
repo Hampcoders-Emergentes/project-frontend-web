@@ -1,0 +1,13 @@
+{
+  "_description": "HTTP 422 - business precondition failed. POST /api/v1/service-assignments/execute when no technician could be assigned: the MatchingResultResponse members are kept as extensions (requestId, assigned) and failureReason becomes detail. POST .../actions/complete uses the same envelope with the reason as detail; reusing an Idempotency-Key with another payload gives 'This Idempotency-Key was already used with a different request payload.'",
+  "_status": 422,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.21",
+  "title": "Unprocessable Content",
+  "status": 422,
+  "detail": "No candidates available for the request in its service area.",
+  "instance": "/api/v1/service-assignments/execute",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
+  "requestId": "req-5e6f7a8b",
+  "assigned": false
+}

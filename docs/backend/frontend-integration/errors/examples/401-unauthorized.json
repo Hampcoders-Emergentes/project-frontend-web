@@ -1,0 +1,11 @@
+{
+  "_description": "HTTP 401 - no Authorization header on a protected route (IAM middleware). Other details with the same envelope: 'The access token is invalid or has expired.', 'The account of this access token no longer exists.', 'The access token has expired.' (JWT challenge, with WWW-Authenticate: Bearer), 'Invalid username or password' (POST /api/v1/auth/sign-in), 'Unauthorized: invalid or missing API key.' (Edge routes), invalid/expired/reused refresh token (POST /api/v1/auth/refresh).",
+  "_status": 401,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.2",
+  "title": "Unauthorized",
+  "status": 401,
+  "detail": "A valid access token is required.",
+  "instance": "/api/v1/profiles/me",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00"
+}

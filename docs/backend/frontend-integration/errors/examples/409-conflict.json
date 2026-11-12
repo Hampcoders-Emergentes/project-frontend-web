@@ -1,0 +1,11 @@
+{
+  "_description": "HTTP 409 - duplicate or illegal state transition, e.g. POST /api/v1/iot-devices with an existing serial number. Also: 'A request with this Idempotency-Key is still being processed. Retry shortly.'",
+  "_status": 409,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.10",
+  "title": "Conflict",
+  "status": 409,
+  "detail": "Device serial number already exists.",
+  "instance": "/api/v1/iot-devices",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00"
+}

@@ -1,0 +1,11 @@
+{
+  "_description": "HTTP 403 - authenticated but not allowed. Other details with the same envelope: 'The account is not active.' (suspended / pending verification), 'Your access role does not allow this action.' (RequireAccessRole), 'You are not allowed to perform this action.' (no eligible Homeowner/Company/Technician profile, Forbid()).",
+  "_status": 403,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.4",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "You are not authorized to view this user.",
+  "instance": "/api/v1/users/us-7f3c9e12",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00"
+}

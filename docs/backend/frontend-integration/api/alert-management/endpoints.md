@@ -1,0 +1,615 @@
+# Alert Management — endpoints
+
+Alerts raised from telemetry or reported manually: history, active alerts, acknowledge/assign/resolve and the edge dispatch endpoint.
+
+> **Conventions for every endpoint on this page**
+> - Base path `/api/v1`. Route segments are lower-case kebab-case; JSON property names are camelCase.
+> - Unless the *Auth* line says *Public* or *Edge API key*, send `Authorization: Bearer <accessToken>`. A missing, invalid or expired token yields **401** and a suspended or unverified account yields **403**, both with the standard error envelope.
+> - Every error (4xx/5xx) uses one RFC 7807 envelope, `application/problem+json`: `{ type, title, status, detail, instance, traceId, errors? }` (`errors` only on validation failures). See [`../../errors/error-contract.md`](../../errors/error-contract.md).
+> - Enums are JSON strings (member names). Paginated lists take `?page=1&pageSize=20` (max 100) and return `PagedResponse<T>` = `{ items, page, pageSize, totalCount, totalPages, hasMore }`.
+> - Payload type names (`*Request` / `*Response`) are defined in [`../../schemas/requests.ts`](../../schemas/requests.ts) and [`../../schemas/responses.ts`](../../schemas/responses.ts). JSON samples below are illustrative values with the exact property names and shapes the server uses.
+> - "Owner-scoped" routes (`technicianId`, `ownerId`, `homeownerId`, `storeId`...) are checked against the caller's identity server-side; a mismatch returns **404** (`detail`: `Resource not found.`) (or **403** when the caller has no eligible profile).
+
+## Index
+
+| Method | URI | Summary | Auth |
+|---|---|---|---|
+| `POST` | `/api/v1/alerts/dispatch` | Dispatch (alerts dispatch) | Edge API key (`X-Api-Key`) |
+| `POST` | `/api/v1/alerts/{alertId}/assign` | Assign (alerts assign) | Bearer JWT (authenticated human user) |
+| `POST` | `/api/v1/alerts/{alertId}/resolve` | Resolve (alerts resolve) | Bearer JWT (authenticated human user) |
+| `POST` | `/api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/anomalies` | Report (equipment anomalies) | Bearer JWT (authenticated human user) |
+| `GET` | `/api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts` | List (equipment alerts) | Bearer JWT (authenticated human user) |
+| `GET` | `/api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts/{alertId}` | Get (equipment alerts) | Bearer JWT (authenticated human user) |
+| `POST` | `/api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts/{alertId}/acknowledgement` | Acknowledge (alerts acknowledgement) | Bearer JWT (authenticated human user) |
+| `GET` | `/api/v1/stores/{storeId}/alerts` | List (stores alerts) | Bearer JWT (authenticated human user) |
+| `GET` | `/api/v1/stores/{storeId}/alerts/active` | Active (alerts active) | Bearer JWT (authenticated human user) |
+
+## `POST /api/v1/alerts/dispatch`
+
+**Dispatch (alerts dispatch)**
+
+- **Auth:** Edge API key (`X-Api-Key`)
+- **Source:** `AlertDispatchController.Dispatch`
+
+**Request body** — `DispatchAlertRequest` (`application/json`)
+
+```json
+{
+  "alertId": "alert-6b1d2c3e4f5a60718293a4b5c6d7e8f9"
+}
+```
+
+**Success response** — `202` · `AlertDispatchResultResponse`
+
+```json
+{
+  "alertId": "alert-6b1d2c3e4f5a60718293a4b5c6d7e8f9",
+  "storeId": "store-3e1f0c9a8b7d4c5e9a1b2c3d4e5f6a7b",
+  "severity": "CRITICAL",
+  "realtimePublished": true,
+  "externalDispatchesQueued": 15
+}
+```
+
+**Status codes**
+
+- `202` Accepted
+- `400` Bad request: validation/model-binding or domain rule violated
+- `401` Missing, invalid or expired credentials
+- `404` Resource not found (also returned when the resource belongs to another owner)
+
+## `POST /api/v1/alerts/{alertId}/assign`
+
+**Assign (alerts assign)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `AlertWorkflowController.Assign`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `alertId` | `string` |
+
+**Request body** — `AssignAlertRequest` (`application/json`)
+
+```json
+{
+  "technicianId": "tech-8a9b0c1d",
+  "technicianName": "Luis Perez"
+}
+```
+
+**Success response** — `200` · `AlertResponse`
+
+```json
+{
+  "id": "id-3a4b5c6d",
+  "bindingId": "binding-0001",
+  "readingId": "reading-0001",
+  "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+  "anomalyType": "CURRENT_LEAKAGE",
+  "detectionSeverity": "string",
+  "severity": "CRITICAL",
+  "capturedAtUtc": "2026-03-14T15:30:00Z",
+  "createdAtUtc": "2026-03-14T15:30:00Z",
+  "status": "OPEN",
+  "acknowledgedByUserId": "acknowledgedByUser-0001",
+  "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+  "isCriticalLeakage": true,
+  "source": "EdgeDevice",
+  "reportCategory": "string",
+  "description": "Description text",
+  "reportedBy": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "onDutyWorker": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "assignedTechnicianId": "assignedTechnician-0001",
+  "assignedTechnicianName": "string",
+  "assignedByUserId": "assignedByUser-0001",
+  "assignedAtUtc": "2026-03-14T15:30:00Z",
+  "resolvedByUserId": "resolvedByUser-0001",
+  "resolvedAtUtc": "2026-03-14T15:30:00Z",
+  "resolutionNotes": "string"
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `400` Bad request: validation/model-binding or domain rule violated
+- `401` Missing, invalid or expired credentials
+- `404` Resource not found (also returned when the resource belongs to another owner)
+- `409` Conflict with current state / duplicate
+
+## `POST /api/v1/alerts/{alertId}/resolve`
+
+**Resolve (alerts resolve)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `AlertWorkflowController.Resolve`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `alertId` | `string` |
+
+**Request body** — `ResolveAlertRequest` (`application/json`)
+
+```json
+{
+  "notes": "Free text notes"
+}
+```
+
+**Success response** — `200` · `AlertResponse`
+
+```json
+{
+  "id": "id-3a4b5c6d",
+  "bindingId": "binding-0001",
+  "readingId": "reading-0001",
+  "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+  "anomalyType": "CURRENT_LEAKAGE",
+  "detectionSeverity": "string",
+  "severity": "CRITICAL",
+  "capturedAtUtc": "2026-03-14T15:30:00Z",
+  "createdAtUtc": "2026-03-14T15:30:00Z",
+  "status": "OPEN",
+  "acknowledgedByUserId": "acknowledgedByUser-0001",
+  "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+  "isCriticalLeakage": true,
+  "source": "EdgeDevice",
+  "reportCategory": "string",
+  "description": "Description text",
+  "reportedBy": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "onDutyWorker": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "assignedTechnicianId": "assignedTechnician-0001",
+  "assignedTechnicianName": "string",
+  "assignedByUserId": "assignedByUser-0001",
+  "assignedAtUtc": "2026-03-14T15:30:00Z",
+  "resolvedByUserId": "resolvedByUser-0001",
+  "resolvedAtUtc": "2026-03-14T15:30:00Z",
+  "resolutionNotes": "string"
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `400` Bad request: validation/model-binding or domain rule violated
+- `401` Missing, invalid or expired credentials
+- `404` Resource not found (also returned when the resource belongs to another owner)
+- `409` Conflict with current state / duplicate
+
+## `POST /api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/anomalies`
+
+**Report (equipment anomalies)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `EquipmentAnomalyReportsController.Report`
+- **Idempotency:** optional `Idempotency-Key` header (retries replay the first successful response).
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+| `areaId` | `string` |
+| `equipmentId` | `string` |
+
+**Request body** — `ReportEquipmentAnomalyRequest` (`application/json`)
+
+```json
+{
+  "category": "SPARKS",
+  "description": "Description text",
+  "reportedByWorkerCode": "string",
+  "reportedByWorkerName": "string"
+}
+```
+
+**Success response** — `201` · `AlertResponse`
+
+```json
+{
+  "id": "id-3a4b5c6d",
+  "bindingId": "binding-0001",
+  "readingId": "reading-0001",
+  "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+  "anomalyType": "CURRENT_LEAKAGE",
+  "detectionSeverity": "string",
+  "severity": "CRITICAL",
+  "capturedAtUtc": "2026-03-14T15:30:00Z",
+  "createdAtUtc": "2026-03-14T15:30:00Z",
+  "status": "OPEN",
+  "acknowledgedByUserId": "acknowledgedByUser-0001",
+  "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+  "isCriticalLeakage": true,
+  "source": "EdgeDevice",
+  "reportCategory": "string",
+  "description": "Description text",
+  "reportedBy": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "onDutyWorker": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "assignedTechnicianId": "assignedTechnician-0001",
+  "assignedTechnicianName": "string",
+  "assignedByUserId": "assignedByUser-0001",
+  "assignedAtUtc": "2026-03-14T15:30:00Z",
+  "resolvedByUserId": "resolvedByUser-0001",
+  "resolvedAtUtc": "2026-03-14T15:30:00Z",
+  "resolutionNotes": "string"
+}
+```
+
+**Status codes**
+
+- `201` Created
+- `400` Bad request: validation/model-binding or domain rule violated
+- `401` Missing, invalid or expired credentials
+- `404` Resource not found (also returned when the resource belongs to another owner)
+- `409` Conflict with current state / duplicate
+
+## `GET /api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts`
+
+**List (equipment alerts)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `EquipmentAlertsController.List`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+| `areaId` | `string` |
+| `equipmentId` | `string` |
+
+**Query parameters**
+
+| Name | Type | Default |
+|---|---|---|
+| `status` | `string?` | `null` |
+| `severity` | `string?` | `null` |
+| `page` | `int` | `1` |
+| `pageSize` | `int` | `20` |
+| `from` | `string?` | `null` |
+| `to` | `string?` | `null` |
+
+Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or `±HH:mm`; encode `+` as `%2B`). Ranges are half-open `[from, to)`, `from < to`, maximum 31 days; invalid or half-specified ranges return 400.
+
+**Success response** — `200` · `HasMorePageResponse<AlertResponse>`
+
+```json
+{
+  "items": [
+    {
+      "id": "id-3a4b5c6d",
+      "bindingId": "binding-0001",
+      "readingId": "reading-0001",
+      "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+      "anomalyType": "CURRENT_LEAKAGE",
+      "detectionSeverity": "string",
+      "severity": "CRITICAL",
+      "capturedAtUtc": "2026-03-14T15:30:00Z",
+      "createdAtUtc": "2026-03-14T15:30:00Z",
+      "status": "OPEN",
+      "acknowledgedByUserId": "acknowledgedByUser-0001",
+      "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+      "isCriticalLeakage": true,
+      "source": "EdgeDevice",
+      "reportCategory": "string",
+      "description": "Description text",
+      "reportedBy": {
+        "workerCode": "W-014",
+        "workerName": "Carlos Ruiz"
+      },
+      "onDutyWorker": {
+        "workerCode": "W-014",
+        "workerName": "Carlos Ruiz"
+      },
+      "assignedTechnicianId": "assignedTechnician-0001",
+      "assignedTechnicianName": "string",
+      "assignedByUserId": "assignedByUser-0001",
+      "assignedAtUtc": "2026-03-14T15:30:00Z",
+      "resolvedByUserId": "resolvedByUser-0001",
+      "resolvedAtUtc": "2026-03-14T15:30:00Z",
+      "resolutionNotes": "string"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "hasMore": false
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `401` Missing, invalid or expired credentials
+
+## `GET /api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts/{alertId}`
+
+**Get (equipment alerts)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `EquipmentAlertsController.Get`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+| `areaId` | `string` |
+| `equipmentId` | `string` |
+| `alertId` | `string` |
+
+**Success response** — `200` · `AlertResponse`
+
+```json
+{
+  "id": "id-3a4b5c6d",
+  "bindingId": "binding-0001",
+  "readingId": "reading-0001",
+  "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+  "anomalyType": "CURRENT_LEAKAGE",
+  "detectionSeverity": "string",
+  "severity": "CRITICAL",
+  "capturedAtUtc": "2026-03-14T15:30:00Z",
+  "createdAtUtc": "2026-03-14T15:30:00Z",
+  "status": "OPEN",
+  "acknowledgedByUserId": "acknowledgedByUser-0001",
+  "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+  "isCriticalLeakage": true,
+  "source": "EdgeDevice",
+  "reportCategory": "string",
+  "description": "Description text",
+  "reportedBy": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "onDutyWorker": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "assignedTechnicianId": "assignedTechnician-0001",
+  "assignedTechnicianName": "string",
+  "assignedByUserId": "assignedByUser-0001",
+  "assignedAtUtc": "2026-03-14T15:30:00Z",
+  "resolvedByUserId": "resolvedByUser-0001",
+  "resolvedAtUtc": "2026-03-14T15:30:00Z",
+  "resolutionNotes": "string"
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `401` Missing, invalid or expired credentials
+
+## `POST /api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts/{alertId}/acknowledgement`
+
+**Acknowledge (alerts acknowledgement)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `EquipmentAlertsController.Acknowledge`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+| `areaId` | `string` |
+| `equipmentId` | `string` |
+| `alertId` | `string` |
+
+**Success response** — `200` · `AlertResponse`
+
+```json
+{
+  "id": "id-3a4b5c6d",
+  "bindingId": "binding-0001",
+  "readingId": "reading-0001",
+  "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+  "anomalyType": "CURRENT_LEAKAGE",
+  "detectionSeverity": "string",
+  "severity": "CRITICAL",
+  "capturedAtUtc": "2026-03-14T15:30:00Z",
+  "createdAtUtc": "2026-03-14T15:30:00Z",
+  "status": "OPEN",
+  "acknowledgedByUserId": "acknowledgedByUser-0001",
+  "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+  "isCriticalLeakage": true,
+  "source": "EdgeDevice",
+  "reportCategory": "string",
+  "description": "Description text",
+  "reportedBy": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "onDutyWorker": {
+    "workerCode": "W-014",
+    "workerName": "Carlos Ruiz"
+  },
+  "assignedTechnicianId": "assignedTechnician-0001",
+  "assignedTechnicianName": "string",
+  "assignedByUserId": "assignedByUser-0001",
+  "assignedAtUtc": "2026-03-14T15:30:00Z",
+  "resolvedByUserId": "resolvedByUser-0001",
+  "resolvedAtUtc": "2026-03-14T15:30:00Z",
+  "resolutionNotes": "string"
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `401` Missing, invalid or expired credentials
+
+## `GET /api/v1/stores/{storeId}/alerts`
+
+**List (stores alerts)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `StoreAlertsController.List`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+
+**Query parameters**
+
+| Name | Type | Default |
+|---|---|---|
+| `equipmentId` | `string?` | `null` |
+| `status` | `string?` | `null` |
+| `severity` | `string?` | `null` |
+| `page` | `int` | `1` |
+| `pageSize` | `int` | `20` |
+| `from` | `string?` | `null` |
+| `to` | `string?` | `null` |
+
+Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or `±HH:mm`; encode `+` as `%2B`). Ranges are half-open `[from, to)`, `from < to`, maximum 31 days; invalid or half-specified ranges return 400.
+
+**Success response** — `200` · `HasMorePageResponse<AlertResponse>`
+
+```json
+{
+  "items": [
+    {
+      "id": "id-3a4b5c6d",
+      "bindingId": "binding-0001",
+      "readingId": "reading-0001",
+      "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+      "anomalyType": "CURRENT_LEAKAGE",
+      "detectionSeverity": "string",
+      "severity": "CRITICAL",
+      "capturedAtUtc": "2026-03-14T15:30:00Z",
+      "createdAtUtc": "2026-03-14T15:30:00Z",
+      "status": "OPEN",
+      "acknowledgedByUserId": "acknowledgedByUser-0001",
+      "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+      "isCriticalLeakage": true,
+      "source": "EdgeDevice",
+      "reportCategory": "string",
+      "description": "Description text",
+      "reportedBy": {
+        "workerCode": "W-014",
+        "workerName": "Carlos Ruiz"
+      },
+      "onDutyWorker": {
+        "workerCode": "W-014",
+        "workerName": "Carlos Ruiz"
+      },
+      "assignedTechnicianId": "assignedTechnician-0001",
+      "assignedTechnicianName": "string",
+      "assignedByUserId": "assignedByUser-0001",
+      "assignedAtUtc": "2026-03-14T15:30:00Z",
+      "resolvedByUserId": "resolvedByUser-0001",
+      "resolvedAtUtc": "2026-03-14T15:30:00Z",
+      "resolutionNotes": "string"
+    }
+  ],
+  "page": 1,
+  "pageSize": 20,
+  "hasMore": false
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `400` Bad request: validation/model-binding or domain rule violated
+- `401` Missing, invalid or expired credentials
+- `404` Resource not found (also returned when the resource belongs to another owner)
+
+## `GET /api/v1/stores/{storeId}/alerts/active`
+
+**Active (alerts active)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `StoreAlertsController.Active`
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+
+**Query parameters**
+
+| Name | Type | Default |
+|---|---|---|
+| `equipmentId` | `string?` | `null` |
+
+**Success response** — `200` · `ActiveAlertsResponse`
+
+```json
+{
+  "storeId": "store-3e1f0c9a8b7d4c5e9a1b2c3d4e5f6a7b",
+  "generatedAtUtc": "2026-03-14T15:30:00Z",
+  "openCritical": 15,
+  "openNonCritical": 15,
+  "hasCriticalLeakage": true,
+  "items": [
+    {
+      "id": "id-3a4b5c6d",
+      "bindingId": "binding-0001",
+      "readingId": "reading-0001",
+      "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9",
+      "anomalyType": "CURRENT_LEAKAGE",
+      "detectionSeverity": "string",
+      "severity": "CRITICAL",
+      "capturedAtUtc": "2026-03-14T15:30:00Z",
+      "createdAtUtc": "2026-03-14T15:30:00Z",
+      "status": "OPEN",
+      "acknowledgedByUserId": "acknowledgedByUser-0001",
+      "acknowledgedAtUtc": "2026-03-14T15:30:00Z",
+      "isCriticalLeakage": true,
+      "source": "EdgeDevice",
+      "reportCategory": "string",
+      "description": "Description text",
+      "reportedBy": {
+        "workerCode": "W-014",
+        "workerName": "Carlos Ruiz"
+      },
+      "onDutyWorker": {
+        "workerCode": "W-014",
+        "workerName": "Carlos Ruiz"
+      },
+      "assignedTechnicianId": "assignedTechnician-0001",
+      "assignedTechnicianName": "string",
+      "assignedByUserId": "assignedByUser-0001",
+      "assignedAtUtc": "2026-03-14T15:30:00Z",
+      "resolvedByUserId": "resolvedByUser-0001",
+      "resolvedAtUtc": "2026-03-14T15:30:00Z",
+      "resolutionNotes": "string"
+    }
+  ]
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `400` Bad request: validation/model-binding or domain rule violated
+- `401` Missing, invalid or expired credentials
+- `404` Resource not found (also returned when the resource belongs to another owner)

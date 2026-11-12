@@ -1,0 +1,19 @@
+{
+  "_description": "HTTP 400 - automatic [ApiController] model validation, e.g. POST /api/v1/stores with a missing name and an unknown property. Same envelope plus the `errors` dictionary (keys are C# member paths).",
+  "_status": 400,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "detail": "The request is invalid.",
+  "instance": "/api/v1/stores",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
+  "errors": {
+    "Name": [
+      "The Name field is required."
+    ],
+    "$.ownerUserId": [
+      "The JSON property 'ownerUserId' could not be mapped to any .NET member contained in type 'CreateStoreResource'."
+    ]
+  }
+}

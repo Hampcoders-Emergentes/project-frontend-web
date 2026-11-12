@@ -822,7 +822,8 @@
     "switcher": {
       "label": "Active store",
       "live": "Live updates",
-      "polling": "Auto-refresh"
+      "polling": "Auto-refresh",
+      "reconnecting": "Reconnecting live updates…"
     },
     "thresholds": {
       "fields": {

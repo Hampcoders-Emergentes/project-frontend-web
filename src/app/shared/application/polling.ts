@@ -1,4 +1,16 @@
-import { catchError, EMPTY, exhaustMap, map, type Observable, of, switchMap, takeWhile, timer } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  distinctUntilChanged,
+  EMPTY,
+  exhaustMap,
+  map,
+  type Observable,
+  of,
+  switchMap,
+  takeWhile,
+  timer,
+} from 'rxjs';
 import { type AppError, toAppError } from '@shared/application/app-error';
 
 /**
@@ -46,6 +58,38 @@ export function pollWhileVisible<T>(
           )
         : EMPTY,
     ),
+    takeWhile((outcome) => outcome.ok || !TERMINAL_STATUSES.has(outcome.error.status), true),
+  );
+}
+
+/**
+ * Polls `load` only while realtime updates are not live, as the documented fallback: while `live$` is
+ * true it loads once (to reconcile, since realtime events are not replayed) and then relies on events;
+ * when the connection drops it resumes polling every `intervalMs`. Pauses in hidden tabs and stops on
+ * `401`/`403`/`404`, like `pollWhileVisible`.
+ * @param visibility - The page visibility source.
+ * @param live$ - Whether realtime updates are currently delivered.
+ * @param intervalMs - The fallback polling interval.
+ * @param load - Produces one value.
+ */
+export function pollWithRealtimeFallback<T>(
+  visibility: PageVisibilityPort,
+  live$: Observable<boolean>,
+  intervalMs: number,
+  load: () => Observable<T>,
+): Observable<PollOutcome<T>> {
+  const loadOnce = (): Observable<PollOutcome<T>> =>
+    load().pipe(
+      map((value): PollOutcome<T> => ({ ok: true, value })),
+      catchError((error: unknown) => of<PollOutcome<T>>({ ok: false, error: toAppError(error) })),
+    );
+  return combineLatest([visibility.visible$, live$.pipe(distinctUntilChanged())]).pipe(
+    switchMap(([visible, live]) => {
+      if (!visible) {
+        return EMPTY;
+      }
+      return live ? loadOnce() : timer(0, intervalMs).pipe(exhaustMap(loadOnce));
+    }),
     takeWhile((outcome) => outcome.ok || !TERMINAL_STATUSES.has(outcome.error.status), true),
   );
 }

@@ -16,4 +16,6 @@ export abstract class AlertsPort {
 export abstract class AlertStreamPort {
   abstract readonly received$: Observable<Alert>;
   abstract readonly reconnected$: Observable<void>;
+  /** True while realtime alerts are delivered; polling is only the fallback when false. */
+  abstract readonly live$: Observable<boolean>;
 }

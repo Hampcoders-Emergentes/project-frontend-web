@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { Observable, Subscription } from 'rxjs';
 import { AsyncResource, MutationState } from '@shared/application/async-resource';
 import type { Page } from '@shared/application/page';
-import { PageVisibilityPort, pollWhileVisible } from '@shared/application/polling';
+import { PageVisibilityPort, pollWithRealtimeFallback } from '@shared/application/polling';
 import {
   type ActiveAlerts,
   type Alert,
@@ -22,7 +22,7 @@ import {
   ResolveAlertUseCase,
 } from '@alerts/application/use-cases/alert-use-cases';
 
-/** Active alerts are polled about every 30 s as the realtime fallback. */
+/** Active alerts are polled about every 30 s, only while realtime updates are not live. */
 export const ACTIVE_ALERTS_POLL_MS = 30_000;
 
 /**
@@ -49,19 +49,19 @@ export class AlertsStore {
     () => new Map((this.equipment.data() ?? []).map((item) => [item.equipmentId, item])),
   );
 
+  private readonly stream = inject(AlertStreamPort);
   private storeId: string | null = null;
   private lastHistory: { filter: AlertHistoryFilter; page: number } | null = null;
 
   constructor() {
-    const stream = inject(AlertStreamPort);
     const destroyRef = inject(DestroyRef);
-    stream.received$.pipe(takeUntilDestroyed(destroyRef)).subscribe((alert) => {
+    this.stream.received$.pipe(takeUntilDestroyed(destroyRef)).subscribe((alert) => {
       if (this.storeId !== null && this.active.key() === this.storeId) {
         this.active.patch((current) => withReceivedAlert(current, alert));
       }
     });
-    // Events are not replayed: re-fetch after every reconnect.
-    stream.reconnected$.pipe(takeUntilDestroyed(destroyRef)).subscribe(() => this.refreshActive());
+    // Events are not replayed: the fallback poll reloads once whenever the connection becomes live
+    // again (initial connect and every reconnect), so no separate reconnect handler is needed.
   }
 
   watchActive(storeId: string): Subscription {
@@ -69,7 +69,9 @@ export class AlertsStore {
     this.loadEquipment(storeId);
     return this.active.follow(
       storeId,
-      pollWhileVisible(this.visibility, ACTIVE_ALERTS_POLL_MS, () => this.activeUseCase.execute(storeId)),
+      pollWithRealtimeFallback(this.visibility, this.stream.live$, ACTIVE_ALERTS_POLL_MS, () =>
+        this.activeUseCase.execute(storeId),
+      ),
     );
   }
 

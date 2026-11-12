@@ -12,6 +12,7 @@ export class ReceiveAlertAdapter implements AlertStreamPort {
   private readonly connection = inject(RealtimeConnectionPort);
   readonly received$: Observable<Alert> = this.connection.on('ReceiveAlert').pipe(filter(isAlertResponse), map(toAlert));
   readonly reconnected$: Observable<void> = this.connection.reconnected$;
+  readonly live$: Observable<boolean> = this.connection.status$.pipe(map((status) => status === 'connected'));
 }
 
 /** Binds the alerts ports to their adapters. */

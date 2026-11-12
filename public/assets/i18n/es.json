@@ -822,7 +822,8 @@
     "switcher": {
       "label": "Local activo",
       "live": "Actualización en vivo",
-      "polling": "Actualización automática"
+      "polling": "Actualización automática",
+      "reconnecting": "Reconectando actualización en vivo…"
     },
     "thresholds": {
       "fields": {

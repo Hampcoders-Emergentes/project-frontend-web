@@ -8,7 +8,7 @@ import {
   CryptoIdempotencyKey,
   DocumentPageVisibility,
 } from '@shared/infrastructure/browser/browser-adapters';
-import { UnavailableRealtimeConnection } from '@shared/infrastructure/realtime/unavailable-realtime-connection';
+import { SignalRRealtimeConnection } from '@shared/infrastructure/realtime/signalr-realtime-connection';
 
 /** Binds the context-agnostic application ports to their browser/infrastructure adapters. */
 export function provideSharedInfrastructure(): EnvironmentProviders {
@@ -16,6 +16,6 @@ export function provideSharedInfrastructure(): EnvironmentProviders {
     { provide: PageVisibilityPort, useExisting: DocumentPageVisibility },
     { provide: IdempotencyKeyPort, useExisting: CryptoIdempotencyKey },
     { provide: FileSaverPort, useExisting: BrowserFileSaver },
-    { provide: RealtimeConnectionPort, useExisting: UnavailableRealtimeConnection },
+    { provide: RealtimeConnectionPort, useExisting: SignalRRealtimeConnection },
   ]);
 }

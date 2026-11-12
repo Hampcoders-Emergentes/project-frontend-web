@@ -30,9 +30,10 @@ import { Icon } from '@shared/presentation/components/icon/icon';
         </select>
       </label>
     }
-    <span class="ui-tag live" [class.ui-tag--info]="live()" [attr.title]="(live() ? 'stores.switcher.live' : 'stores.switcher.polling') | translate">
-      <app-icon class="ui-tag__icon" [name]="live() ? 'broadcast' : 'refresh'" />
-      <span>{{ (live() ? 'stores.switcher.live' : 'stores.switcher.polling') | translate }}</span>
+    <span class="ui-tag live" role="status" [class.ui-tag--info]="live()" [class.ui-tag--warning]="liveState() === 'reconnecting'"
+      [attr.title]="liveLabel() | translate">
+      <app-icon class="ui-tag__icon" [name]="live() ? 'broadcast' : liveState() === 'reconnecting' ? 'loader-2' : 'refresh'" />
+      <span>{{ liveLabel() | translate }}</span>
     </span>
   `,
 })
@@ -41,6 +42,15 @@ export class StoreSwitcher {
   private readonly router = inject(Router);
 
   protected readonly live = computed(() => this.directory.realtimeStatus() === 'connected');
+  /** `live` when connected, `reconnecting` while (re)connecting, otherwise `polling` (fallback). */
+  protected readonly liveState = computed(() => {
+    const status = this.directory.realtimeStatus();
+    if (status === 'connected') {
+      return 'live';
+    }
+    return status === 'connecting' || status === 'reconnecting' ? 'reconnecting' : 'polling';
+  });
+  protected readonly liveLabel = computed(() => `stores.switcher.${this.liveState()}`);
   /** The owned stores, always including the active one while the list is loading. */
   protected readonly options = computed(() => {
     const stores = this.directory.stores.data() ?? [];

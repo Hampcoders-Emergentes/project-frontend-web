@@ -1,0 +1,126 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <p class="text-meta" style="margin: 0"><a [routerLink]="['/stores', storeId(), 'dashboard']">{{ 'monitoring.dashboard.title' | translate }}</a></p>
+      <h1 class="ui-page-header__title">{{ risk.data()?.name ?? ('monitoring.equipment.title' | translate) }}</h1>
+      @if (risk.data(); as r) {
+        <p class="ui-page-header__subtitle">{{ r.areaName }}</p>
+      }
+    </div>
+    <div class="ui-actions">
+      <a class="ui-button ui-button--secondary" [routerLink]="['/stores', storeId(), 'alerts']" [queryParams]="{ equipmentId: equipmentId() }">
+        <app-icon class="ui-button__icon" name="bell-ringing" />{{ 'monitoring.equipment.alerts' | translate }}
+      </a>
+      <a class="ui-button ui-button--ghost" [routerLink]="['/stores', storeId(), 'setup', 'areas', areaId(), 'equipment', equipmentId()]">
+        <app-icon class="ui-button__icon" name="tool" />{{ 'monitoring.equipment.configure' | translate }}
+      </a>
+    </div>
+  </header>
+
+  <div class="ui-grid">
+    <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="risk-title">
+      <h2 id="risk-title">{{ 'monitoring.equipment.risk' | translate }}</h2>
+      @if (risk.initialLoading()) {
+        <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+      } @else if (risk.error() && !risk.data()) {
+        <app-error-notice [error]="risk.error()!" />
+      } @else if (risk.data(); as r) {
+        <div class="ui-actions">
+          <app-status-tag [label]="'monitoring.risk.' + r.riskLevel | translate" [appearance]="riskAppearance[r.riskLevel]" />
+          <app-status-tag [label]="'monitoring.state.' + r.operationalState | translate" [appearance]="stateAppearance[r.operationalState]" />
+        </div>
+        @if (r.reasons.length > 0) {
+          <ul style="margin: 0; padding-inline-start: 1.25rem">
+            @for (reason of r.reasons; track reason) {
+              <!-- Reasons are server-generated codes/phrases; shown verbatim as diagnostic detail. -->
+              <li class="text-meta">{{ reason }}</li>
+            }
+          </ul>
+        }
+        <p class="text-meta" style="margin: 0">
+          {{ 'monitoring.dashboard.openAlerts' | translate: { critical: r.openCriticalAlerts, nonCritical: r.openNonCriticalAlerts } }}
+        </p>
+        <app-freshness [lastUpdatedAt]="risk.lastUpdatedAt()" [stale]="risk.stale()" [refreshing]="risk.loading()" />
+      }
+    </section>
+
+    <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="telemetry-title">
+      <h2 id="telemetry-title">{{ 'monitoring.equipment.telemetry' | translate }}</h2>
+      @if (telemetry.initialLoading()) {
+        <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+      } @else if (telemetry.error() && !telemetry.data()) {
+        <app-error-notice [error]="telemetry.error()!" />
+      } @else if (telemetry.data(); as t) {
+        <app-status-tag [label]="'monitoring.state.' + t.state | translate" [appearance]="stateAppearance[t.state]" />
+        @if (t.sensorSerialNumber; as serial) {
+          <p class="text-meta" style="margin: 0">{{ 'monitoring.equipment.sensor' | translate: { serial } }}</p>
+        } @else {
+          <p class="text-meta" style="margin: 0">{{ 'monitoring.equipment.noSensor' | translate }}</p>
+        }
+        <app-reading-values [reading]="t.lastMeasurement" [state]="t.state" />
+        <app-freshness [lastUpdatedAt]="telemetry.lastUpdatedAt()" [stale]="telemetry.stale()" [refreshing]="telemetry.loading()" />
+      }
+    </section>
+  </div>
+
+  <section class="ui-stack" aria-labelledby="history-title">
+    <h2 id="history-title">{{ 'monitoring.equipment.history' | translate }}</h2>
+    <form class="ui-actions" [formGroup]="rangeForm" (ngSubmit)="applyRange()">
+      <div class="ui-field">
+        <label class="ui-field__label" for="hist-from">{{ 'shared.labels.from' | translate }}</label>
+        <input class="ui-input" id="hist-from" type="datetime-local" formControlName="from" />
+      </div>
+      <div class="ui-field">
+        <label class="ui-field__label" for="hist-to">{{ 'shared.labels.to' | translate }}</label>
+        <input class="ui-input" id="hist-to" type="datetime-local" formControlName="to" />
+      </div>
+      <button class="ui-button ui-button--secondary" type="submit" style="align-self: end">{{ 'shared.actions.apply' | translate }}</button>
+    </form>
+    <p class="ui-field__hint">{{ 'shared.dateRange.hint' | translate }}</p>
+    @if (rangeProblem(); as key) {
+      <p class="ui-field__error" role="alert">{{ key | translate }}</p>
+    }
+
+    @if (history.initialLoading()) {
+      <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+    } @else if (history.error(); as failure) {
+      <app-error-notice [error]="failure" [retryable]="true" (retry)="loadHistory()" />
+    } @else if (history.data(); as result) {
+      @if (result.items.length === 0) {
+        <app-state-panel kind="empty" [heading]="'monitoring.equipment.noHistory' | translate" [message]="'monitoring.equipment.noHistoryMessage' | translate" />
+      } @else {
+        <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="'monitoring.equipment.history' | translate">
+          <table class="ui-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'monitoring.reading.capturedAtHeader' | translate }}</th>
+                <th scope="col" class="num">V</th>
+                <th scope="col" class="num">A</th>
+                <th scope="col" class="num">{{ 'monitoring.reading.powerFactor' | translate }}</th>
+                <th scope="col" class="num">Hz</th>
+                <th scope="col">{{ 'monitoring.reading.anomaly' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of result.items; track m.readingId) {
+                <tr>
+                  <th scope="row">{{ m.capturedAt | localizedDate: 'dateTime' }}</th>
+                  <td class="num">{{ m.voltage | localizedNumber: 1 }}</td>
+                  <td class="num">{{ m.current | localizedNumber: 2 }}</td>
+                  <td class="num">{{ m.powerFactor | localizedNumber: 2 }}</td>
+                  <td class="num">{{ m.frequency | localizedNumber: 1 }}</td>
+                  <td>{{ m.detectedAnomalyType ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="ui-actions" style="justify-content: flex-end">
+          <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
+          <span class="text-meta">{{ 'shared.pagination.page' | translate: { page: page() } }}</span>
+          <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>
+        </div>
+      }
+    }
+  </section>
+</div>

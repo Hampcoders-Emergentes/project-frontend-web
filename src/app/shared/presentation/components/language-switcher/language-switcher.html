@@ -1,0 +1,18 @@
+<div
+  class="language-switcher"
+  role="group"
+  [attr.aria-label]="'shared.languageSwitcher.label' | translate"
+>
+  <app-icon class="language-switcher__icon" name="world" />
+  @for (language of languages; track language) {
+    <button
+      class="language-switcher__option"
+      type="button"
+      [attr.lang]="language"
+      [attr.aria-pressed]="language === current()"
+      (click)="select(language)"
+    >
+      {{ 'shared.languageSwitcher.languages.' + language | translate }}
+    </button>
+  }
+</div>

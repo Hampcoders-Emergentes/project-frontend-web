@@ -1,0 +1,30 @@
+.iam-card {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.iam-card__header {
+  display: grid;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.iam-card__footer {
+  margin: 0;
+  padding-block-start: var(--space-2);
+  border-block-start: 1px solid var(--border-subtle);
+  text-align: center;
+  font-size: 0.9375rem;
+}
+
+.iam-card__submit {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .iam-card.ui-card {
+    padding: var(--space-2);
+  }
+}

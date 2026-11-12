@@ -1,0 +1,86 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <h1 class="ui-page-header__title">{{ 'notifications.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">{{ 'notifications.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="ui-notice ui-notice--warning">
+    <p class="ui-notice__body">{{ 'notifications.deliveryNote' | translate }}</p>
+  </div>
+
+  @if (store.preferences.initialLoading()) {
+    <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+  } @else if (store.preferences.error(); as failure) {
+    <app-error-notice [error]="failure" [retryable]="true" (retry)="store.load(storeId())" />
+  } @else if (store.preferences.data(); as prefs) {
+    <p class="text-meta" style="margin: 0">
+      @if (prefs.isDefault) { {{ 'notifications.isDefault' | translate }} }
+      @else if (prefs.updatedAt; as updated) { {{ 'notifications.updatedAt' | translate: { time: (updated | localizedDate: 'dateTime') } }} }
+    </p>
+    @if (store.saveState.error(); as failure) { <app-error-notice [error]="failure" /> }
+    @if (store.saveState.succeededAt() && routes.pristine) { <p class="ui-notice ui-notice--success" role="status">{{ 'notifications.saved' | translate }}</p> }
+
+    <form class="ui-stack" (ngSubmit)="save()" novalidate>
+      @if (routes.length === 0) {
+        <app-state-panel kind="empty" [heading]="'notifications.noRoutes' | translate" [message]="'notifications.noRoutesMessage' | translate" />
+      }
+      @for (group of routes.controls; track group; let i = $index) {
+        <fieldset class="ui-fieldset ui-stack" style="gap: var(--space-1)" [formGroup]="group">
+          <legend>{{ 'notifications.route' | translate: { n: i + 1 } }}</legend>
+          <div class="ui-form-grid">
+            <div class="ui-field">
+              <label class="ui-field__label" [for]="'nr-channel-' + i">{{ 'notifications.fields.channel' | translate }}</label>
+              <select class="ui-input" [id]="'nr-channel-' + i" formControlName="channel">
+                @for (channel of channels; track channel) { <option [value]="channel">{{ 'notifications.channels.' + channel | translate }}</option> }
+              </select>
+            </div>
+            @if (needsDestination(group.controls.channel.value)) {
+              <div class="ui-field">
+                <label class="ui-field__label" [for]="'nr-destination-' + i">{{ 'notifications.destinations.' + group.controls.channel.value | translate }}</label>
+                <input class="ui-input" [id]="'nr-destination-' + i" formControlName="destination"
+                  [type]="group.controls.channel.value === 'EMAIL' ? 'email' : group.controls.channel.value === 'SMS' ? 'tel' : 'url'" />
+              </div>
+            }
+            <div class="ui-field">
+              <label class="ui-field__label" [for]="'nr-role-' + i">{{ 'notifications.fields.recipientRole' | translate }}</label>
+              <select class="ui-input" [id]="'nr-role-' + i" formControlName="recipientRole">
+                @for (role of roles; track role) { <option [value]="role">{{ 'notifications.roles.' + role | translate }}</option> }
+              </select>
+            </div>
+            <div class="ui-field">
+              <label class="ui-field__label" [for]="'nr-name-' + i">{{ 'notifications.fields.recipientName' | translate }}</label>
+              <input class="ui-input" [id]="'nr-name-' + i" formControlName="recipientName" />
+            </div>
+          </div>
+          <div class="ui-actions" role="group" [attr.aria-label]="'notifications.fields.urgency' | translate">
+            <label class="ui-check"><input type="checkbox" formControlName="critical" /> {{ 'notifications.urgency.CRITICAL' | translate }}</label>
+            <label class="ui-check"><input type="checkbox" formControlName="nonCritical" /> {{ 'notifications.urgency.NON_CRITICAL' | translate }}</label>
+            <label class="ui-check"><input type="checkbox" formControlName="enabled" /> {{ 'notifications.fields.enabled' | translate }}</label>
+          </div>
+          @if (dependsOnConfiguration(group.controls.channel.value)) {
+            <p class="ui-field__hint">{{ 'notifications.configurationDependent.' + group.controls.channel.value | translate }}</p>
+          }
+          @if (submitted() && problemKey(group); as key) {
+            <p class="ui-field__error" role="alert">{{ key | translate }}</p>
+          }
+          <div>
+            <button class="ui-button ui-button--ghost ui-button--small" type="button" (click)="remove(i)">
+              {{ 'shared.actions.remove' | translate }}<span class="sr-only"> {{ 'notifications.route' | translate: { n: i + 1 } }}</span>
+            </button>
+          </div>
+        </fieldset>
+      }
+      <div class="ui-actions">
+        <button class="ui-button ui-button--secondary" type="button" [disabled]="routes.length >= maxRoutes" (click)="add()">
+          {{ 'notifications.addRoute' | translate }}
+        </button>
+        <span class="text-meta">{{ 'notifications.count' | translate: { count: routes.length, max: maxRoutes } }}</span>
+        <button class="ui-button" type="submit" [disabled]="store.saveState.submitting()">
+          {{ (store.saveState.submitting() ? 'shared.actions.saving' : 'shared.actions.save') | translate }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

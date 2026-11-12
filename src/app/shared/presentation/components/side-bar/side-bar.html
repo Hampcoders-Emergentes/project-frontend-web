@@ -1,0 +1,46 @@
+<div class="side-bar">
+  <p class="side-bar__brand">
+    <img class="side-bar__logo" src="favicon.svg" width="36" height="36" alt="" />
+    {{ 'shared.appName' | translate }}
+  </p>
+
+  <nav [attr.aria-label]="'shared.navigation.label' | translate">
+    <ul class="side-bar__list">
+      @for (item of items(); track item.path) {
+        <li>
+          <a
+            class="side-bar__link"
+            [routerLink]="item.path"
+            routerLinkActive="side-bar__link--active"
+            ariaCurrentWhenActive="page"
+            [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+            (click)="navigated.emit()"
+          >
+            <app-icon class="side-bar__icon" [name]="item.icon" />
+            <span>{{ item.labelKey | translate }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="side-bar__footer">
+    @if (account(); as current) {
+      <a
+        class="side-bar__account"
+        [routerLink]="current.settingsPath"
+        routerLinkActive="side-bar__account--active"
+        ariaCurrentWhenActive="page"
+        (click)="navigated.emit()"
+      >
+        <span class="side-bar__avatar" aria-hidden="true">{{ initial() }}</span>
+        <span class="side-bar__account-text">
+          <span class="side-bar__username">{{ current.username }}</span>
+          <span class="side-bar__account-hint">{{ 'shared.navigation.settings' | translate }}</span>
+        </span>
+      </a>
+    }
+    <app-language-switcher />
+    <app-button-logout (signOut)="signOut.emit()" />
+  </div>
+</div>

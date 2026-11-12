@@ -1,0 +1,95 @@
+<app-dialog [heading]="'alerts.anomaly.' + alert().anomalyType | translate" (closed)="closed.emit()">
+  <div class="ui-actions">
+    <app-status-tag [label]="'alerts.severity.' + alert().severity | translate" [appearance]="severityAppearance[alert().severity]" />
+    <app-status-tag [label]="'alerts.status.' + alert().status | translate" [appearance]="statusAppearance[alert().status]" />
+  </div>
+  @if (alert().isCriticalLeakage) {
+    <p class="ui-notice ui-notice--warning" style="margin: 0">{{ 'alerts.criticalLeakageNote' | translate }}</p>
+  }
+  <dl class="ui-dl">
+    <dt>{{ 'alerts.fields.equipment' | translate }}</dt>
+    <dd>{{ equipment()?.equipmentName ?? ('alerts.unknownEquipment' | translate) }}{{ equipment() ? ' · ' + equipment()!.areaName : '' }}</dd>
+    <dt>{{ 'alerts.fields.source' | translate }}</dt>
+    <dd>{{ 'alerts.source.' + alert().source | translate }}{{ alert().reportCategory ? ' · ' + ('alerts.category.' + alert().reportCategory | translate) : '' }}</dd>
+    <dt>{{ 'alerts.fields.detectionSeverity' | translate }}</dt>
+    <dd>{{ alert().detectionSeverity }}</dd>
+    <dt>{{ 'alerts.fields.capturedAt' | translate }}</dt>
+    <dd>{{ alert().capturedAt | localizedDate: 'dateTime' }}</dd>
+    <dt>{{ 'alerts.fields.onDuty' | translate }}</dt>
+    <dd>{{ alert().onDutyWorker ? alert().onDutyWorker!.workerName + ' (' + alert().onDutyWorker!.workerCode + ')' : ('alerts.noOnDuty' | translate) }}</dd>
+    @if (alert().reportedBy; as reporter) {
+      <dt>{{ 'alerts.fields.reportedBy' | translate }}</dt>
+      <dd>{{ reporter.workerName }} ({{ reporter.workerCode }})</dd>
+    }
+    @if (alert().description; as description) {
+      <dt>{{ 'alerts.fields.description' | translate }}</dt>
+      <dd>{{ description }}</dd>
+    }
+    @if (alert().acknowledgedAt; as at) {
+      <dt>{{ 'alerts.fields.acknowledgedAt' | translate }}</dt>
+      <dd>{{ at | localizedDate: 'dateTime' }}</dd>
+    }
+    @if (alert().assignedAt; as at) {
+      <dt>{{ 'alerts.fields.technician' | translate }}</dt>
+      <dd>{{ alert().assignedTechnicianName ?? alert().assignedTechnicianId }} · {{ at | localizedDate: 'dateTime' }}</dd>
+    }
+    @if (alert().resolvedAt; as at) {
+      <dt>{{ 'alerts.fields.resolvedAt' | translate }}</dt>
+      <dd>{{ at | localizedDate: 'dateTime' }}</dd>
+      <dt>{{ 'alerts.fields.notes' | translate }}</dt>
+      <dd>{{ alert().resolutionNotes ?? '—' }}</dd>
+    }
+  </dl>
+
+  @if (error(); as failure) {
+    <app-error-notice [error]="failure" [message]="failure.status === 409 ? ('alerts.errors.conflict' | translate) : null" />
+  }
+
+  @switch (nextAction()) {
+    @case ('acknowledge') {
+      <button class="ui-button" type="button" [disabled]="submitting() || !equipment()" (click)="acknowledge.emit()">
+        {{ (submitting() ? 'shared.actions.saving' : 'alerts.actions.acknowledge') | translate }}
+      </button>
+      @if (!equipment()) {
+        <p class="ui-field__hint">{{ 'alerts.equipmentUnresolved' | translate }}</p>
+      }
+    }
+    @case ('assign') {
+      <form class="ui-form" [formGroup]="assignForm" (ngSubmit)="submitAssign()" novalidate>
+        <h3>{{ 'alerts.actions.assign' | translate }}</h3>
+        <div class="ui-form-grid">
+          <div class="ui-field">
+            <label class="ui-field__label" for="assign-id">{{ 'alerts.fields.technicianId' | translate }}</label>
+            <input class="ui-input" id="assign-id" formControlName="technicianId"
+              [attr.aria-invalid]="(assignForm.controls.technicianId.invalid && assignForm.controls.technicianId.touched) || null" />
+            @if (assignForm.controls.technicianId.invalid && assignForm.controls.technicianId.touched) {
+              <p class="ui-field__error">{{ 'shared.validation.required' | translate }}</p>
+            }
+          </div>
+          <div class="ui-field">
+            <label class="ui-field__label" for="assign-name">{{ 'alerts.fields.technicianName' | translate }}</label>
+            <input class="ui-input" id="assign-name" formControlName="technicianName" />
+            <p class="ui-field__hint">{{ 'shared.validation.optional' | translate }}</p>
+          </div>
+        </div>
+        <div><button class="ui-button" type="submit" [disabled]="submitting()">{{ (submitting() ? 'shared.actions.saving' : 'alerts.actions.assign') | translate }}</button></div>
+      </form>
+    }
+    @case ('resolve') {
+      <form class="ui-form" [formGroup]="resolveForm" (ngSubmit)="submitResolve()" novalidate>
+        <div class="ui-field">
+          <label class="ui-field__label" for="resolve-notes">{{ 'alerts.fields.notes' | translate }}</label>
+          <textarea class="ui-input" id="resolve-notes" formControlName="notes" [attr.maxlength]="notesMax"
+            aria-describedby="resolve-notes-hint"></textarea>
+          <p class="ui-field__hint" id="resolve-notes-hint">{{ 'shared.validation.maxLength' | translate: { max: notesMax } }}</p>
+        </div>
+        <div><button class="ui-button" type="submit" [disabled]="submitting()">{{ (submitting() ? 'shared.actions.saving' : 'alerts.actions.resolve') | translate }}</button></div>
+      </form>
+    }
+    @default {
+      <p class="text-meta" style="margin: 0">{{ 'alerts.closedWorkflow' | translate }}</p>
+    }
+  }
+
+  <button dialogActions class="ui-button ui-button--secondary" type="button" (click)="closed.emit()">{{ 'shared.actions.close' | translate }}</button>
+</app-dialog>

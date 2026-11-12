@@ -1,0 +1,112 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <h1 class="ui-page-header__title">{{ 'stores.layout.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">{{ 'stores.layout.subtitle' | translate }}</p>
+    </div>
+    <div class="ui-actions">
+      <button class="ui-button ui-button--secondary" type="button" [disabled]="!dirty() || layoutStore.saveState.submitting()" (click)="discard()">
+        {{ 'shared.actions.discard' | translate }}
+      </button>
+      <button class="ui-button" type="button" [disabled]="!dirty() || layoutStore.saveState.submitting()" (click)="save()">
+        {{ (layoutStore.saveState.submitting() ? 'shared.actions.saving' : 'shared.actions.save') | translate }}
+      </button>
+    </div>
+  </header>
+
+  @if (layoutStore.saveState.error(); as failure) {
+    <app-error-notice [error]="failure" [message]="failure.status === 409 ? ('shared.errors.conflictReloaded' | translate) : null" />
+  } @else if (layoutStore.saveState.succeededAt() && !dirty()) {
+    <p class="ui-notice ui-notice--success" role="status">{{ 'stores.layout.saved' | translate }}</p>
+  }
+
+  @if (resource.initialLoading()) {
+    <app-state-panel kind="loading" [heading]="'stores.layout.loading' | translate" />
+  } @else if (resource.error(); as failure) {
+    <app-error-notice [error]="failure" [retryable]="true" (retry)="layoutStore.load(storeId())" />
+  } @else if (edited(); as layout) {
+    @if (layout.equipment.length === 0) {
+      <app-state-panel kind="empty" [heading]="'stores.layout.emptyTitle' | translate" [message]="'stores.layout.emptyMessage' | translate" />
+    } @else {
+      <p class="ui-field__hint">{{ 'stores.layout.keyboardHint' | translate }}</p>
+      <div class="floor-plan">
+        <div class="ui-stack" style="gap: var(--space-1)">
+          <div class="ui-actions" role="group" [attr.aria-label]="'stores.layout.zoom' | translate">
+            <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="setZoom(-1)" [disabled]="zoomIndex() === 0">−</button>
+            <span class="text-meta tnum" aria-live="polite">{{ zoom() * 100 }}%</span>
+            <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="setZoom(1)" [disabled]="zoomIndex() === 4">+</button>
+            <span class="text-meta">{{ 'stores.layout.canvasSize' | translate: { width: layout.canvasWidth, height: layout.canvasHeight } }}</span>
+          </div>
+          <div class="floor-plan__viewport" role="region" tabindex="0" [attr.aria-label]="'stores.layout.canvasLabel' | translate">
+            <div class="floor-plan__canvas"
+              [style.width.px]="layout.canvasWidth * zoom()" [style.height.px]="layout.canvasHeight * zoom()"
+              [style.background-size.px]="40 * zoom()">
+              @for (item of placed(); track item.equipmentId) {
+                @if (item.box; as box) {
+                  <div class="floor-plan__item" tabindex="0" role="button"
+                    [class.floor-plan__item--selected]="selectedId() === item.equipmentId"
+                    [class.floor-plan__item--critical]="item.riskLevel === 'CRITICAL_RISK'"
+                    [class.floor-plan__item--warning]="item.riskLevel === 'WARNING'"
+                    [class.floor-plan__item--offline]="item.riskLevel === 'DISCONNECTED'"
+                    [style.left.px]="box.x * zoom()" [style.top.px]="box.y * zoom()"
+                    [style.width.px]="box.width * zoom()" [style.height.px]="box.height * zoom()" [style.z-index]="box.zIndex"
+                    [attr.aria-pressed]="selectedId() === item.equipmentId"
+                    [attr.aria-label]="'stores.layout.itemLabel' | translate: { name: item.name, area: item.areaName, x: box.x, y: box.y, risk: ('stores.risk.' + item.riskLevel | translate) }"
+                    (focus)="selectedId.set(item.equipmentId)"
+                    (keydown)="onKeydown($event, item)"
+                    (pointerdown)="onPointerDown($event, item)" (pointermove)="onPointerMove($event)"
+                    (pointerup)="onPointerUp()" (pointercancel)="onPointerUp()">
+                    <span class="floor-plan__name">{{ item.name }}</span>
+                    <app-status-tag [label]="'stores.risk.' + item.riskLevel | translate" [appearance]="appearance(item.riskLevel)" />
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        </div>
+
+        <aside class="floor-plan__side">
+          <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="fp-selected-title">
+            <h2 id="fp-selected-title">{{ 'stores.layout.selected' | translate }}</h2>
+            @if (selected(); as item) {
+              <p style="margin: 0"><strong>{{ item.name }}</strong> · <span class="text-meta">{{ item.areaName }}</span></p>
+              @if (item.box; as box) {
+                <div class="ui-form-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr))">
+                  @for (field of boxFields; track field) {
+                    <div class="ui-field">
+                      <label class="ui-field__label" [for]="'fp-' + field">{{ 'stores.layout.fields.' + field | translate }}</label>
+                      <input class="ui-input tnum" type="number" [id]="'fp-' + field" [value]="box[field]" (change)="setBoxField(field, $event)" />
+                    </div>
+                  }
+                </div>
+                <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="unplace(item.equipmentId)">
+                  {{ 'stores.layout.removeFromPlan' | translate }}
+                </button>
+              }
+            } @else {
+              <p class="text-meta" style="margin: 0">{{ 'stores.layout.noSelection' | translate }}</p>
+            }
+          </section>
+
+          <section class="ui-card ui-stack" style="gap: var(--space-1)" aria-labelledby="fp-unplaced-title">
+            <h2 id="fp-unplaced-title">{{ 'stores.layout.unplaced' | translate: { count: unplaced().length } }}</h2>
+            @if (unplaced().length === 0) {
+              <p class="text-meta" style="margin: 0">{{ 'stores.layout.allPlaced' | translate }}</p>
+            } @else {
+              <ul class="floor-plan__list">
+                @for (item of unplaced(); track item.equipmentId) {
+                  <li>
+                    <span>{{ item.name }} <span class="text-meta">· {{ item.areaName }}</span></span>
+                    <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="place(item)">
+                      {{ 'stores.layout.place' | translate }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        </aside>
+      </div>
+    }
+  }
+</div>

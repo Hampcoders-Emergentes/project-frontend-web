@@ -1,0 +1,132 @@
+<section class="ui-stack" aria-labelledby="checklist-title">
+  <h2 id="checklist-title">{{ 'compliance.checklist.title' | translate }}</h2>
+  @if (store.template.initialLoading()) {
+    <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+  } @else if (store.template.error(); as failure) {
+    <app-error-notice [error]="failure" [retryable]="true" (retry)="store.loadChecklistData(storeId())" />
+  } @else {
+    @if (draftId()) {
+      <p class="ui-notice" role="status">{{ 'compliance.checklist.editingDraft' | translate }}</p>
+    }
+    @if (store.checklistState.error(); as failure) {
+      <app-error-notice [error]="failure"
+        [message]="failure.status === 409 ? ('compliance.checklist.errors.conflict' | translate) : failure.status === 422 ? ('compliance.checklist.errors.keyReused' | translate) : null" />
+    } @else if (store.checklistState.succeededAt()) {
+      <p class="ui-notice ui-notice--success" role="status">{{ 'compliance.checklist.saved' | translate }}</p>
+    }
+
+    <form class="ui-card ui-form" [formGroup]="form" novalidate (ngSubmit)="save('DRAFT')">
+      <div class="ui-form-grid">
+        <div class="ui-field">
+          <label class="ui-field__label" for="cl-inspector-id">{{ 'compliance.checklist.inspectorId' | translate }}</label>
+          <input class="ui-input" id="cl-inspector-id" formControlName="inspectorStaffId"
+            [attr.aria-invalid]="(form.controls.inspectorStaffId.invalid && form.controls.inspectorStaffId.touched) || null" />
+          @if (form.controls.inspectorStaffId.invalid && form.controls.inspectorStaffId.touched) { <p class="ui-field__error">{{ 'shared.validation.required' | translate }}</p> }
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="cl-inspector-name">{{ 'compliance.checklist.inspectorName' | translate }}</label>
+          <input class="ui-input" id="cl-inspector-name" formControlName="inspectorName"
+            [attr.aria-invalid]="(form.controls.inspectorName.invalid && form.controls.inspectorName.touched) || null" />
+          @if (form.controls.inspectorName.invalid && form.controls.inspectorName.touched) { <p class="ui-field__error">{{ 'shared.validation.required' | translate }}</p> }
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="cl-week">{{ 'compliance.checklist.weekOf' | translate }}</label>
+          <input class="ui-input" id="cl-week" type="date" formControlName="weekOf" aria-describedby="cl-week-hint" />
+          <p class="ui-field__hint" id="cl-week-hint">{{ 'compliance.checklist.weekHint' | translate }}</p>
+        </div>
+      </div>
+
+      <ol class="ui-stack" style="gap: var(--space-2); margin: 0; padding: 0; list-style: none" formArrayName="items">
+        @for (group of form.controls.items.controls; track group.controls.code.value; let i = $index) {
+          <li [formGroupName]="i">
+            <fieldset class="ui-fieldset ui-stack" style="gap: var(--space-1)" [attr.aria-describedby]="showItemProblem(group) ? 'cl-item-error-' + i : null">
+              <legend>{{ i + 1 }}. {{ group.controls.label.value }}</legend>
+              <div class="ui-actions" role="radiogroup" [attr.aria-label]="group.controls.label.value">
+                @for (result of results; track result) {
+                  <label class="ui-check"><input type="radio" formControlName="result" [value]="result" /> {{ 'compliance.checklist.results.' + result | translate }}</label>
+                }
+              </div>
+              <div class="ui-field">
+                <label class="ui-field__label" [for]="'cl-notes-' + i">
+                  {{ 'compliance.checklist.notes' | translate }}
+                  @if (group.controls.result.value === 'FAIL') { <span>({{ 'shared.validation.requiredShort' | translate }})</span> }
+                </label>
+                <textarea class="ui-input" [id]="'cl-notes-' + i" formControlName="notes" rows="2" [attr.maxlength]="limits.notesMax"></textarea>
+              </div>
+              @if (showItemProblem(group)) {
+                <p class="ui-field__error" [id]="'cl-item-error-' + i">{{ itemProblem(group)! | translate: { max: limits.notesMax } }}</p>
+              }
+            </fieldset>
+          </li>
+        }
+      </ol>
+
+      <div class="ui-field">
+        <label class="ui-field__label" for="cl-observations">{{ 'compliance.checklist.observations' | translate }}</label>
+        <textarea class="ui-input" id="cl-observations" formControlName="observations" [attr.maxlength]="limits.observationsMax"></textarea>
+        <p class="ui-field__hint">{{ 'shared.validation.maxLength' | translate: { max: limits.observationsMax } }}</p>
+      </div>
+
+      <div class="ui-actions">
+        <button class="ui-button ui-button--secondary" type="submit" [disabled]="store.checklistState.submitting()">
+          {{ (store.checklistState.submitting() ? 'shared.actions.saving' : 'compliance.checklist.saveDraft') | translate }}
+        </button>
+        <button class="ui-button" type="button" [disabled]="store.checklistState.submitting()" (click)="save('SUBMITTED')">
+          {{ 'compliance.checklist.submit' | translate }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
+
+<section class="ui-stack" aria-labelledby="cl-history-title">
+  <h2 id="cl-history-title">{{ 'compliance.checklist.history' | translate }}</h2>
+  @if (store.checklists.initialLoading()) {
+    <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+  } @else if (store.checklists.error(); as failure) {
+    <app-error-notice [error]="failure" [retryable]="true" (retry)="store.loadChecklists(storeId(), page())" />
+  } @else if (store.checklists.data(); as result) {
+    @if (result.items.length === 0) {
+      <app-state-panel kind="empty" [heading]="'compliance.checklist.noHistory' | translate" />
+    } @else {
+      <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="'compliance.checklist.history' | translate">
+        <table class="ui-table">
+          <thead><tr>
+            <th scope="col">{{ 'compliance.checklist.week' | translate }}</th><th scope="col">{{ 'compliance.checklist.status' | translate }}</th>
+            <th scope="col" class="num">{{ 'compliance.checklist.score' | translate }}</th><th scope="col">{{ 'compliance.checklist.inspectorName' | translate }}</th>
+            <th scope="col">{{ 'compliance.checklist.updated' | translate }}</th><th scope="col"><span class="sr-only">{{ 'shared.labels.actions' | translate }}</span></th>
+          </tr></thead>
+          <tbody>
+            @for (c of result.items; track c.id) {
+              <tr>
+                <th scope="row">{{ c.week }} ({{ c.weekStartDate }})</th>
+                <td><span class="ui-tag" [class.ui-tag--success]="c.status === 'SUBMITTED'">{{ 'compliance.checklist.statuses.' + c.status | translate }}</span></td>
+                <td class="num">{{ c.score }}</td>
+                <td>{{ c.inspectorName }}</td>
+                <td>{{ (c.submittedAt ?? c.updatedAt) | localizedDate: 'dateTime' }}</td>
+                <td>
+                  @if (c.status === 'DRAFT') {
+                    <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="editDraft(c)">{{ 'compliance.checklist.continue' | translate }}</button>
+                  } @else {
+                    <span class="text-meta">{{ 'compliance.checklist.locked' | translate }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="ui-actions" style="justify-content: flex-end">
+        <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
+        <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>
+      </div>
+    }
+  }
+</section>
+
+@if (confirmingSubmit()) {
+  <app-dialog [heading]="'compliance.checklist.confirmTitle' | translate" [description]="'compliance.checklist.confirmMessage' | translate" (closed)="confirmingSubmit.set(false)">
+    <button dialogActions class="ui-button ui-button--secondary" type="button" (click)="confirmingSubmit.set(false)">{{ 'shared.actions.cancel' | translate }}</button>
+    <button dialogActions class="ui-button" type="button" (click)="save('SUBMITTED')">{{ 'compliance.checklist.submit' | translate }}</button>
+  </app-dialog>
+}

@@ -1,0 +1,91 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <h1 class="ui-page-header__title">{{ 'stores.directory.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">{{ 'stores.directory.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  @if (notice; as current) {
+    <div class="ui-notice ui-notice--warning" role="status">
+      <app-icon class="ui-notice__icon" name="info-circle" />
+      <p class="ui-notice__body">{{ 'stores.directory.notices.' + current | translate }}</p>
+    </div>
+  }
+
+  <section aria-labelledby="stores-list-title">
+    <h2 class="sr-only" id="stores-list-title">{{ 'stores.directory.listTitle' | translate }}</h2>
+    @if (stores.initialLoading()) {
+      <app-state-panel kind="loading" [heading]="'stores.directory.loading' | translate" />
+    } @else if (stores.error(); as failure) {
+      <app-error-notice [error]="failure" [retryable]="true" (retry)="directory.loadStores()" />
+    } @else if (stores.data(); as list) {
+      @if (list.length === 0) {
+        <app-state-panel
+          kind="empty"
+          [heading]="'stores.directory.emptyTitle' | translate"
+          [message]="'stores.directory.emptyMessage' | translate"
+        />
+      } @else {
+        <ul class="ui-grid" role="list" style="list-style: none; margin: 0; padding: 0">
+          @for (store of list; track store.id) {
+            <li class="ui-card ui-stack" style="gap: var(--space-1)">
+              <h3>{{ store.name }}</h3>
+              <p class="text-meta" style="margin: 0">{{ store.address }}</p>
+              <p class="text-meta" style="margin: 0">
+                @if (store.lastEdgeSyncAt; as synced) {
+                  {{ 'stores.directory.lastSync' | translate: { time: (synced | localizedDate: 'dateTime') } }}
+                } @else {
+                  {{ 'stores.directory.neverSynced' | translate }}
+                }
+              </p>
+              <div class="ui-actions">
+                <a class="ui-button ui-button--small" [routerLink]="['/stores', store.id, 'dashboard']">
+                  {{ 'stores.directory.open' | translate }}
+                  <app-icon class="ui-button__icon" name="arrow-right" />
+                </a>
+                <a class="ui-button ui-button--secondary ui-button--small" [routerLink]="['/stores', store.id, 'setup', 'areas']">
+                  {{ 'stores.directory.configure' | translate }}
+                </a>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+
+  <section class="ui-card ui-stack" aria-labelledby="create-store-title">
+    <h2 id="create-store-title">{{ 'stores.directory.createTitle' | translate }}</h2>
+    @if (createState.error(); as failure) {
+      @if (failure.status !== 400) {
+        <app-error-notice [error]="failure" />
+      }
+    }
+    <form class="ui-form" [formGroup]="form" (ngSubmit)="create()" novalidate>
+      <div class="ui-form-grid">
+        <div class="ui-field">
+          <label class="ui-field__label" for="store-name">{{ 'stores.fields.name' | translate }}</label>
+          <input class="ui-input" id="store-name" formControlName="name" autocomplete="organization"
+            [attr.aria-invalid]="invalid('name') || null" [attr.aria-describedby]="invalid('name') ? 'store-name-error' : null" />
+          @if (invalid('name')) {
+            <p class="ui-field__error" id="store-name-error">{{ form.controls.name.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+          }
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="store-address">{{ 'stores.fields.address' | translate }}</label>
+          <input class="ui-input" id="store-address" formControlName="address" autocomplete="street-address"
+            [attr.aria-invalid]="invalid('address') || null" [attr.aria-describedby]="invalid('address') ? 'store-address-error' : null" />
+          @if (invalid('address')) {
+            <p class="ui-field__error" id="store-address-error">{{ form.controls.address.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+          }
+        </div>
+      </div>
+      <div class="ui-actions">
+        <button class="ui-button" type="submit" [disabled]="createState.submitting()">
+          {{ (createState.submitting() ? 'shared.actions.saving' : 'stores.directory.create') | translate }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

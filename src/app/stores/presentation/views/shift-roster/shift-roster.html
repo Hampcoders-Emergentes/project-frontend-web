@@ -1,0 +1,159 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <h1 class="ui-page-header__title">{{ 'stores.shifts.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">{{ 'stores.shifts.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  @if (roster.lastHandover(); as handover) {
+    <div class="ui-notice" role="status">
+      <app-icon class="ui-notice__icon" name="bell-ringing" />
+      <p class="ui-notice__body">{{ 'stores.shifts.handoverReceived' | translate: { time: (handover.receivedAt | localizedDate: 'time') } }}</p>
+    </div>
+  }
+
+  <section class="ui-card ui-stack" aria-labelledby="on-duty-title">
+    <div class="ui-section-header" style="margin: 0">
+      <h2 id="on-duty-title">{{ 'stores.shifts.onDuty' | translate }}</h2>
+      <app-freshness [lastUpdatedAt]="roster.onDuty.lastUpdatedAt()" [stale]="roster.onDuty.stale()" [refreshing]="roster.onDuty.loading()" />
+    </div>
+    @if (roster.onDuty.initialLoading()) {
+      <app-state-panel kind="loading" [heading]="'stores.shifts.loadingOnDuty' | translate" />
+    } @else if (roster.onDuty.error(); as failure) {
+      <app-error-notice [error]="failure" [retryable]="true" (retry)="roster.loadOnDuty(storeId())" />
+    } @else if (roster.onDuty.data(); as duty) {
+      @if (duty.onDuty.length === 0) {
+        <p class="text-meta" style="margin: 0">{{ 'stores.shifts.nobodyOnDuty' | translate }}</p>
+      } @else {
+        <dl class="ui-dl">
+          <dt>{{ 'stores.shifts.accountable' | translate }}</dt>
+          <dd>{{ duty.accountable ? duty.accountable.workerName + ' (' + duty.accountable.workerCode + ') · ' + duty.accountable.role : ('stores.shifts.noAccountable' | translate) }}</dd>
+          <dt>{{ 'stores.shifts.onDutyCount' | translate }}</dt>
+          <dd>
+            @for (shift of duty.onDuty; track shift.id; let last = $last) {
+              {{ shift.workerName }} ({{ shift.role }}){{ last ? '' : ', ' }}
+            }
+          </dd>
+        </dl>
+      }
+    }
+  </section>
+
+  <section class="ui-card ui-stack" aria-labelledby="schedule-title">
+    <h2 id="schedule-title">{{ 'stores.shifts.scheduleTitle' | translate }}</h2>
+    <p class="ui-field__hint">{{ 'stores.shifts.rosterNote' | translate }}</p>
+    @if (roster.scheduleState.error(); as failure) {
+      @if (failure.status !== 400) {
+        <app-error-notice [error]="failure" />
+      }
+    }
+    <form class="ui-form" [formGroup]="shiftForm" (ngSubmit)="schedule()" novalidate>
+      <div class="ui-form-grid">
+        @for (field of ['workerCode', 'workerName', 'role']; track field) {
+          <div class="ui-field">
+            <label class="ui-field__label" [for]="'shift-' + field">{{ 'stores.shifts.fields.' + field | translate }}</label>
+            <input class="ui-input" [id]="'shift-' + field" [formControlName]="field"
+              [attr.aria-invalid]="(shiftForm.get(field)?.invalid && shiftForm.get(field)?.touched) || null" />
+            @if (shiftForm.get(field)?.invalid && shiftForm.get(field)?.touched) {
+              <p class="ui-field__error">{{ shiftForm.get(field)?.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+            }
+          </div>
+        }
+        <div class="ui-field">
+          <label class="ui-field__label" for="shift-starts">{{ 'stores.shifts.fields.startsAt' | translate }}</label>
+          <input class="ui-input" id="shift-starts" type="datetime-local" formControlName="startsAt" />
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="shift-ends">{{ 'stores.shifts.fields.endsAt' | translate }}</label>
+          <input class="ui-input" id="shift-ends" type="datetime-local" formControlName="endsAt"
+            [attr.aria-invalid]="windowInvalid() || null" [attr.aria-describedby]="windowInvalid() ? 'shift-window-error' : null" />
+          @if (windowInvalid()) {
+            <p class="ui-field__error" id="shift-window-error">{{ 'stores.shifts.windowInvalid' | translate }}</p>
+          }
+        </div>
+      </div>
+      <div class="ui-actions">
+        <button class="ui-button" type="submit" [disabled]="roster.scheduleState.submitting()">
+          {{ (roster.scheduleState.submitting() ? 'shared.actions.saving' : 'stores.shifts.schedule') | translate }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="ui-stack" aria-labelledby="roster-title">
+    <div class="ui-section-header" style="margin: 0">
+      <h2 id="roster-title">{{ 'stores.shifts.rosterTitle' | translate }}</h2>
+    </div>
+    <form class="ui-actions" [formGroup]="windowForm" (ngSubmit)="applyWindow()">
+      <div class="ui-field">
+        <label class="ui-field__label" for="roster-from">{{ 'shared.labels.from' | translate }}</label>
+        <input class="ui-input" id="roster-from" type="date" formControlName="from" />
+      </div>
+      <div class="ui-field">
+        <label class="ui-field__label" for="roster-to">{{ 'shared.labels.to' | translate }}</label>
+        <input class="ui-input" id="roster-to" type="date" formControlName="to" />
+      </div>
+      <button class="ui-button ui-button--secondary" type="submit" style="align-self: end">{{ 'shared.actions.apply' | translate }}</button>
+    </form>
+    @if (rangeError(); as key) {
+      <p class="ui-field__error" role="alert">{{ key | translate }}</p>
+    }
+    @if (roster.removeState.error(); as failure) {
+      <app-error-notice [error]="failure" />
+    }
+
+    @if (roster.assignments.initialLoading()) {
+      <app-state-panel kind="loading" [heading]="'stores.shifts.loadingRoster' | translate" />
+    } @else if (roster.assignments.error(); as failure) {
+      <app-error-notice [error]="failure" [retryable]="true" (retry)="applyWindow()" />
+    } @else if (roster.assignments.data(); as result) {
+      @if (result.items.length === 0) {
+        <app-state-panel kind="empty" [heading]="'stores.shifts.emptyTitle' | translate" [message]="'stores.shifts.emptyMessage' | translate" />
+      } @else {
+        <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="'stores.shifts.rosterTitle' | translate">
+          <table class="ui-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'stores.shifts.fields.workerName' | translate }}</th>
+                <th scope="col">{{ 'stores.shifts.fields.workerCode' | translate }}</th>
+                <th scope="col">{{ 'stores.shifts.fields.role' | translate }}</th>
+                <th scope="col">{{ 'stores.shifts.fields.startsAt' | translate }}</th>
+                <th scope="col">{{ 'stores.shifts.fields.endsAt' | translate }}</th>
+                <th scope="col"><span class="sr-only">{{ 'shared.labels.actions' | translate }}</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (shift of result.items; track shift.id) {
+                <tr>
+                  <th scope="row">{{ shift.workerName }}</th>
+                  <td>{{ shift.workerCode }}</td>
+                  <td>{{ shift.role }}</td>
+                  <td>{{ shift.startsAt | localizedDate: 'dateTime' }}</td>
+                  <td>{{ shift.endsAt | localizedDate: 'dateTime' }}</td>
+                  <td>
+                    <button class="ui-button ui-button--ghost ui-button--small" type="button" [disabled]="roster.removeState.submitting()"
+                      (click)="pendingRemoval.set(shift)">
+                      {{ 'shared.actions.remove' | translate }}<span class="sr-only"> {{ shift.workerName }}</span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        @if (result.totalPages; as pages) {
+          <app-pagination [page]="result.page" [pageCount]="pages" (pageChange)="goToPage($event)" />
+        }
+      }
+    }
+  </section>
+</div>
+
+@if (pendingRemoval(); as shift) {
+  <app-dialog [heading]="'stores.shifts.removeTitle' | translate"
+    [description]="'stores.shifts.removeMessage' | translate: { name: shift.workerName }" (closed)="pendingRemoval.set(null)">
+    <button dialogActions class="ui-button ui-button--secondary" type="button" (click)="pendingRemoval.set(null)">{{ 'shared.actions.cancel' | translate }}</button>
+    <button dialogActions class="ui-button" type="button" (click)="confirmRemoval()">{{ 'shared.actions.remove' | translate }}</button>
+  </app-dialog>
+}

@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  padding: var(--space-6) var(--layout-gutter);
+}
+
+.page-not-found {
+  max-width: 36rem;
+  margin-inline: auto;
+}

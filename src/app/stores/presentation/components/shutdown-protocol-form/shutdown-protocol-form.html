@@ -1,0 +1,89 @@
+<section class="ui-card ui-stack" aria-labelledby="protocol-title">
+  <div>
+    <h2 id="protocol-title">{{ 'stores.protocol.title' | translate }}</h2>
+    @if (protocol(); as current) {
+      <p class="ui-field__hint">
+        @if (current.isDefault) {
+          {{ 'stores.protocol.isDefault' | translate }}
+        } @else if (current.updatedAt; as updated) {
+          {{ 'stores.protocol.updatedAt' | translate: { time: (updated | localizedDate: 'dateTime') } }}
+        }
+      </p>
+    }
+  </div>
+  @if (error(); as failure) {
+    <app-error-notice [error]="failure" />
+  }
+  @if (saved()) {
+    <p class="ui-notice ui-notice--success" role="status">{{ 'stores.protocol.saved' | translate }}</p>
+  }
+
+  <form class="ui-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @for (list of lists; track list) {
+      <fieldset class="ui-fieldset ui-stack" style="gap: var(--space-1)">
+        <legend>{{ 'stores.protocol.' + list | translate }}</legend>
+        <p class="ui-field__hint">{{ 'stores.protocol.stepsHint' | translate: { min: limits.minSteps, max: limits.maxSteps } }}</p>
+        <ol class="ui-stack" style="gap: var(--space-1); margin: 0; padding-inline-start: 1.5rem">
+          @for (step of steps(list).controls; track step; let i = $index; let first = $first; let last = $last) {
+            <li>
+              <div class="ui-actions" style="flex-wrap: nowrap">
+                <label class="sr-only" [for]="list + '-' + i">{{ 'stores.protocol.stepLabel' | translate: { n: i + 1 } }}</label>
+                <input class="ui-input" [id]="list + '-' + i" [formControl]="step"
+                  [attr.aria-invalid]="(step.invalid && step.touched) || null" />
+                <button class="ui-button ui-button--ghost ui-button--icon" type="button" [disabled]="first"
+                  [attr.aria-label]="'stores.protocol.moveUp' | translate: { n: i + 1 }" (click)="moveStep(list, i, -1)">
+                  <app-icon class="ui-button__icon" name="chevron-down" style="transform: rotate(180deg)" />
+                </button>
+                <button class="ui-button ui-button--ghost ui-button--icon" type="button" [disabled]="last"
+                  [attr.aria-label]="'stores.protocol.moveDown' | translate: { n: i + 1 }" (click)="moveStep(list, i, 1)">
+                  <app-icon class="ui-button__icon" name="chevron-down" />
+                </button>
+                <button class="ui-button ui-button--ghost ui-button--icon" type="button" [disabled]="steps(list).length <= limits.minSteps"
+                  [attr.aria-label]="'stores.protocol.removeStep' | translate: { n: i + 1 }" (click)="removeStep(list, i)">
+                  <app-icon class="ui-button__icon" name="x" />
+                </button>
+              </div>
+              @if (step.invalid && step.touched) {
+                <p class="ui-field__error">{{ 'shared.validation.required' | translate }}</p>
+              }
+            </li>
+          }
+        </ol>
+        <div>
+          <button class="ui-button ui-button--secondary ui-button--small" type="button"
+            [disabled]="steps(list).length >= limits.maxSteps" (click)="addStep(list)">
+            {{ 'stores.protocol.addStep' | translate }}
+          </button>
+        </div>
+      </fieldset>
+    }
+
+    <fieldset class="ui-fieldset">
+      <legend>{{ 'stores.protocol.safeToClean' | translate }}</legend>
+      <div class="ui-form-grid">
+        <div class="ui-field">
+          <label class="ui-field__label" for="stc-current">{{ 'stores.protocol.maxDeEnergizedCurrentAmps' | translate }} (A)</label>
+          <input class="ui-input tnum" id="stc-current" type="number" step="0.01" min="0" max="1" formControlName="maxDeEnergizedCurrentAmps"
+            [attr.aria-invalid]="(form.controls.maxDeEnergizedCurrentAmps.invalid && form.controls.maxDeEnergizedCurrentAmps.touched) || null" />
+          <p class="ui-field__hint">{{ 'shared.validation.between' | translate: { min: 0, max: 1 } }}</p>
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="stc-age">{{ 'stores.protocol.maxReadingAgeMinutes' | translate }} (min)</label>
+          <input class="ui-input tnum" id="stc-age" type="number" step="1" min="1" max="30" formControlName="maxReadingAgeMinutes"
+            [attr.aria-invalid]="(form.controls.maxReadingAgeMinutes.invalid && form.controls.maxReadingAgeMinutes.touched) || null" />
+          <p class="ui-field__hint">{{ 'shared.validation.between' | translate: { min: 1, max: 30 } }}</p>
+        </div>
+        <label class="ui-check ui-field--full">
+          <input type="checkbox" formControlName="requireNoActiveCriticalAlerts" />
+          {{ 'stores.protocol.requireNoActiveCriticalAlerts' | translate }}
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="ui-actions">
+      <button class="ui-button" type="submit" [disabled]="submitting()">
+        {{ (submitting() ? 'shared.actions.saving' : 'shared.actions.save') | translate }}
+      </button>
+    </div>
+  </form>
+</section>

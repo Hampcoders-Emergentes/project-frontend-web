@@ -1,0 +1,63 @@
+import { Component, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { StoreDirectoryStore } from '@stores/application/store-directory.store';
+import { Icon } from '@shared/presentation/components/icon/icon';
+
+/**
+ * Header store selector and live-update status. Switching navigates to the other store's dashboard
+ * (the route guard verifies ownership and moves the realtime membership); the store list is loaded
+ * lazily the first time the selector is rendered.
+ */
+@Component({
+  imports: [TranslatePipe, Icon],
+  selector: 'app-store-switcher',
+  styles: `
+    :host { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
+    .switcher { display: flex; align-items: center; gap: 0.5rem; }
+    .switcher select { min-width: 12rem; max-width: 18rem; }
+    @media (max-width: 640px) { .switcher select { min-width: 0; max-width: 11rem; } .live span { display: none; } }
+  `,
+  template: `
+    @if (directory.activeStore(); as active) {
+      <label class="switcher">
+        <app-icon name="building-store" />
+        <span class="sr-only">{{ 'stores.switcher.label' | translate }}</span>
+        <select class="ui-input" [value]="active.id" (change)="switchTo($event)">
+          @for (store of options(); track store.id) {
+            <option [value]="store.id">{{ store.name }}</option>
+          }
+        </select>
+      </label>
+    }
+    <span class="ui-tag live" [class.ui-tag--info]="live()" [attr.title]="(live() ? 'stores.switcher.live' : 'stores.switcher.polling') | translate">
+      <app-icon class="ui-tag__icon" [name]="live() ? 'broadcast' : 'refresh'" />
+      <span>{{ (live() ? 'stores.switcher.live' : 'stores.switcher.polling') | translate }}</span>
+    </span>
+  `,
+})
+export class StoreSwitcher {
+  protected readonly directory = inject(StoreDirectoryStore);
+  private readonly router = inject(Router);
+
+  protected readonly live = computed(() => this.directory.realtimeStatus() === 'connected');
+  /** The owned stores, always including the active one while the list is loading. */
+  protected readonly options = computed(() => {
+    const stores = this.directory.stores.data() ?? [];
+    const active = this.directory.activeStore();
+    return active !== null && !stores.some((store) => store.id === active.id) ? [active, ...stores] : stores;
+  });
+
+  constructor() {
+    if (this.directory.stores.data() === null && !this.directory.stores.loading()) {
+      this.directory.loadStores();
+    }
+  }
+
+  protected switchTo(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLSelectElement && target.value !== this.directory.activeStore()?.id) {
+      void this.router.navigate(['/stores', target.value, 'dashboard']);
+    }
+  }
+}

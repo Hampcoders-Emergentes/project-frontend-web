@@ -1,0 +1,105 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <h1 class="ui-page-header__title">{{ 'stores.hierarchy.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">
+        {{ directory.activeStore()?.name }} · {{ 'stores.hierarchy.subtitle' | translate }}
+      </p>
+    </div>
+  </header>
+
+  <section class="ui-card ui-stack" aria-labelledby="new-area-title">
+    <h2 id="new-area-title">{{ 'stores.hierarchy.newArea' | translate }}</h2>
+    @if (hierarchy.createAreaState.error(); as failure) {
+      <app-error-notice [error]="failure" />
+    }
+    <form class="ui-actions" [formGroup]="areaForm" (ngSubmit)="createArea()" novalidate>
+      <div class="ui-field" style="flex: 1 1 16rem">
+        <label class="ui-field__label" for="area-name">{{ 'stores.fields.areaName' | translate }}</label>
+        <input class="ui-input" id="area-name" formControlName="name"
+          [attr.aria-invalid]="(areaForm.invalid && areaForm.touched) || null"
+          [attr.aria-describedby]="areaForm.invalid && areaForm.touched ? 'area-name-error' : null" />
+        @if (areaForm.invalid && areaForm.touched) {
+          <p class="ui-field__error" id="area-name-error">{{ 'shared.validation.required' | translate }}</p>
+        }
+      </div>
+      <button class="ui-button" type="submit" [disabled]="hierarchy.createAreaState.submitting()">
+        {{ (hierarchy.createAreaState.submitting() ? 'shared.actions.saving' : 'stores.hierarchy.addArea') | translate }}
+      </button>
+    </form>
+  </section>
+
+  @if (tree.initialLoading()) {
+    <app-state-panel kind="loading" [heading]="'stores.hierarchy.loading' | translate" />
+  } @else if (tree.error(); as failure) {
+    <app-error-notice [error]="failure" [retryable]="true" (retry)="hierarchy.load(storeId())" />
+  } @else if (tree.data(); as nodes) {
+    @if (nodes.length === 0) {
+      <app-state-panel kind="empty" [heading]="'stores.hierarchy.emptyTitle' | translate" [message]="'stores.hierarchy.emptyMessage' | translate" />
+    }
+    @for (node of nodes; track node.area.id) {
+      <section class="ui-card ui-stack" [attr.aria-labelledby]="'area-' + node.area.id">
+        <div class="ui-section-header" style="margin: 0">
+          <h2 [id]="'area-' + node.area.id">{{ node.area.name }}</h2>
+          <button class="ui-button ui-button--secondary ui-button--small" type="button" (click)="openEquipmentForm(node.area.id)">
+            {{ 'stores.hierarchy.addEquipment' | translate }}
+          </button>
+        </div>
+
+        @if (addingToArea() === node.area.id) {
+          <form class="ui-actions" [formGroup]="equipmentForm" (ngSubmit)="createEquipment(node.area.id)" novalidate>
+            <div class="ui-field" style="flex: 1 1 16rem">
+              <label class="ui-field__label" [for]="'equipment-name-' + node.area.id">{{ 'stores.fields.equipmentName' | translate }}</label>
+              <input class="ui-input" [id]="'equipment-name-' + node.area.id" formControlName="name"
+                [attr.aria-invalid]="(equipmentForm.invalid && equipmentForm.touched) || null" />
+              @if (equipmentForm.invalid && equipmentForm.touched) {
+                <p class="ui-field__error">{{ 'shared.validation.required' | translate }}</p>
+              }
+            </div>
+            <button class="ui-button" type="submit" [disabled]="hierarchy.createEquipmentState.submitting()">
+              {{ (hierarchy.createEquipmentState.submitting() ? 'shared.actions.saving' : 'shared.actions.add') | translate }}
+            </button>
+            <button class="ui-button ui-button--ghost" type="button" (click)="addingToArea.set(null)">{{ 'shared.actions.cancel' | translate }}</button>
+          </form>
+          @if (hierarchy.createEquipmentState.error(); as failure) {
+            <app-error-notice [error]="failure" />
+          }
+        }
+
+        @if (node.equipment.length === 0) {
+          <p class="text-meta" style="margin: 0">{{ 'stores.hierarchy.noEquipment' | translate }}</p>
+        } @else {
+          <div class="ui-table-wrap" role="region" tabindex="0" [attr.aria-label]="node.area.name">
+            <table class="ui-table">
+              <thead>
+                <tr>
+                  <th scope="col">{{ 'stores.fields.equipmentName' | translate }}</th>
+                  <th scope="col">{{ 'shared.labels.actions' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of node.equipment; track item.id) {
+                  <tr>
+                    <th scope="row">{{ item.name }}</th>
+                    <td>
+                      <div class="ui-actions">
+                        <a class="ui-button ui-button--secondary ui-button--small" [routerLink]="['/stores', storeId(), 'setup', 'areas', node.area.id, 'equipment', item.id]">
+                          <app-icon class="ui-button__icon" name="tool" />
+                          {{ 'stores.hierarchy.configure' | translate }}
+                        </a>
+                        <a class="ui-button ui-button--ghost ui-button--small" [routerLink]="['/stores', storeId(), 'monitoring', 'areas', node.area.id, 'equipment', item.id]">
+                          <app-icon class="ui-button__icon" name="wave-saw-tool" />
+                          {{ 'stores.hierarchy.monitor' | translate }}
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  }
+</div>

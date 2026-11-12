@@ -1,0 +1,78 @@
+<section class="ui-card ui-stack" aria-labelledby="binding-title">
+  <h2 id="binding-title">{{ 'stores.binding.title' | translate }}</h2>
+
+  @if (binding(); as linked) {
+    <span class="ui-tag ui-tag--info" style="justify-self: start">
+      <app-icon class="ui-tag__icon" name="wifi" />
+      {{ 'stores.binding.linked' | translate }}
+    </span>
+    <dl class="ui-dl">
+      <dt>{{ 'stores.binding.serialNumber' | translate }}</dt>
+      <dd>{{ linked.serialNumber }}</dd>
+      <dt>{{ 'stores.binding.deviceId' | translate }}</dt>
+      <dd>{{ linked.deviceId }}</dd>
+      <dt>{{ 'stores.binding.edgeDeviceId' | translate }}</dt>
+      <dd>{{ linked.edgeDeviceId }}</dd>
+      <dt>{{ 'stores.binding.linkedAt' | translate }}</dt>
+      <dd>{{ linked.linkedAt | localizedDate: 'dateTime' }}</dd>
+    </dl>
+    <p class="ui-field__hint">{{ 'stores.binding.permanentNote' | translate }}</p>
+  } @else {
+    <div class="ui-notice ui-notice--warning">
+      <app-icon class="ui-notice__icon" name="alert-triangle" />
+      <p class="ui-notice__body">{{ 'stores.binding.unlinked' | translate }}</p>
+    </div>
+    @if (error(); as failure) {
+      @if (failure.status !== 400) {
+        <app-error-notice [error]="failure" [message]="messageKey(failure) ? (messageKey(failure)! | translate) : null" />
+      }
+    }
+    <form class="ui-form" [formGroup]="form" (ngSubmit)="requestConfirmation()" novalidate>
+      <div class="ui-form-grid">
+        <div class="ui-field">
+          <label class="ui-field__label" for="binding-device">{{ 'stores.binding.deviceId' | translate }}</label>
+          <input class="ui-input" id="binding-device" formControlName="deviceId" aria-describedby="binding-device-hint"
+            [attr.aria-invalid]="(form.controls.deviceId.invalid && form.controls.deviceId.touched) || null" />
+          <p class="ui-field__hint" id="binding-device-hint">{{ 'stores.binding.deviceHint' | translate }}</p>
+          @if (form.controls.deviceId.invalid && form.controls.deviceId.touched) {
+            <p class="ui-field__error">{{ form.controls.deviceId.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+          }
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="binding-edge">{{ 'stores.binding.edgeDeviceId' | translate }}</label>
+          <input class="ui-input" id="binding-edge" formControlName="edgeDeviceId"
+            [attr.aria-invalid]="(form.controls.edgeDeviceId.invalid && form.controls.edgeDeviceId.touched) || null" />
+          @if (form.controls.edgeDeviceId.invalid && form.controls.edgeDeviceId.touched) {
+            <p class="ui-field__error">{{ form.controls.edgeDeviceId.getError('server') ?? ('shared.validation.required' | translate) }}</p>
+          }
+        </div>
+      </div>
+      <div class="ui-actions">
+        <button class="ui-button" type="submit" [disabled]="submitting()">
+          {{ (submitting() ? 'stores.binding.linking' : 'stores.binding.link') | translate }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
+
+@if (confirming()) {
+  <app-dialog
+    [heading]="'stores.binding.confirmTitle' | translate"
+    [description]="'stores.binding.confirmMessage' | translate"
+    (closed)="confirming.set(false)"
+  >
+    <dl class="ui-dl">
+      <dt>{{ 'stores.binding.deviceId' | translate }}</dt>
+      <dd>{{ form.controls.deviceId.value }}</dd>
+      <dt>{{ 'stores.binding.edgeDeviceId' | translate }}</dt>
+      <dd>{{ form.controls.edgeDeviceId.value }}</dd>
+    </dl>
+    <button dialogActions class="ui-button ui-button--secondary" type="button" (click)="confirming.set(false)">
+      {{ 'shared.actions.cancel' | translate }}
+    </button>
+    <button dialogActions class="ui-button" type="button" (click)="confirm()">
+      {{ 'stores.binding.confirm' | translate }}
+    </button>
+  </app-dialog>
+}

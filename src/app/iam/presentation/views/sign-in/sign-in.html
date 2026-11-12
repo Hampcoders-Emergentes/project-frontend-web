@@ -1,0 +1,68 @@
+<app-public-layout>
+  <section class="ui-card iam-card" aria-labelledby="sign-in-title">
+    <header class="iam-card__header">
+      <h1 id="sign-in-title">{{ 'iam.signIn.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">{{ 'iam.signIn.subtitle' | translate }}</p>
+    </header>
+
+    @if (reason; as current) {
+      <div class="ui-notice" [class.ui-notice--warning]="current === 'expired' || current === 'inactive' || current === 'unreachable'" role="status">
+        <app-icon class="ui-notice__icon" name="info-circle" />
+        <p class="ui-notice__body">{{ 'iam.signIn.reasons.' + current | translate }}</p>
+      </div>
+    }
+
+    @if (error(); as failure) {
+      <app-error-notice [error]="failure" [message]="specificErrorKey() ? (specificErrorKey()! | translate) : null" />
+    }
+
+    <form class="ui-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="ui-field">
+        <label class="ui-field__label" for="sign-in-email">{{ 'iam.fields.email' | translate }}</label>
+        <input
+          class="ui-input"
+          id="sign-in-email"
+          type="email"
+          formControlName="email"
+          autocomplete="username"
+          [attr.aria-invalid]="invalid('email') || null"
+          [attr.aria-describedby]="invalid('email') ? 'sign-in-email-error' : null"
+        />
+        @if (invalid('email')) {
+          <p class="ui-field__error" id="sign-in-email-error">
+            {{ (form.controls.email.hasError('required') ? 'iam.validation.required' : 'iam.validation.email') | translate }}
+          </p>
+        }
+      </div>
+
+      <div class="ui-field">
+        <label class="ui-field__label" for="sign-in-password">{{ 'iam.fields.password' | translate }}</label>
+        <input
+          class="ui-input"
+          id="sign-in-password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="invalid('password') || null"
+          [attr.aria-describedby]="invalid('password') ? 'sign-in-password-error' : null"
+        />
+        @if (invalid('password')) {
+          <p class="ui-field__error" id="sign-in-password-error">{{ 'iam.validation.required' | translate }}</p>
+        }
+      </div>
+
+      <button class="ui-button iam-card__submit" type="submit" [disabled]="store.signInState.submitting()">
+        @if (store.signInState.submitting()) {
+          {{ 'iam.signIn.submitting' | translate }}
+        } @else {
+          <app-icon class="ui-button__icon" name="login-2" />
+          {{ 'iam.signIn.submit' | translate }}
+        }
+      </button>
+    </form>
+
+    <p class="iam-card__footer">
+      <a routerLink="/forgot-password">{{ 'iam.signIn.forgotPassword' | translate }}</a>
+    </p>
+  </section>
+</app-public-layout>

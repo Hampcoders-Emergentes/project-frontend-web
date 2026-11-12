@@ -1,0 +1,115 @@
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div>
+      <h1 class="ui-page-header__title">{{ 'alerts.title' | translate }}</h1>
+      <p class="ui-page-header__subtitle">{{ 'alerts.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  @if (alerts.equipment.error()) {
+    <p class="ui-notice ui-notice--warning">{{ 'alerts.equipmentNamesUnavailable' | translate }}</p>
+  }
+
+  <section class="ui-stack" aria-labelledby="active-title">
+    <div class="ui-section-header" style="margin: 0">
+      <h2 id="active-title">{{ 'alerts.active' | translate }}</h2>
+      <app-freshness [lastUpdatedAt]="alerts.active.lastUpdatedAt()" [stale]="alerts.active.stale()" [refreshing]="alerts.active.loading()"
+        [note]="'shared.freshness.every' | translate: { seconds: pollSeconds }" />
+    </div>
+    @if (alerts.active.initialLoading()) {
+      <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+    } @else if (alerts.active.error() && !alerts.active.data()) {
+      <app-error-notice [error]="alerts.active.error()!" />
+    } @else if (alerts.active.data(); as active) {
+      <div class="ui-grid">
+        <div class="ui-kpi"><p class="ui-kpi__label">{{ 'alerts.openCritical' | translate }}</p><p class="ui-kpi__value" aria-live="polite">{{ active.openCritical }}</p></div>
+        <div class="ui-kpi"><p class="ui-kpi__label">{{ 'alerts.openNonCritical' | translate }}</p><p class="ui-kpi__value">{{ active.openNonCritical }}</p></div>
+      </div>
+      @if (active.hasCriticalLeakage) {
+        <p class="ui-notice ui-notice--error" role="alert">{{ 'alerts.criticalLeakageActive' | translate }}</p>
+      }
+      @if (active.items.length === 0) {
+        <app-state-panel kind="empty" [heading]="'alerts.noActive' | translate" [message]="'alerts.noActiveMessage' | translate" />
+      } @else {
+        <app-alert-table [alerts]="active.items" [equipment]="alerts.equipmentById()" [caption]="'alerts.active' | translate" (selected)="open($event)" />
+      }
+    }
+  </section>
+
+  <section class="ui-stack" aria-labelledby="history-title">
+    <h2 id="history-title">{{ 'alerts.history' | translate }}</h2>
+    <form class="ui-card ui-form" style="padding: var(--space-2)" [formGroup]="filterForm" (ngSubmit)="applyFilter()">
+      <div class="ui-form-grid">
+        <div class="ui-field">
+          <label class="ui-field__label" for="f-status">{{ 'alerts.fields.status' | translate }}</label>
+          <select class="ui-input" id="f-status" formControlName="status">
+            <option value="">{{ 'shared.labels.all' | translate }}</option>
+            @for (status of statuses; track status) { <option [value]="status">{{ 'alerts.status.' + status | translate }}</option> }
+          </select>
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="f-severity">{{ 'alerts.fields.severity' | translate }}</label>
+          <select class="ui-input" id="f-severity" formControlName="severity">
+            <option value="">{{ 'shared.labels.all' | translate }}</option>
+            @for (severity of severities; track severity) { <option [value]="severity">{{ 'alerts.severity.' + severity | translate }}</option> }
+          </select>
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="f-equipment">{{ 'alerts.fields.equipment' | translate }}</label>
+          <select class="ui-input" id="f-equipment" formControlName="equipmentId">
+            <option value="">{{ 'shared.labels.all' | translate }}</option>
+            @for (item of alerts.equipment.data() ?? []; track item.equipmentId) {
+              <option [value]="item.equipmentId">{{ item.equipmentName }} · {{ item.areaName }}</option>
+            }
+          </select>
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="f-from">{{ 'shared.labels.from' | translate }}</label>
+          <input class="ui-input" id="f-from" type="datetime-local" formControlName="from" />
+        </div>
+        <div class="ui-field">
+          <label class="ui-field__label" for="f-to">{{ 'shared.labels.to' | translate }}</label>
+          <input class="ui-input" id="f-to" type="datetime-local" formControlName="to" />
+        </div>
+      </div>
+      <p class="ui-field__hint">{{ 'shared.dateRange.hint' | translate }}</p>
+      @if (rangeProblem(); as key) {
+        <p class="ui-field__error" role="alert">{{ key | translate }}</p>
+      }
+      <div class="ui-actions">
+        <button class="ui-button" type="submit">{{ 'shared.actions.apply' | translate }}</button>
+        <button class="ui-button ui-button--ghost" type="button" (click)="clearFilter()">{{ 'shared.actions.clear' | translate }}</button>
+      </div>
+    </form>
+
+    @if (alerts.history.initialLoading()) {
+      <app-state-panel kind="loading" [heading]="'shared.states.loading' | translate" />
+    } @else if (alerts.history.error(); as failure) {
+      <app-error-notice [error]="failure" [retryable]="true" (retry)="loadHistory()" />
+    } @else if (alerts.history.data(); as result) {
+      @if (result.items.length === 0) {
+        <app-state-panel kind="empty" [heading]="'alerts.noHistory' | translate" [message]="'alerts.noHistoryMessage' | translate" />
+      } @else {
+        <app-alert-table [alerts]="result.items" [equipment]="alerts.equipmentById()" [caption]="'alerts.history' | translate" (selected)="open($event)" />
+        <div class="ui-actions" style="justify-content: flex-end">
+          <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="page() === 1" (click)="changePage(-1)">{{ 'shared.pagination.previous' | translate }}</button>
+          <span class="text-meta">{{ 'shared.pagination.page' | translate: { page: page() } }}</span>
+          <button class="ui-button ui-button--secondary ui-button--small" type="button" [disabled]="!result.hasMore" (click)="changePage(1)">{{ 'shared.pagination.next' | translate }}</button>
+        </div>
+      }
+    }
+  </section>
+</div>
+
+@if (alerts.selected.data(); as alert) {
+  <app-alert-detail-dialog
+    [alert]="alert"
+    [equipment]="selectedEquipment()"
+    [submitting]="alerts.workflowState.submitting()"
+    [error]="alerts.workflowState.error()"
+    (closed)="alerts.close()"
+    (acknowledge)="acknowledge(alert)"
+    (assign)="assign(alert, $event)"
+    (resolve)="resolve(alert, $event)"
+  />
+}

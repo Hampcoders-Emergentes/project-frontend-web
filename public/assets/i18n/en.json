@@ -1,0 +1,847 @@
+{
+  "alerts": {
+    "actions": {
+      "acknowledge": "Acknowledge",
+      "assign": "Assign technician",
+      "resolve": "Resolve"
+    },
+    "active": "Active alerts",
+    "anomaly": {
+      "ABNORMAL_FREQUENCY": "Abnormal frequency",
+      "CONNECTION_LOST": "Connection lost",
+      "CURRENT_LEAKAGE": "Current leakage",
+      "LOW_POWER_FACTOR": "Low power factor",
+      "MANUAL_REPORT": "Manual report",
+      "MOISTURE_HAZARD": "Moisture hazard",
+      "OVERCONSUMPTION": "Overconsumption",
+      "OVERCURRENT": "Overcurrent",
+      "OVERVOLTAGE": "Overvoltage",
+      "SHORT_CIRCUIT_RISK": "Short-circuit risk",
+      "UNUSUAL_CONSUMPTION": "Unusual consumption",
+      "VOLTAGE_SAG": "Voltage sag"
+    },
+    "category": {
+      "ABNORMAL_NOISE": "Abnormal noise",
+      "BURNING_SMELL": "Burning smell",
+      "FLICKERING_LIGHTS": "Flickering lights",
+      "OTHER": "Other",
+      "OVERHEATING": "Overheating",
+      "SMOKE": "Smoke",
+      "SPARKS": "Sparks"
+    },
+    "closedWorkflow": "This alert is resolved.",
+    "criticalLeakage": "Critical leakage",
+    "criticalLeakageActive": "There is an active critical current leakage. Follow the emergency isolation protocol.",
+    "criticalLeakageNote": "Critical current leakage: follow the emergency isolation protocol.",
+    "equipmentNamesUnavailable": "Equipment names could not be loaded; acknowledging is unavailable until they are.",
+    "equipmentUnresolved": "The equipment of this alert could not be resolved.",
+    "errors": {
+      "conflict": "This alert already moved on; it was reloaded."
+    },
+    "fields": {
+      "acknowledgedAt": "Acknowledged",
+      "anomaly": "Anomaly",
+      "capturedAt": "Reading captured",
+      "createdAt": "Raised",
+      "description": "Description",
+      "detectionSeverity": "Detection severity",
+      "equipment": "Equipment",
+      "notes": "Resolution notes",
+      "onDuty": "On-duty worker",
+      "reportedBy": "Reported by",
+      "resolvedAt": "Resolved",
+      "severity": "Severity",
+      "source": "Source",
+      "status": "Status",
+      "technician": "Technician",
+      "technicianId": "Technician ID",
+      "technicianName": "Technician name"
+    },
+    "history": "Alert history",
+    "noActive": "No active alerts",
+    "noActiveMessage": "Every alert is resolved.",
+    "noHistory": "No alerts match the filters",
+    "noHistoryMessage": "Change the filters or expand the date range.",
+    "noOnDuty": "No one on duty",
+    "open": "Open",
+    "openCritical": "Open critical",
+    "openNonCritical": "Open non-critical",
+    "severity": {
+      "CRITICAL": "Critical",
+      "NON_CRITICAL": "Non-critical"
+    },
+    "source": {
+      "MANUAL_REPORT": "Manual report",
+      "TELEMETRY": "Telemetry"
+    },
+    "status": {
+      "ACKNOWLEDGED": "Acknowledged",
+      "ASSIGNED": "Assigned",
+      "OPEN": "Open",
+      "RESOLVED": "Resolved"
+    },
+    "subtitle": "Each alert corresponds to one reading; acknowledge, assign and resolve them.",
+    "title": "Alerts",
+    "unknownEquipment": "Unknown equipment"
+  },
+  "analytics": {
+    "averageKw": "Average power",
+    "comparison": {
+      "change": "Change",
+      "partial": "One period has no consumption data: the comparison is partial.",
+      "perDay": "{{value}} kWh/day",
+      "period1": "Period 1",
+      "period2": "Period 2",
+      "title": "Compare periods",
+      "zeroBaseline": "Period 1 has no consumption, so a percentage cannot be calculated."
+    },
+    "consumption": {
+      "byEquipment": "Consumption by equipment",
+      "chart": "Energy consumption per period",
+      "equipmentTitle": "Equipment consumption and cost",
+      "exportCsv": "Export CSV",
+      "exporting": "Exporting…",
+      "granularity": "Granularity",
+      "title": "Store consumption",
+      "total": "Total consumption"
+    },
+    "cost": "Cost",
+    "costs": {
+      "alertAt": "Alert threshold",
+      "budget": "Monthly budget",
+      "consumedOf": "{{consumed}} of {{target}} kWh consumed",
+      "consumedPct": "Consumed",
+      "elapsed": "day {{elapsed}} of {{total}}",
+      "generated": "Generated {{time}} · {{zone}}",
+      "method": "method: {{method}}",
+      "month": "Month",
+      "monthToDate": "Month to date",
+      "noBudget": "No budget is set for this month.",
+      "onTrack": "Within budget",
+      "projected": "Projected cost",
+      "projectedPct": "Projected",
+      "projection": "End-of-month projection",
+      "remaining": "Remaining",
+      "saved": "Budget saved.",
+      "setBudget": "Set monthly budget",
+      "target": "Target",
+      "targetInvalid": "Enter a target greater than 0.",
+      "warning": "Budget alert threshold reached",
+      "year": "Year"
+    },
+    "days": "days",
+    "daysOfWeek": {
+      "Friday": "Friday",
+      "Monday": "Monday",
+      "Saturday": "Saturday",
+      "Sunday": "Sunday",
+      "Thursday": "Thursday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday"
+    },
+    "equipment": "Equipment",
+    "granularity": {
+      "daily": "Daily",
+      "hourly": "Hourly"
+    },
+    "insufficient": "Insufficient data",
+    "insufficientTelemetry": "Insufficient telemetry for this result; it is not a sign of healthy consumption.",
+    "maintenance": {
+      "analysed": "{{count}} equipment analysed · {{time}}",
+      "days": "{{days}} days",
+      "daysToLimit": "About {{days}} days to the power-factor limit",
+      "horizon": "Analysis period",
+      "insufficient": "{{count}} equipment have insufficient data and were not evaluated.",
+      "none": "No wear warnings",
+      "noneMessage": "No warning was found for the equipment with enough data. This does not cover equipment with insufficient data.",
+      "severity": "Severity: {{severity}}",
+      "title": "Maintenance predictions",
+      "window": "Recommended window"
+    },
+    "noData": "No consumption data in this range",
+    "noDataMessage": "Expand the date range or check that sensors are reporting.",
+    "notAvailable": "Not available",
+    "offHours": {
+      "configure": "Configure opening hours",
+      "episodes": "Off-hours episodes",
+      "none": "No off-hours consumption detected",
+      "noneMessage": "No episode exceeded the standby threshold in this range.",
+      "notConfigured": "Opening hours are not configured, so off-hours detection may be incomplete.",
+      "threshold": "Standby threshold",
+      "title": "Off-hours consumption",
+      "total": "Off-hours consumption"
+    },
+    "openingHours": {
+      "closes": "Closes",
+      "day": "Day",
+      "invalid": "Enter valid times (HH:mm) for every open day.",
+      "notConfigured": "Opening hours are not configured yet.",
+      "open": "Open",
+      "openOn": "Open on {{day}}",
+      "opens": "Opens",
+      "saved": "Opening hours saved.",
+      "title": "Opening hours"
+    },
+    "peakKw": "Peak kW",
+    "peakOffPeak": "Peak / off-peak cost",
+    "period": "Period",
+    "reports": {
+      "expires": "Available until",
+      "file": "File",
+      "format": "Format",
+      "generate": "Generate report",
+      "generated": "Generated reports",
+      "generating": "Generating…",
+      "none": "No report generated in this session yet.",
+      "title": "Energy reports",
+      "wait": "Generating the report may take several seconds."
+    },
+    "samples": "Samples",
+    "sections": "Energy sections",
+    "selectEquipment": "Select equipment",
+    "subtitle": "Consumption, costs, budget and maintenance predictions.",
+    "tabs": {
+      "comparison": "Comparison",
+      "consumption": "Consumption",
+      "costs": "Costs & budget",
+      "maintenance": "Maintenance",
+      "off-hours": "Off-hours",
+      "opening-hours": "Opening hours",
+      "reports": "Reports"
+    },
+    "timeZone": "Time zone",
+    "title": "Energy"
+  },
+  "audit": {
+    "empty": "No audit entries",
+    "emptyMessage": "Change the filters or expand the date range.",
+    "fields": {
+      "action": "Action",
+      "operatorId": "Operator ID",
+      "request": "Request",
+      "resource": "Resource",
+      "status": "Status",
+      "timestamp": "Time"
+    },
+    "limitations": "Read operations may not be recorded, and entries can be dropped under very high load.",
+    "subtitle": "Operations performed on this store.",
+    "title": "Audit log"
+  },
+  "compliance": {
+    "certificates": {
+      "daysLeft": "Days left",
+      "document": "Document",
+      "equipment": "Equipment",
+      "expirations": "Expiring within {{days}} days",
+      "expirationsShort": "Upcoming expirations",
+      "expiresAt": "Expires",
+      "fields": {
+        "certificationNumber": "Certification number",
+        "documentFileUrl": "Document URL",
+        "technicianName": "Technician name",
+        "workDescription": "Work description"
+      },
+      "issuedAt": "Issued",
+      "keyReused": "This registration changed while retrying. Submit it again.",
+      "noExpirations": "No certificate expires in this window.",
+      "none": "This equipment has no certificates.",
+      "number": "Certification number",
+      "openDocument": "Open document",
+      "problems": {
+        "expiryBeforeIssue": "The expiry must be after the issue date.",
+        "expiryTooFar": "The expiry must be within 10 years of the issue date.",
+        "issuedInFuture": "The issue date cannot be more than one day in the future."
+      },
+      "register": "Register certificate",
+      "saved": "Certificate registered.",
+      "selectEquipment": "Select equipment",
+      "technician": "Technician",
+      "title": "Maintenance certificates",
+      "uncertified": "{{count}} equipment have no certificate:",
+      "urgencies": {
+        "EXPIRED": "Expired",
+        "EXPIRES_WITHIN_15_DAYS": "Expires within 15 days",
+        "EXPIRES_WITHIN_30_DAYS": "Expires within 30 days",
+        "VALID": "Valid"
+      },
+      "urgency": "Validity",
+      "urlHint": "Link to the certificate document (there is no file upload).",
+      "urlInvalid": "Enter a full http(s) address."
+    },
+    "checklist": {
+      "confirmMessage": "A submitted checklist is locked and cannot be edited.",
+      "confirmTitle": "Submit the checklist?",
+      "continue": "Continue draft",
+      "editingDraft": "You are editing a saved draft.",
+      "errors": {
+        "conflict": "The checklist is locked or the same submission is still being processed. The history was reloaded.",
+        "keyReused": "This submission changed while retrying. Submit it again."
+      },
+      "history": "Checklist history",
+      "inspectorId": "Inspector ID",
+      "inspectorName": "Inspector name",
+      "locked": "Locked",
+      "noHistory": "No checklists yet",
+      "notes": "Notes",
+      "observations": "Observations",
+      "problems": {
+        "failNeedsNotes": "A failed item needs notes.",
+        "missingResult": "Choose a result.",
+        "notesTooLong": "Notes can have at most {{max}} characters."
+      },
+      "results": {
+        "FAIL": "Fail",
+        "NOT_APPLICABLE": "Not applicable",
+        "PASS": "Pass"
+      },
+      "saveDraft": "Save draft",
+      "saved": "Checklist saved.",
+      "score": "Score",
+      "status": "Status",
+      "statuses": {
+        "DRAFT": "Draft",
+        "SUBMITTED": "Submitted"
+      },
+      "submit": "Submit and lock",
+      "title": "Weekly safety checklist",
+      "updated": "Last change",
+      "week": "Week",
+      "weekHint": "The checklist is filed under the Monday of that week.",
+      "weekOf": "Week of"
+    },
+    "noticeReceived": "A compliance notice arrived at {{time}}; expirations were reloaded.",
+    "reports": {
+      "generate": "Generate OHS report",
+      "generatedAt": "Generated",
+      "generating": "Generating…",
+      "hint": "Generates a PDF with the compliance score; the registered signature is embedded when available.",
+      "list": "Generated OHS reports",
+      "no": "No",
+      "none": "No OHS reports yet",
+      "period": "Period",
+      "signed": "Signed",
+      "title": "OHS reports",
+      "wait": "Generating the report may take several seconds.",
+      "yes": "Yes"
+    },
+    "score": {
+      "bestScore": "Best submitted score",
+      "component": "Component",
+      "components": "Score components",
+      "evaluated": "Evaluated {{time}}",
+      "explanation": "Explanation",
+      "grade": "Grade",
+      "names": {
+        "CRITICAL_ALARMS_RESOLVED": "Critical alarms resolved",
+        "MAINTENANCE_CERTIFICATES": "Maintenance certificates",
+        "WEEKLY_CHECKLISTS": "Weekly checklists"
+      },
+      "notSubmitted": "Not submitted",
+      "score": "Score",
+      "title": "Compliance score",
+      "weeks": "Weekly checklists",
+      "weight": "Weight"
+    },
+    "sections": "Compliance sections",
+    "signature": {
+      "canvasLabel": "Signature drawing area",
+      "clear": "Clear",
+      "current": "Registered signature",
+      "drawn": "Signature drawn",
+      "empty": "No signature drawn",
+      "instructions": "Draw your signature in the box with a mouse, pen or finger. Use Clear to start again.",
+      "none": "No signature registered yet; OHS reports will be unsigned.",
+      "previewAlt": "Signature of {{name}}",
+      "register": "Register signature",
+      "required": "Draw your signature first.",
+      "saved": "Signature registered.",
+      "showPreview": "Show signature",
+      "signedAt": "Signed",
+      "signerName": "Signer name",
+      "signerTitle": "Signer title",
+      "tooLarge": "The signature image is too large. Clear it and draw it again."
+    },
+    "subtitle": "Weekly checklist, certificates, score, signature and OHS reports.",
+    "tabs": {
+      "certificates": "Certificates",
+      "checklist": "Weekly checklist",
+      "reports": "OHS reports",
+      "score": "Score",
+      "signature": "Signature"
+    },
+    "title": "OHS compliance"
+  },
+  "iam": {
+    "backToSignIn": "Back to sign in",
+    "changePassword": {
+      "done": "Your password was changed.",
+      "rejected": "The current password is incorrect or the new one is not accepted.",
+      "submit": "Change password",
+      "title": "Change password"
+    },
+    "fields": {
+      "confirmPassword": "Confirm the new password",
+      "currentPassword": "Current password",
+      "email": "Email",
+      "newPassword": "New password",
+      "password": "Password"
+    },
+    "forgotPassword": {
+      "sent": "If the email belongs to an account, a reset link valid for 15 minutes is sent to it. Delivery depends on the email service of the platform.",
+      "submit": "Request link",
+      "submitting": "Sending…",
+      "subtitle": "Enter your account email to request a reset link.",
+      "title": "Recover your password"
+    },
+    "resetPassword": {
+      "done": "Your password was changed. Every session was closed.",
+      "missingToken": "This link is incomplete. Request a new reset link.",
+      "rejected": "The link is invalid, expired or already used, or the password is not accepted.",
+      "requestNew": "Request a new link",
+      "submit": "Change password",
+      "submitting": "Changing…",
+      "subtitle": "Signing in again is required on every device afterwards.",
+      "title": "Set a new password"
+    },
+    "signIn": {
+      "errors": {
+        "inactive": "This account is not active. Contact support to restore access.",
+        "invalidCredentials": "Invalid email or password."
+      },
+      "forgotPassword": "Forgot your password?",
+      "reasons": {
+        "expired": "Your session expired. Sign in again.",
+        "inactive": "Access denied: this account is not active.",
+        "passwordReset": "Your password was changed. Sign in with the new password.",
+        "signedOut": "You signed out.",
+        "unreachable": "ElectroLink could not be reached to restore your session. Sign in again or retry later."
+      },
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "subtitle": "Monitor the electrical safety of your stores.",
+      "title": "Sign in"
+    },
+    "validation": {
+      "email": "Enter a valid email address.",
+      "passwordHint": "At least {{min}} characters.",
+      "passwordLength": "Use between 8 and 128 characters.",
+      "passwordMismatch": "The passwords do not match.",
+      "passwordRejected": "This password is not accepted.",
+      "required": "This field is required."
+    }
+  },
+  "monitoring": {
+    "connectivity": {
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "empty": "No sensors linked",
+      "emptyMessage": "Link sensors to equipment to monitor them.",
+      "equipment": "Equipment",
+      "lastEdgeSync": "Last edge sync",
+      "lastTelemetry": "Last telemetry",
+      "never": "Never",
+      "serial": "Serial number",
+      "status": "Status",
+      "threshold": "Disconnection threshold",
+      "title": "Sensor connectivity"
+    },
+    "dashboard": {
+      "activeAlerts": "Active alerts",
+      "alertSplit": "{{critical}} critical · {{nonCritical}} non-critical",
+      "configure": "Configure equipment",
+      "details": "Details",
+      "equipment": "Equipment",
+      "gridAverages": "{{current}} A · avg {{voltage}} V · PF {{pf}}",
+      "gridStatus": "Electrical grid",
+      "gridUnavailable": "Grid status unavailable",
+      "kpis": "Key indicators",
+      "loading": "Loading dashboard…",
+      "maxLeakage": "Max leakage {{value}} mA",
+      "monitored": "Monitored equipment",
+      "noEquipment": "No equipment yet",
+      "noEquipmentMessage": "Register areas and equipment, then link their sensors.",
+      "offlineUnmonitored": "{{offline}} offline · {{unmonitored}} without sensor",
+      "openAlerts": "Open alerts: {{critical}} critical, {{nonCritical}} non-critical",
+      "power": "Instant consumption",
+      "protocol": "Protocol",
+      "reporting": "{{reporting}} of {{total}} equipment reporting",
+      "riskCounts": "Equipment by risk level",
+      "title": "Real-time monitoring",
+      "viewAlerts": "View alerts"
+    },
+    "equipment": {
+      "alerts": "Alerts",
+      "configure": "Configure",
+      "history": "Measurement history",
+      "noHistory": "No measurements in this range",
+      "noHistoryMessage": "Expand the date range or check the sensor connectivity.",
+      "noSensor": "No sensor linked",
+      "risk": "Risk level",
+      "sensor": "Sensor {{serial}}",
+      "telemetry": "Latest telemetry",
+      "title": "Equipment monitoring"
+    },
+    "grid": {
+      "CRITICAL": "Critical",
+      "NORMAL": "Normal",
+      "NO_DATA": "No data",
+      "WARNING": "Warning"
+    },
+    "reading": {
+      "anomaly": "Anomaly",
+      "capturedAt": "Captured {{time}}",
+      "capturedAtHeader": "Captured",
+      "current": "Current",
+      "frequency": "Frequency",
+      "lastCaptured": "Last reading: {{time}}",
+      "leakage": "Leakage current",
+      "noData": "No readings",
+      "noFreshData": "No fresh data",
+      "power": "Active power",
+      "powerFactor": "Power factor",
+      "voltage": "Voltage"
+    },
+    "risk": {
+      "CRITICAL_RISK": "Critical risk",
+      "DISCONNECTED": "Disconnected",
+      "SAFE": "Safe",
+      "UNKNOWN": "Unknown (no sensor)",
+      "WARNING": "Warning"
+    },
+    "state": {
+      "ANOMALY": "Anomaly",
+      "DEVICE_UNVERIFIED": "Device not verified",
+      "NORMAL": "Normal",
+      "STALE": "No fresh data",
+      "UNKNOWN": "Unknown",
+      "UNMONITORED": "Not monitored"
+    }
+  },
+  "notifications": {
+    "addRoute": "Add route",
+    "channels": {
+      "DASHBOARD_PUSH": "Dashboard push",
+      "EMAIL": "Email",
+      "SMS": "SMS",
+      "WEBHOOK": "Webhook"
+    },
+    "configurationDependent": {
+      "EMAIL": "Delivery depends on the platform email (SMTP) configuration.",
+      "SMS": "Delivery depends on the platform SMS gateway configuration."
+    },
+    "count": "{{count}} of {{max}} routes",
+    "deliveryNote": "Email and SMS are delivered only when the platform has an email service and an SMS gateway configured; otherwise they are only logged. Dashboard push and webhooks do not depend on that configuration.",
+    "destinations": {
+      "EMAIL": "Email address",
+      "SMS": "Phone number",
+      "WEBHOOK": "Webhook URL (https)"
+    },
+    "fields": {
+      "channel": "Channel",
+      "enabled": "Enabled",
+      "recipientName": "Recipient name (optional)",
+      "recipientRole": "Recipient role",
+      "urgency": "Urgency levels"
+    },
+    "isDefault": "Default preferences are in use.",
+    "noRoutes": "No notification routes",
+    "noRoutesMessage": "Add a route so alerts reach someone.",
+    "problems": {
+      "destinationRequired": "Enter a destination for this channel.",
+      "emailInvalid": "Enter a valid email address.",
+      "urgencyRequired": "Choose at least one urgency level.",
+      "webhookInvalid": "Enter a public https URL (no local or private addresses, at most 254 characters)."
+    },
+    "roles": {
+      "OPERATIONAL_STAFF": "Operational staff",
+      "STORE_MANAGER": "Store manager"
+    },
+    "route": "Route {{n}}",
+    "saved": "Preferences saved.",
+    "subtitle": "Choose who receives alerts and through which channel.",
+    "title": "Notifications",
+    "updatedAt": "Updated {{time}}",
+    "urgency": {
+      "CRITICAL": "Critical",
+      "NON_CRITICAL": "Non-critical"
+    }
+  },
+  "shared": {
+    "actions": {
+      "add": "Add",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "close": "Close",
+      "discard": "Discard changes",
+      "download": "Download",
+      "reload": "Reload",
+      "remove": "Remove",
+      "retry": "Try again",
+      "save": "Save",
+      "saving": "Saving…",
+      "signOut": "Sign out"
+    },
+    "appName": "ElectroLink",
+    "chart": {
+      "noData": "No data",
+      "showTable": "Show data table"
+    },
+    "dateRange": {
+      "bothOrNeither": "Enter both dates or leave both empty.",
+      "hint": "Ranges cover at most 31 days.",
+      "invalid": "Enter a valid start and end.",
+      "notOrdered": "The end must be after the start.",
+      "tooLong": "The range cannot exceed 31 days."
+    },
+    "errors": {
+      "businessRule": "The request could not be completed because of a business rule.",
+      "conflict": "The data changed in the meantime. Reload to see the current state.",
+      "conflictReloaded": "The data changed in the meantime; the latest version was reloaded.",
+      "forbidden": "You do not have access to this action.",
+      "network": "Could not reach ElectroLink. Check your connection.",
+      "notFound": "This resource is not available.",
+      "rateLimited": "Too many requests. Please try again later.",
+      "server": "The service had a problem. Please try again in a moment.",
+      "traceId": "Support reference: {{traceId}}",
+      "unauthenticated": "Your session has expired. Sign in again.",
+      "validation": "Some data is not valid. Review the form and try again."
+    },
+    "freshness": {
+      "every": "refreshes every {{seconds}} s",
+      "never": "Not updated yet",
+      "stale": "Outdated",
+      "updatedAt": "Updated {{time}}"
+    },
+    "labels": {
+      "actions": "Actions",
+      "all": "All",
+      "from": "From",
+      "fromDay": "From (day)",
+      "to": "To",
+      "toDay": "To (day, inclusive)"
+    },
+    "languageSwitcher": {
+      "label": "Language",
+      "languages": {
+        "en": "English",
+        "es": "Español"
+      }
+    },
+    "navigation": {
+      "alerts": "Alerts",
+      "analytics": "Energy",
+      "audit": "Audit log",
+      "compliance": "OHS compliance",
+      "connectivity": "Sensor connectivity",
+      "dashboard": "Real-time monitoring",
+      "equipment": "Areas & equipment",
+      "label": "Main navigation",
+      "layout": "Floor plan",
+      "notifications": "Notifications",
+      "settings": "Account settings",
+      "shifts": "Shift roster",
+      "stores": "My stores"
+    },
+    "pageNotFound": {
+      "action": "Go to the start page",
+      "description": "The page you are looking for does not exist or is not available to you.",
+      "title": "Page not found"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "next": "Next",
+      "page": "Page {{page}}",
+      "previous": "Previous"
+    },
+    "privateLayout": {
+      "skipToContent": "Skip to main content",
+      "toggleNavigation": "Show or hide the navigation menu"
+    },
+    "publicLayout": {
+      "tagline": "Electrical safety and operational continuity for your kitchens"
+    },
+    "settings": {
+      "subtitle": "Manage your account",
+      "title": "Settings"
+    },
+    "states": {
+      "loading": "Loading…"
+    },
+    "validation": {
+      "between": "Between {{min}} and {{max}}.",
+      "maxLength": "At most {{max}} characters.",
+      "optional": "Optional.",
+      "required": "This field is required.",
+      "requiredShort": "required"
+    }
+  },
+  "stores": {
+    "binding": {
+      "confirm": "Link permanently",
+      "confirmMessage": "The link cannot be undone in this version. Check the identifiers before confirming.",
+      "confirmTitle": "Link this sensor permanently?",
+      "deviceHint": "The device must be installed on one of your properties.",
+      "deviceId": "Device ID",
+      "edgeDeviceId": "Edge gateway ID",
+      "errors": {
+        "conflict": "This equipment or device is already linked. The current link was reloaded.",
+        "forbidden": "This device is unknown or not installed on your properties."
+      },
+      "link": "Link sensor",
+      "linked": "Sensor linked",
+      "linkedAt": "Linked on",
+      "linking": "Linking…",
+      "loading": "Loading sensor link…",
+      "permanentNote": "Sensor links are permanent in this version and cannot be removed.",
+      "serialNumber": "Serial number",
+      "title": "Sensor link",
+      "unlinked": "No sensor is linked: this equipment is not monitored."
+    },
+    "directory": {
+      "configure": "Configure",
+      "create": "Create store",
+      "createTitle": "Create a store",
+      "emptyMessage": "Create your first store to start configuring areas and equipment.",
+      "emptyTitle": "You have no stores yet",
+      "lastSync": "Last edge sync: {{time}}",
+      "listTitle": "Stores",
+      "loading": "Loading your stores…",
+      "neverSynced": "No edge sync yet",
+      "notices": {
+        "unavailable": "That store is not available. Choose one of your stores.",
+        "unreachable": "The store could not be opened right now. Try again."
+      },
+      "open": "Open",
+      "subtitle": "Choose a store to monitor or create a new one.",
+      "title": "My stores"
+    },
+    "fields": {
+      "address": "Address",
+      "areaName": "Area name",
+      "equipmentName": "Equipment name",
+      "name": "Store name"
+    },
+    "hierarchy": {
+      "addArea": "Add area",
+      "addEquipment": "Add equipment",
+      "configure": "Configure",
+      "emptyMessage": "Add an area such as \"Hot line\" to begin.",
+      "emptyTitle": "No areas yet",
+      "loading": "Loading areas…",
+      "monitor": "Monitor",
+      "newArea": "New area",
+      "noEquipment": "No equipment in this area yet.",
+      "subtitle": "Organize the kitchen into areas and register the equipment to monitor.",
+      "title": "Areas & equipment"
+    },
+    "layout": {
+      "allPlaced": "All equipment is placed.",
+      "canvasLabel": "Floor plan canvas",
+      "canvasSize": "Canvas {{width}} × {{height}}",
+      "emptyMessage": "Register equipment in Areas & equipment first.",
+      "emptyTitle": "No equipment to place",
+      "fields": {
+        "height": "Height",
+        "width": "Width",
+        "x": "X",
+        "y": "Y",
+        "zIndex": "Layer"
+      },
+      "itemLabel": "{{name}}, {{area}}, at {{x}}, {{y}}, {{risk}}",
+      "keyboardHint": "Select an item and use the arrow keys to move it (Shift for fine steps), Delete to remove it, or type its coordinates.",
+      "loading": "Loading floor plan…",
+      "noSelection": "Select an equipment on the plan.",
+      "place": "Place",
+      "removeFromPlan": "Remove from plan",
+      "saved": "Floor plan saved.",
+      "selected": "Selected equipment",
+      "subtitle": "Place the equipment on the kitchen plan.",
+      "title": "Floor plan",
+      "unplaced": "Not placed ({{count}})",
+      "zoom": "Zoom"
+    },
+    "protocol": {
+      "addStep": "Add step",
+      "emergencyIsolationSteps": "Emergency isolation steps",
+      "isDefault": "The platform default protocol is in use.",
+      "loading": "Loading protocol…",
+      "maxDeEnergizedCurrentAmps": "Maximum de-energized current",
+      "maxReadingAgeMinutes": "Maximum reading age",
+      "moveDown": "Move step {{n}} down",
+      "moveUp": "Move step {{n}} up",
+      "removeStep": "Remove step {{n}}",
+      "requireNoActiveCriticalAlerts": "Require no active critical alerts",
+      "safeToClean": "Safe-to-clean rule",
+      "saved": "Protocol saved.",
+      "shutdownSteps": "Shutdown steps",
+      "stepLabel": "Step {{n}}",
+      "stepsHint": "Between {{min}} and {{max}} steps.",
+      "title": "Shutdown protocol",
+      "updatedAt": "Updated {{time}}"
+    },
+    "risk": {
+      "CRITICAL_RISK": "Critical risk",
+      "DISCONNECTED": "Disconnected",
+      "SAFE": "Safe",
+      "UNKNOWN": "Unknown (no sensor)",
+      "WARNING": "Warning"
+    },
+    "setup": {
+      "subtitle": "Sensor link, electrical thresholds and shutdown protocol.",
+      "title": "Equipment"
+    },
+    "shifts": {
+      "accountable": "Accountable",
+      "emptyMessage": "Choose another period or schedule a shift.",
+      "emptyTitle": "No shifts in this period",
+      "fields": {
+        "endsAt": "Ends",
+        "role": "Role",
+        "startsAt": "Starts",
+        "workerCode": "Worker code",
+        "workerName": "Worker name"
+      },
+      "handoverReceived": "A shift handover was recorded at {{time}}; on-duty staff was reloaded.",
+      "loadingOnDuty": "Loading on-duty staff…",
+      "loadingRoster": "Loading roster…",
+      "noAccountable": "No accountable worker",
+      "nobodyOnDuty": "Nobody is on duty right now.",
+      "onDuty": "On duty now",
+      "onDutyCount": "On duty",
+      "removeMessage": "The shift of {{name}} will be removed from the roster.",
+      "removeTitle": "Remove this shift?",
+      "rosterNote": "Workers are roster entries (code, name and role); no login account is created.",
+      "rosterTitle": "Roster",
+      "schedule": "Schedule",
+      "scheduleTitle": "Schedule a shift",
+      "subtitle": "Who is on duty and accountable for each shift.",
+      "title": "Shift roster",
+      "windowInvalid": "The shift must end after it starts."
+    },
+    "switcher": {
+      "label": "Active store",
+      "live": "Live updates",
+      "polling": "Auto-refresh"
+    },
+    "thresholds": {
+      "fields": {
+        "alertLimitAmps": "Alert current limit",
+        "disconnectionThresholdMin": "Disconnection threshold",
+        "maxConsumptionWatts": "Maximum consumption",
+        "maxCurrentAmps": "Maximum current",
+        "minPowerFactor": "Minimum power factor (0–1)",
+        "nominalFrequency": "Nominal frequency",
+        "nominalVoltage": "Nominal voltage",
+        "normalLimitAmps": "Normal current limit"
+      },
+      "loading": "Loading thresholds…",
+      "noTemperature": "Electrical limits only: the platform does not define temperature thresholds.",
+      "nonNegative": "Enter a number of 0 or more.",
+      "powerFactorRange": "Enter a value between 0 and 1.",
+      "saved": "Thresholds saved.",
+      "serverRejected": "The value is outside the accepted range.",
+      "title": "Electrical thresholds"
+    }
+  }
+}

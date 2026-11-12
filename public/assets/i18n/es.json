@@ -1,0 +1,847 @@
+{
+  "alerts": {
+    "actions": {
+      "acknowledge": "Reconocer",
+      "assign": "Asignar técnico",
+      "resolve": "Resolver"
+    },
+    "active": "Alertas activas",
+    "anomaly": {
+      "ABNORMAL_FREQUENCY": "Frecuencia anormal",
+      "CONNECTION_LOST": "Conexión perdida",
+      "CURRENT_LEAKAGE": "Fuga de corriente",
+      "LOW_POWER_FACTOR": "Factor de potencia bajo",
+      "MANUAL_REPORT": "Reporte manual",
+      "MOISTURE_HAZARD": "Riesgo por humedad",
+      "OVERCONSUMPTION": "Sobreconsumo",
+      "OVERCURRENT": "Sobrecorriente",
+      "OVERVOLTAGE": "Sobrevoltaje",
+      "SHORT_CIRCUIT_RISK": "Riesgo de cortocircuito",
+      "UNUSUAL_CONSUMPTION": "Consumo inusual",
+      "VOLTAGE_SAG": "Caída de voltaje"
+    },
+    "category": {
+      "ABNORMAL_NOISE": "Ruido anormal",
+      "BURNING_SMELL": "Olor a quemado",
+      "FLICKERING_LIGHTS": "Luces parpadeantes",
+      "OTHER": "Otro",
+      "OVERHEATING": "Sobrecalentamiento",
+      "SMOKE": "Humo",
+      "SPARKS": "Chispas"
+    },
+    "closedWorkflow": "Esta alerta está resuelta.",
+    "criticalLeakage": "Fuga crítica",
+    "criticalLeakageActive": "Hay una fuga de corriente crítica activa. Sigue el protocolo de aislamiento de emergencia.",
+    "criticalLeakageNote": "Fuga de corriente crítica: sigue el protocolo de aislamiento de emergencia.",
+    "equipmentNamesUnavailable": "No se pudieron cargar los nombres de los equipos; reconocer no está disponible hasta entonces.",
+    "equipmentUnresolved": "No se pudo identificar el equipo de esta alerta.",
+    "errors": {
+      "conflict": "Esta alerta ya avanzó; se recargó."
+    },
+    "fields": {
+      "acknowledgedAt": "Reconocida",
+      "anomaly": "Anomalía",
+      "capturedAt": "Lectura capturada",
+      "createdAt": "Generada",
+      "description": "Descripción",
+      "detectionSeverity": "Severidad detectada",
+      "equipment": "Equipo",
+      "notes": "Notas de resolución",
+      "onDuty": "Trabajador de turno",
+      "reportedBy": "Reportado por",
+      "resolvedAt": "Resuelta",
+      "severity": "Severidad",
+      "source": "Origen",
+      "status": "Estado",
+      "technician": "Técnico",
+      "technicianId": "ID del técnico",
+      "technicianName": "Nombre del técnico"
+    },
+    "history": "Historial de alertas",
+    "noActive": "No hay alertas activas",
+    "noActiveMessage": "Todas las alertas están resueltas.",
+    "noHistory": "Ninguna alerta coincide con los filtros",
+    "noHistoryMessage": "Cambia los filtros o amplía el rango de fechas.",
+    "noOnDuty": "Nadie de turno",
+    "open": "Abrir",
+    "openCritical": "Críticas abiertas",
+    "openNonCritical": "No críticas abiertas",
+    "severity": {
+      "CRITICAL": "Crítica",
+      "NON_CRITICAL": "No crítica"
+    },
+    "source": {
+      "MANUAL_REPORT": "Reporte manual",
+      "TELEMETRY": "Telemetría"
+    },
+    "status": {
+      "ACKNOWLEDGED": "Reconocida",
+      "ASSIGNED": "Asignada",
+      "OPEN": "Abierta",
+      "RESOLVED": "Resuelta"
+    },
+    "subtitle": "Cada alerta corresponde a una lectura; reconócelas, asígnalas y resuélvelas.",
+    "title": "Alertas",
+    "unknownEquipment": "Equipo desconocido"
+  },
+  "analytics": {
+    "averageKw": "Potencia promedio",
+    "comparison": {
+      "change": "Variación",
+      "partial": "Un periodo no tiene datos de consumo: la comparación es parcial.",
+      "perDay": "{{value}} kWh/día",
+      "period1": "Periodo 1",
+      "period2": "Periodo 2",
+      "title": "Comparar periodos",
+      "zeroBaseline": "El periodo 1 no tiene consumo, por lo que no se puede calcular un porcentaje."
+    },
+    "consumption": {
+      "byEquipment": "Consumo por equipo",
+      "chart": "Consumo de energía por periodo",
+      "equipmentTitle": "Consumo y costo por equipo",
+      "exportCsv": "Exportar CSV",
+      "exporting": "Exportando…",
+      "granularity": "Granularidad",
+      "title": "Consumo del local",
+      "total": "Consumo total"
+    },
+    "cost": "Costo",
+    "costs": {
+      "alertAt": "Umbral de alerta",
+      "budget": "Presupuesto mensual",
+      "consumedOf": "{{consumed}} de {{target}} kWh consumidos",
+      "consumedPct": "Consumido",
+      "elapsed": "día {{elapsed}} de {{total}}",
+      "generated": "Generado {{time}} · {{zone}}",
+      "method": "método: {{method}}",
+      "month": "Mes",
+      "monthToDate": "Mes a la fecha",
+      "noBudget": "No hay presupuesto definido para este mes.",
+      "onTrack": "Dentro del presupuesto",
+      "projected": "Costo proyectado",
+      "projectedPct": "Proyectado",
+      "projection": "Proyección a fin de mes",
+      "remaining": "Restante",
+      "saved": "Presupuesto guardado.",
+      "setBudget": "Definir presupuesto mensual",
+      "target": "Meta",
+      "targetInvalid": "Ingresa una meta mayor que 0.",
+      "warning": "Se alcanzó el umbral de alerta del presupuesto",
+      "year": "Año"
+    },
+    "days": "días",
+    "daysOfWeek": {
+      "Friday": "Viernes",
+      "Monday": "Lunes",
+      "Saturday": "Sábado",
+      "Sunday": "Domingo",
+      "Thursday": "Jueves",
+      "Tuesday": "Martes",
+      "Wednesday": "Miércoles"
+    },
+    "equipment": "Equipo",
+    "granularity": {
+      "daily": "Diario",
+      "hourly": "Por hora"
+    },
+    "insufficient": "Datos insuficientes",
+    "insufficientTelemetry": "Telemetría insuficiente para este resultado; no indica un consumo saludable.",
+    "maintenance": {
+      "analysed": "{{count}} equipos analizados · {{time}}",
+      "days": "{{days}} días",
+      "daysToLimit": "Unos {{days}} días hasta el límite del factor de potencia",
+      "horizon": "Periodo de análisis",
+      "insufficient": "{{count}} equipos tienen datos insuficientes y no se evaluaron.",
+      "none": "Sin advertencias de desgaste",
+      "noneMessage": "No se encontraron advertencias en los equipos con datos suficientes. Esto no cubre a los equipos con datos insuficientes.",
+      "severity": "Severidad: {{severity}}",
+      "title": "Predicciones de mantenimiento",
+      "window": "Ventana recomendada"
+    },
+    "noData": "No hay datos de consumo en este rango",
+    "noDataMessage": "Amplía el rango de fechas o verifica que los sensores estén reportando.",
+    "notAvailable": "No disponible",
+    "offHours": {
+      "configure": "Configurar horario",
+      "episodes": "Episodios fuera de horario",
+      "none": "No se detectó consumo fuera de horario",
+      "noneMessage": "Ningún episodio superó el umbral de reposo en este rango.",
+      "notConfigured": "El horario de atención no está configurado, por lo que la detección fuera de horario puede estar incompleta.",
+      "threshold": "Umbral de reposo",
+      "title": "Consumo fuera de horario",
+      "total": "Consumo fuera de horario"
+    },
+    "openingHours": {
+      "closes": "Cierra",
+      "day": "Día",
+      "invalid": "Ingresa horas válidas (HH:mm) para cada día abierto.",
+      "notConfigured": "El horario de atención aún no está configurado.",
+      "open": "Abierto",
+      "openOn": "Abierto el {{day}}",
+      "opens": "Abre",
+      "saved": "Horario guardado.",
+      "title": "Horario de atención"
+    },
+    "peakKw": "kW pico",
+    "peakOffPeak": "Costo punta / fuera de punta",
+    "period": "Periodo",
+    "reports": {
+      "expires": "Disponible hasta",
+      "file": "Archivo",
+      "format": "Formato",
+      "generate": "Generar reporte",
+      "generated": "Reportes generados",
+      "generating": "Generando…",
+      "none": "Aún no se generó ningún reporte en esta sesión.",
+      "title": "Reportes de energía",
+      "wait": "Generar el reporte puede tardar varios segundos."
+    },
+    "samples": "Muestras",
+    "sections": "Secciones de consumos",
+    "selectEquipment": "Selecciona un equipo",
+    "subtitle": "Consumo, costos, presupuesto y predicciones de mantenimiento.",
+    "tabs": {
+      "comparison": "Comparación",
+      "consumption": "Consumo",
+      "costs": "Costos y presupuesto",
+      "maintenance": "Mantenimiento",
+      "off-hours": "Fuera de horario",
+      "opening-hours": "Horario de atención",
+      "reports": "Reportes"
+    },
+    "timeZone": "Zona horaria",
+    "title": "Consumos"
+  },
+  "audit": {
+    "empty": "No hay registros de auditoría",
+    "emptyMessage": "Cambia los filtros o amplía el rango de fechas.",
+    "fields": {
+      "action": "Acción",
+      "operatorId": "ID del operador",
+      "request": "Solicitud",
+      "resource": "Recurso",
+      "status": "Estado",
+      "timestamp": "Hora"
+    },
+    "limitations": "Las operaciones de lectura pueden no registrarse y algunos registros pueden perderse con una carga muy alta.",
+    "subtitle": "Operaciones realizadas en este local.",
+    "title": "Auditoría"
+  },
+  "compliance": {
+    "certificates": {
+      "daysLeft": "Días restantes",
+      "document": "Documento",
+      "equipment": "Equipo",
+      "expirations": "Vencen en los próximos {{days}} días",
+      "expirationsShort": "Próximos vencimientos",
+      "expiresAt": "Vence",
+      "fields": {
+        "certificationNumber": "Número de certificación",
+        "documentFileUrl": "URL del documento",
+        "technicianName": "Nombre del técnico",
+        "workDescription": "Descripción del trabajo"
+      },
+      "issuedAt": "Emitido",
+      "keyReused": "Este registro cambió al reintentar. Envíalo de nuevo.",
+      "noExpirations": "Ningún certificado vence en este periodo.",
+      "none": "Este equipo no tiene certificados.",
+      "number": "Número de certificación",
+      "openDocument": "Abrir documento",
+      "problems": {
+        "expiryBeforeIssue": "El vencimiento debe ser posterior a la emisión.",
+        "expiryTooFar": "El vencimiento debe estar dentro de los 10 años desde la emisión.",
+        "issuedInFuture": "La fecha de emisión no puede ser más de un día en el futuro."
+      },
+      "register": "Registrar certificado",
+      "saved": "Certificado registrado.",
+      "selectEquipment": "Selecciona un equipo",
+      "technician": "Técnico",
+      "title": "Certificados de mantenimiento",
+      "uncertified": "{{count}} equipos no tienen certificado:",
+      "urgencies": {
+        "EXPIRED": "Vencido",
+        "EXPIRES_WITHIN_15_DAYS": "Vence en 15 días",
+        "EXPIRES_WITHIN_30_DAYS": "Vence en 30 días",
+        "VALID": "Vigente"
+      },
+      "urgency": "Vigencia",
+      "urlHint": "Enlace al documento del certificado (no hay carga de archivos).",
+      "urlInvalid": "Ingresa una dirección http(s) completa."
+    },
+    "checklist": {
+      "confirmMessage": "Un checklist enviado queda bloqueado y no se puede editar.",
+      "confirmTitle": "¿Enviar el checklist?",
+      "continue": "Continuar borrador",
+      "editingDraft": "Estás editando un borrador guardado.",
+      "errors": {
+        "conflict": "El checklist está bloqueado o el mismo envío aún se procesa. Se recargó el historial.",
+        "keyReused": "Este envío cambió al reintentar. Envíalo de nuevo."
+      },
+      "history": "Historial de checklists",
+      "inspectorId": "ID del inspector",
+      "inspectorName": "Nombre del inspector",
+      "locked": "Bloqueado",
+      "noHistory": "Aún no hay checklists",
+      "notes": "Notas",
+      "observations": "Observaciones",
+      "problems": {
+        "failNeedsNotes": "Un ítem fallido necesita notas.",
+        "missingResult": "Elige un resultado.",
+        "notesTooLong": "Las notas pueden tener como máximo {{max}} caracteres."
+      },
+      "results": {
+        "FAIL": "No cumple",
+        "NOT_APPLICABLE": "No aplica",
+        "PASS": "Cumple"
+      },
+      "saveDraft": "Guardar borrador",
+      "saved": "Checklist guardado.",
+      "score": "Puntaje",
+      "status": "Estado",
+      "statuses": {
+        "DRAFT": "Borrador",
+        "SUBMITTED": "Enviado"
+      },
+      "submit": "Enviar y bloquear",
+      "title": "Checklist semanal de seguridad",
+      "updated": "Último cambio",
+      "week": "Semana",
+      "weekHint": "El checklist se registra en el lunes de esa semana.",
+      "weekOf": "Semana del"
+    },
+    "noticeReceived": "Llegó un aviso de cumplimiento a las {{time}}; se recargaron los vencimientos.",
+    "reports": {
+      "generate": "Generar reporte SST",
+      "generatedAt": "Generado",
+      "generating": "Generando…",
+      "hint": "Genera un PDF con el puntaje de cumplimiento; la firma registrada se incluye cuando existe.",
+      "list": "Reportes SST generados",
+      "no": "No",
+      "none": "Aún no hay reportes SST",
+      "period": "Periodo",
+      "signed": "Firmado",
+      "title": "Reportes SST",
+      "wait": "Generar el reporte puede tardar varios segundos.",
+      "yes": "Sí"
+    },
+    "score": {
+      "bestScore": "Mejor puntaje enviado",
+      "component": "Componente",
+      "components": "Componentes del puntaje",
+      "evaluated": "Evaluado {{time}}",
+      "explanation": "Explicación",
+      "grade": "Calificación",
+      "names": {
+        "CRITICAL_ALARMS_RESOLVED": "Alarmas críticas resueltas",
+        "MAINTENANCE_CERTIFICATES": "Certificados de mantenimiento",
+        "WEEKLY_CHECKLISTS": "Checklists semanales"
+      },
+      "notSubmitted": "No enviado",
+      "score": "Puntaje",
+      "title": "Puntaje de cumplimiento",
+      "weeks": "Checklists semanales",
+      "weight": "Peso"
+    },
+    "sections": "Secciones de cumplimiento",
+    "signature": {
+      "canvasLabel": "Área para dibujar la firma",
+      "clear": "Limpiar",
+      "current": "Firma registrada",
+      "drawn": "Firma dibujada",
+      "empty": "Sin firma dibujada",
+      "instructions": "Dibuja tu firma en el recuadro con el mouse, un lápiz o el dedo. Usa Limpiar para empezar de nuevo.",
+      "none": "Aún no hay firma registrada; los reportes SST no estarán firmados.",
+      "previewAlt": "Firma de {{name}}",
+      "register": "Registrar firma",
+      "required": "Primero dibuja tu firma.",
+      "saved": "Firma registrada.",
+      "showPreview": "Ver firma",
+      "signedAt": "Firmado",
+      "signerName": "Nombre del firmante",
+      "signerTitle": "Cargo del firmante",
+      "tooLarge": "La imagen de la firma es demasiado grande. Límpiala y dibújala de nuevo."
+    },
+    "subtitle": "Checklist semanal, certificados, puntaje, firma y reportes SST.",
+    "tabs": {
+      "certificates": "Certificados",
+      "checklist": "Checklist semanal",
+      "reports": "Reportes SST",
+      "score": "Puntaje",
+      "signature": "Firma"
+    },
+    "title": "Cumplimiento SST"
+  },
+  "iam": {
+    "backToSignIn": "Volver a iniciar sesión",
+    "changePassword": {
+      "done": "Tu contraseña se cambió.",
+      "rejected": "La contraseña actual es incorrecta o la nueva no es aceptada.",
+      "submit": "Cambiar contraseña",
+      "title": "Cambiar contraseña"
+    },
+    "fields": {
+      "confirmPassword": "Confirma la nueva contraseña",
+      "currentPassword": "Contraseña actual",
+      "email": "Correo electrónico",
+      "newPassword": "Nueva contraseña",
+      "password": "Contraseña"
+    },
+    "forgotPassword": {
+      "sent": "Si el correo pertenece a una cuenta, se le envía un enlace válido por 15 minutos. La entrega depende del servicio de correo de la plataforma.",
+      "submit": "Solicitar enlace",
+      "submitting": "Enviando…",
+      "subtitle": "Ingresa el correo de tu cuenta para solicitar un enlace de restablecimiento.",
+      "title": "Recupera tu contraseña"
+    },
+    "resetPassword": {
+      "done": "Tu contraseña se cambió. Se cerraron todas las sesiones.",
+      "missingToken": "Este enlace está incompleto. Solicita un nuevo enlace.",
+      "rejected": "El enlace no es válido, expiró o ya se usó, o la contraseña no es aceptada.",
+      "requestNew": "Solicitar un nuevo enlace",
+      "submit": "Cambiar contraseña",
+      "submitting": "Cambiando…",
+      "subtitle": "Después deberás iniciar sesión de nuevo en todos tus dispositivos.",
+      "title": "Define una nueva contraseña"
+    },
+    "signIn": {
+      "errors": {
+        "inactive": "Esta cuenta no está activa. Contacta a soporte para recuperar el acceso.",
+        "invalidCredentials": "Correo o contraseña incorrectos."
+      },
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "reasons": {
+        "expired": "Tu sesión expiró. Vuelve a iniciar sesión.",
+        "inactive": "Acceso denegado: esta cuenta no está activa.",
+        "passwordReset": "Tu contraseña se cambió. Inicia sesión con la nueva contraseña.",
+        "signedOut": "Cerraste sesión.",
+        "unreachable": "No se pudo conectar con ElectroLink para restaurar tu sesión. Vuelve a iniciar sesión o inténtalo más tarde."
+      },
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión…",
+      "subtitle": "Monitorea la seguridad eléctrica de tus locales.",
+      "title": "Iniciar sesión"
+    },
+    "validation": {
+      "email": "Ingresa un correo electrónico válido.",
+      "passwordHint": "Al menos {{min}} caracteres.",
+      "passwordLength": "Usa entre 8 y 128 caracteres.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "passwordRejected": "Esta contraseña no es aceptada.",
+      "required": "Este campo es obligatorio."
+    }
+  },
+  "monitoring": {
+    "connectivity": {
+      "connected": "Conectado",
+      "disconnected": "Desconectado",
+      "empty": "No hay sensores vinculados",
+      "emptyMessage": "Vincula sensores a los equipos para monitorearlos.",
+      "equipment": "Equipo",
+      "lastEdgeSync": "Última sincronización Edge",
+      "lastTelemetry": "Última telemetría",
+      "never": "Nunca",
+      "serial": "Número de serie",
+      "status": "Estado",
+      "threshold": "Umbral de desconexión",
+      "title": "Conectividad de sensores"
+    },
+    "dashboard": {
+      "activeAlerts": "Alertas activas",
+      "alertSplit": "{{critical}} críticas · {{nonCritical}} no críticas",
+      "configure": "Configurar equipos",
+      "details": "Detalle",
+      "equipment": "Equipos",
+      "gridAverages": "{{current}} A · prom. {{voltage}} V · FP {{pf}}",
+      "gridStatus": "Red eléctrica",
+      "gridUnavailable": "Estado de la red no disponible",
+      "kpis": "Indicadores clave",
+      "loading": "Cargando panel…",
+      "maxLeakage": "Fuga máxima {{value}} mA",
+      "monitored": "Equipos monitoreados",
+      "noEquipment": "Aún no hay equipos",
+      "noEquipmentMessage": "Registra áreas y equipos y luego vincula sus sensores.",
+      "offlineUnmonitored": "{{offline}} desconectados · {{unmonitored}} sin sensor",
+      "openAlerts": "Alertas abiertas: {{critical}} críticas, {{nonCritical}} no críticas",
+      "power": "Consumo instantáneo",
+      "protocol": "Protocolo",
+      "reporting": "{{reporting}} de {{total}} equipos reportando",
+      "riskCounts": "Equipos por nivel de riesgo",
+      "title": "Monitoreo en tiempo real",
+      "viewAlerts": "Ver alertas"
+    },
+    "equipment": {
+      "alerts": "Alertas",
+      "configure": "Configurar",
+      "history": "Historial de mediciones",
+      "noHistory": "No hay mediciones en este rango",
+      "noHistoryMessage": "Amplía el rango de fechas o revisa la conectividad del sensor.",
+      "noSensor": "Sin sensor vinculado",
+      "risk": "Nivel de riesgo",
+      "sensor": "Sensor {{serial}}",
+      "telemetry": "Última telemetría",
+      "title": "Monitoreo del equipo"
+    },
+    "grid": {
+      "CRITICAL": "Crítico",
+      "NORMAL": "Normal",
+      "NO_DATA": "Sin datos",
+      "WARNING": "Advertencia"
+    },
+    "reading": {
+      "anomaly": "Anomalía",
+      "capturedAt": "Capturado {{time}}",
+      "capturedAtHeader": "Capturado",
+      "current": "Corriente",
+      "frequency": "Frecuencia",
+      "lastCaptured": "Última lectura: {{time}}",
+      "leakage": "Corriente de fuga",
+      "noData": "Sin lecturas",
+      "noFreshData": "Sin datos recientes",
+      "power": "Potencia activa",
+      "powerFactor": "Factor de potencia",
+      "voltage": "Voltaje"
+    },
+    "risk": {
+      "CRITICAL_RISK": "Riesgo crítico",
+      "DISCONNECTED": "Desconectado",
+      "SAFE": "Seguro",
+      "UNKNOWN": "Desconocido (sin sensor)",
+      "WARNING": "Advertencia"
+    },
+    "state": {
+      "ANOMALY": "Anomalía",
+      "DEVICE_UNVERIFIED": "Dispositivo no verificado",
+      "NORMAL": "Normal",
+      "STALE": "Sin datos recientes",
+      "UNKNOWN": "Desconocido",
+      "UNMONITORED": "Sin monitoreo"
+    }
+  },
+  "notifications": {
+    "addRoute": "Agregar ruta",
+    "channels": {
+      "DASHBOARD_PUSH": "Notificación en el panel",
+      "EMAIL": "Correo",
+      "SMS": "SMS",
+      "WEBHOOK": "Webhook"
+    },
+    "configurationDependent": {
+      "EMAIL": "La entrega depende de la configuración de correo (SMTP) de la plataforma.",
+      "SMS": "La entrega depende de la configuración de la pasarela SMS de la plataforma."
+    },
+    "count": "{{count}} de {{max}} rutas",
+    "deliveryNote": "El correo y el SMS se entregan solo si la plataforma tiene configurado un servicio de correo y una pasarela SMS; de lo contrario solo se registran. Las notificaciones del panel y los webhooks no dependen de esa configuración.",
+    "destinations": {
+      "EMAIL": "Correo electrónico",
+      "SMS": "Número de teléfono",
+      "WEBHOOK": "URL del webhook (https)"
+    },
+    "fields": {
+      "channel": "Canal",
+      "enabled": "Activa",
+      "recipientName": "Nombre del destinatario (opcional)",
+      "recipientRole": "Rol del destinatario",
+      "urgency": "Niveles de urgencia"
+    },
+    "isDefault": "Se usan las preferencias predeterminadas.",
+    "noRoutes": "No hay rutas de notificación",
+    "noRoutesMessage": "Agrega una ruta para que las alertas lleguen a alguien.",
+    "problems": {
+      "destinationRequired": "Ingresa un destino para este canal.",
+      "emailInvalid": "Ingresa un correo electrónico válido.",
+      "urgencyRequired": "Elige al menos un nivel de urgencia.",
+      "webhookInvalid": "Ingresa una URL https pública (sin direcciones locales o privadas, máximo 254 caracteres)."
+    },
+    "roles": {
+      "OPERATIONAL_STAFF": "Personal operativo",
+      "STORE_MANAGER": "Administrador del local"
+    },
+    "route": "Ruta {{n}}",
+    "saved": "Preferencias guardadas.",
+    "subtitle": "Elige quién recibe las alertas y por qué canal.",
+    "title": "Notificaciones",
+    "updatedAt": "Actualizado {{time}}",
+    "urgency": {
+      "CRITICAL": "Críticas",
+      "NON_CRITICAL": "No críticas"
+    }
+  },
+  "shared": {
+    "actions": {
+      "add": "Agregar",
+      "apply": "Aplicar",
+      "cancel": "Cancelar",
+      "clear": "Limpiar",
+      "close": "Cerrar",
+      "discard": "Descartar cambios",
+      "download": "Descargar",
+      "reload": "Recargar",
+      "remove": "Quitar",
+      "retry": "Reintentar",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "signOut": "Cerrar sesión"
+    },
+    "appName": "ElectroLink",
+    "chart": {
+      "noData": "Sin datos",
+      "showTable": "Ver tabla de datos"
+    },
+    "dateRange": {
+      "bothOrNeither": "Ingresa ambas fechas o deja ambas vacías.",
+      "hint": "Los rangos abarcan como máximo 31 días.",
+      "invalid": "Ingresa un inicio y un fin válidos.",
+      "notOrdered": "El fin debe ser posterior al inicio.",
+      "tooLong": "El rango no puede superar los 31 días."
+    },
+    "errors": {
+      "businessRule": "No se pudo completar la solicitud por una regla de negocio.",
+      "conflict": "Los datos cambiaron mientras tanto. Recarga para ver el estado actual.",
+      "conflictReloaded": "Los datos cambiaron mientras tanto; se recargó la versión más reciente.",
+      "forbidden": "No tienes acceso a esta acción.",
+      "network": "No se pudo conectar con ElectroLink. Revisa tu conexión.",
+      "notFound": "Este recurso no está disponible.",
+      "rateLimited": "Demasiadas solicitudes. Inténtalo más tarde.",
+      "server": "El servicio tuvo un problema. Inténtalo de nuevo en un momento.",
+      "traceId": "Referencia de soporte: {{traceId}}",
+      "unauthenticated": "Tu sesión expiró. Vuelve a iniciar sesión.",
+      "validation": "Algunos datos no son válidos. Revisa el formulario e inténtalo de nuevo."
+    },
+    "freshness": {
+      "every": "se actualiza cada {{seconds}} s",
+      "never": "Aún sin actualizar",
+      "stale": "Desactualizado",
+      "updatedAt": "Actualizado {{time}}"
+    },
+    "labels": {
+      "actions": "Acciones",
+      "all": "Todos",
+      "from": "Desde",
+      "fromDay": "Desde (día)",
+      "to": "Hasta",
+      "toDay": "Hasta (día, inclusive)"
+    },
+    "languageSwitcher": {
+      "label": "Idioma",
+      "languages": {
+        "en": "English",
+        "es": "Español"
+      }
+    },
+    "navigation": {
+      "alerts": "Alertas",
+      "analytics": "Consumos",
+      "audit": "Auditoría",
+      "compliance": "Reporte SST",
+      "connectivity": "Conectividad de sensores",
+      "dashboard": "Monitoreo en tiempo real",
+      "equipment": "Áreas y equipos",
+      "label": "Navegación principal",
+      "layout": "Plano del local",
+      "notifications": "Notificaciones",
+      "settings": "Ajustes de la cuenta",
+      "shifts": "Turnos",
+      "stores": "Mis locales"
+    },
+    "pageNotFound": {
+      "action": "Ir a la página de inicio",
+      "description": "La página que buscas no existe o no está disponible para ti.",
+      "title": "Página no encontrada"
+    },
+    "pagination": {
+      "label": "Paginación",
+      "next": "Siguiente",
+      "page": "Página {{page}}",
+      "previous": "Anterior"
+    },
+    "privateLayout": {
+      "skipToContent": "Saltar al contenido principal",
+      "toggleNavigation": "Mostrar u ocultar el menú de navegación"
+    },
+    "publicLayout": {
+      "tagline": "Seguridad eléctrica y continuidad operativa para tus cocinas"
+    },
+    "settings": {
+      "subtitle": "Gestiona tu cuenta",
+      "title": "Ajustes"
+    },
+    "states": {
+      "loading": "Cargando…"
+    },
+    "validation": {
+      "between": "Entre {{min}} y {{max}}.",
+      "maxLength": "Máximo {{max}} caracteres.",
+      "optional": "Opcional.",
+      "required": "Este campo es obligatorio.",
+      "requiredShort": "obligatorio"
+    }
+  },
+  "stores": {
+    "binding": {
+      "confirm": "Vincular permanentemente",
+      "confirmMessage": "El vínculo no se puede deshacer en esta versión. Revisa los identificadores antes de confirmar.",
+      "confirmTitle": "¿Vincular este sensor de forma permanente?",
+      "deviceHint": "El dispositivo debe estar instalado en una de tus propiedades.",
+      "deviceId": "ID del dispositivo",
+      "edgeDeviceId": "ID del gateway Edge",
+      "errors": {
+        "conflict": "Este equipo o dispositivo ya está vinculado. Se recargó el vínculo actual.",
+        "forbidden": "Este dispositivo es desconocido o no está instalado en tus propiedades."
+      },
+      "link": "Vincular sensor",
+      "linked": "Sensor vinculado",
+      "linkedAt": "Vinculado el",
+      "linking": "Vinculando…",
+      "loading": "Cargando vínculo del sensor…",
+      "permanentNote": "Los vínculos de sensores son permanentes en esta versión y no se pueden quitar.",
+      "serialNumber": "Número de serie",
+      "title": "Sensor vinculado",
+      "unlinked": "No hay sensor vinculado: este equipo no se monitorea."
+    },
+    "directory": {
+      "configure": "Configurar",
+      "create": "Crear local",
+      "createTitle": "Crear un local",
+      "emptyMessage": "Crea tu primer local para empezar a configurar áreas y equipos.",
+      "emptyTitle": "Aún no tienes locales",
+      "lastSync": "Última sincronización: {{time}}",
+      "listTitle": "Locales",
+      "loading": "Cargando tus locales…",
+      "neverSynced": "Sin sincronización aún",
+      "notices": {
+        "unavailable": "Ese local no está disponible. Elige uno de tus locales.",
+        "unreachable": "No se pudo abrir el local en este momento. Inténtalo de nuevo."
+      },
+      "open": "Abrir",
+      "subtitle": "Elige un local para monitorear o crea uno nuevo.",
+      "title": "Mis locales"
+    },
+    "fields": {
+      "address": "Dirección",
+      "areaName": "Nombre del área",
+      "equipmentName": "Nombre del equipo",
+      "name": "Nombre del local"
+    },
+    "hierarchy": {
+      "addArea": "Agregar área",
+      "addEquipment": "Agregar equipo",
+      "configure": "Configurar",
+      "emptyMessage": "Agrega un área como \"Cocina caliente\" para empezar.",
+      "emptyTitle": "Aún no hay áreas",
+      "loading": "Cargando áreas…",
+      "monitor": "Monitorear",
+      "newArea": "Nueva área",
+      "noEquipment": "Aún no hay equipos en esta área.",
+      "subtitle": "Organiza la cocina en áreas y registra los equipos a monitorear.",
+      "title": "Áreas y equipos"
+    },
+    "layout": {
+      "allPlaced": "Todos los equipos están ubicados.",
+      "canvasLabel": "Lienzo del plano",
+      "canvasSize": "Lienzo {{width}} × {{height}}",
+      "emptyMessage": "Primero registra equipos en Áreas y equipos.",
+      "emptyTitle": "No hay equipos para ubicar",
+      "fields": {
+        "height": "Alto",
+        "width": "Ancho",
+        "x": "X",
+        "y": "Y",
+        "zIndex": "Capa"
+      },
+      "itemLabel": "{{name}}, {{area}}, en {{x}}, {{y}}, {{risk}}",
+      "keyboardHint": "Selecciona un elemento y usa las flechas para moverlo (Mayús para pasos finos), Supr para quitarlo, o escribe sus coordenadas.",
+      "loading": "Cargando plano…",
+      "noSelection": "Selecciona un equipo en el plano.",
+      "place": "Ubicar",
+      "removeFromPlan": "Quitar del plano",
+      "saved": "Plano guardado.",
+      "selected": "Equipo seleccionado",
+      "subtitle": "Ubica los equipos en el plano de la cocina.",
+      "title": "Plano del local",
+      "unplaced": "Sin ubicar ({{count}})",
+      "zoom": "Zoom"
+    },
+    "protocol": {
+      "addStep": "Agregar paso",
+      "emergencyIsolationSteps": "Pasos de aislamiento de emergencia",
+      "isDefault": "Se usa el protocolo predeterminado de la plataforma.",
+      "loading": "Cargando protocolo…",
+      "maxDeEnergizedCurrentAmps": "Corriente máxima desenergizado",
+      "maxReadingAgeMinutes": "Antigüedad máxima de la lectura",
+      "moveDown": "Bajar el paso {{n}}",
+      "moveUp": "Subir el paso {{n}}",
+      "removeStep": "Quitar el paso {{n}}",
+      "requireNoActiveCriticalAlerts": "Exigir que no haya alertas críticas activas",
+      "safeToClean": "Regla de limpieza segura",
+      "saved": "Protocolo guardado.",
+      "shutdownSteps": "Pasos de apagado",
+      "stepLabel": "Paso {{n}}",
+      "stepsHint": "Entre {{min}} y {{max}} pasos.",
+      "title": "Protocolo de apagado",
+      "updatedAt": "Actualizado {{time}}"
+    },
+    "risk": {
+      "CRITICAL_RISK": "Riesgo crítico",
+      "DISCONNECTED": "Desconectado",
+      "SAFE": "Seguro",
+      "UNKNOWN": "Desconocido (sin sensor)",
+      "WARNING": "Advertencia"
+    },
+    "setup": {
+      "subtitle": "Sensor vinculado, umbrales eléctricos y protocolo de apagado.",
+      "title": "Equipo"
+    },
+    "shifts": {
+      "accountable": "Responsable",
+      "emptyMessage": "Elige otro periodo o programa un turno.",
+      "emptyTitle": "No hay turnos en este periodo",
+      "fields": {
+        "endsAt": "Fin",
+        "role": "Rol",
+        "startsAt": "Inicio",
+        "workerCode": "Código del trabajador",
+        "workerName": "Nombre del trabajador"
+      },
+      "handoverReceived": "Se registró un cambio de turno a las {{time}}; se recargó el personal de turno.",
+      "loadingOnDuty": "Cargando personal de turno…",
+      "loadingRoster": "Cargando programación…",
+      "noAccountable": "Sin responsable",
+      "nobodyOnDuty": "Nadie está de turno en este momento.",
+      "onDuty": "De turno ahora",
+      "onDutyCount": "De turno",
+      "removeMessage": "El turno de {{name}} se quitará de la programación.",
+      "removeTitle": "¿Quitar este turno?",
+      "rosterNote": "Los trabajadores son registros del turno (código, nombre y rol); no se crea una cuenta de acceso.",
+      "rosterTitle": "Programación",
+      "schedule": "Programar",
+      "scheduleTitle": "Programar un turno",
+      "subtitle": "Quién está de turno y es responsable en cada turno.",
+      "title": "Turnos",
+      "windowInvalid": "El turno debe terminar después de empezar."
+    },
+    "switcher": {
+      "label": "Local activo",
+      "live": "Actualización en vivo",
+      "polling": "Actualización automática"
+    },
+    "thresholds": {
+      "fields": {
+        "alertLimitAmps": "Límite de alerta de corriente",
+        "disconnectionThresholdMin": "Umbral de desconexión",
+        "maxConsumptionWatts": "Consumo máximo",
+        "maxCurrentAmps": "Corriente máxima",
+        "minPowerFactor": "Factor de potencia mínimo (0–1)",
+        "nominalFrequency": "Frecuencia nominal",
+        "nominalVoltage": "Voltaje nominal",
+        "normalLimitAmps": "Límite normal de corriente"
+      },
+      "loading": "Cargando umbrales…",
+      "noTemperature": "Solo límites eléctricos: la plataforma no define umbrales de temperatura.",
+      "nonNegative": "Ingresa un número de 0 o más.",
+      "powerFactorRange": "Ingresa un valor entre 0 y 1.",
+      "saved": "Umbrales guardados.",
+      "serverRejected": "El valor está fuera del rango aceptado.",
+      "title": "Umbrales eléctricos"
+    }
+  }
+}

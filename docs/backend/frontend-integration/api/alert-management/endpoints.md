@@ -23,6 +23,8 @@ Alerts raised from telemetry or reported manually: history, active alerts, ackno
 | `POST` | `/api/v1/stores/{storeId}/areas/{areaId}/equipment/{equipmentId}/alerts/{alertId}/acknowledgement` | Acknowledge (alerts acknowledgement) | Bearer JWT (authenticated human user) |
 | `GET` | `/api/v1/stores/{storeId}/alerts` | List (stores alerts) | Bearer JWT (authenticated human user) |
 | `GET` | `/api/v1/stores/{storeId}/alerts/active` | Active (alerts active) | Bearer JWT (authenticated human user) |
+| `GET` | `/api/v1/stores/{storeId}/alerts/changes` | Changes (alert delta after a sequence) | Bearer JWT (authenticated human user) |
+| `GET` | `/api/v1/notification-channels` | Notification channel readiness | Bearer JWT (authenticated human user) |
 
 ## `POST /api/v1/alerts/dispatch`
 
@@ -114,7 +116,8 @@ Alerts raised from telemetry or reported manually: history, active alerts, ackno
   "assignedAtUtc": "2026-03-14T15:30:00Z",
   "resolvedByUserId": "resolvedByUser-0001",
   "resolvedAtUtc": "2026-03-14T15:30:00Z",
-  "resolutionNotes": "string"
+  "resolutionNotes": "string",
+  "sequence": 42
 }
 ```
 
@@ -181,7 +184,8 @@ Alerts raised from telemetry or reported manually: history, active alerts, ackno
   "assignedAtUtc": "2026-03-14T15:30:00Z",
   "resolvedByUserId": "resolvedByUser-0001",
   "resolvedAtUtc": "2026-03-14T15:30:00Z",
-  "resolutionNotes": "string"
+  "resolutionNotes": "string",
+  "sequence": 42
 }
 ```
 
@@ -254,7 +258,8 @@ Alerts raised from telemetry or reported manually: history, active alerts, ackno
   "assignedAtUtc": "2026-03-14T15:30:00Z",
   "resolvedByUserId": "resolvedByUser-0001",
   "resolvedAtUtc": "2026-03-14T15:30:00Z",
-  "resolutionNotes": "string"
+  "resolutionNotes": "string",
+  "sequence": 42
 }
 ```
 
@@ -330,7 +335,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
       "assignedAtUtc": "2026-03-14T15:30:00Z",
       "resolvedByUserId": "resolvedByUser-0001",
       "resolvedAtUtc": "2026-03-14T15:30:00Z",
-      "resolutionNotes": "string"
+      "resolutionNotes": "string",
+      "sequence": 42
     }
   ],
   "page": 1,
@@ -394,7 +400,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
   "assignedAtUtc": "2026-03-14T15:30:00Z",
   "resolvedByUserId": "resolvedByUser-0001",
   "resolvedAtUtc": "2026-03-14T15:30:00Z",
-  "resolutionNotes": "string"
+  "resolutionNotes": "string",
+  "sequence": 42
 }
 ```
 
@@ -453,7 +460,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
   "assignedAtUtc": "2026-03-14T15:30:00Z",
   "resolvedByUserId": "resolvedByUser-0001",
   "resolvedAtUtc": "2026-03-14T15:30:00Z",
-  "resolutionNotes": "string"
+  "resolutionNotes": "string",
+  "sequence": 42
 }
 ```
 
@@ -525,7 +533,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
       "assignedAtUtc": "2026-03-14T15:30:00Z",
       "resolvedByUserId": "resolvedByUser-0001",
       "resolvedAtUtc": "2026-03-14T15:30:00Z",
-      "resolutionNotes": "string"
+      "resolutionNotes": "string",
+      "sequence": 42
     }
   ],
   "page": 1,
@@ -569,6 +578,7 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
   "openCritical": 15,
   "openNonCritical": 15,
   "hasCriticalLeakage": true,
+  "latestSequence": 42,
   "items": [
     {
       "id": "id-3a4b5c6d",
@@ -601,7 +611,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
       "assignedAtUtc": "2026-03-14T15:30:00Z",
       "resolvedByUserId": "resolvedByUser-0001",
       "resolvedAtUtc": "2026-03-14T15:30:00Z",
-      "resolutionNotes": "string"
+      "resolutionNotes": "string",
+      "sequence": 42
     }
   ]
 }
@@ -613,3 +624,95 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
 - `400` Bad request: validation/model-binding or domain rule violated
 - `401` Missing, invalid or expired credentials
 - `404` Resource not found (also returned when the resource belongs to another owner)
+
+`latestSequence` is the store's alert change sequence the snapshot is consistent with: keep it and pass it as
+`afterSequence` to [`GET .../alerts/changes`](#get-apiv1storesstoreidalertschanges) after a hub reconnect.
+
+## `GET /api/v1/stores/{storeId}/alerts/changes`
+
+**Changes (alert delta after a sequence)**
+
+- **Auth:** Bearer JWT (authenticated human user)
+- **Source:** `StoreAlertsController.Changes`
+
+Every alert creation and state change (raise, manual report, acknowledge, assign, resolve) takes the store's next
+**change sequence** in the same transaction, so sequences become visible in commit order. This endpoint returns the
+current state of every alert whose latest change is after `afterSequence` (one entry per alert, ordered by `sequence`)
+and the cursor for the next call. Use it when the SignalR connection to `/hubs/alerts` is re-established instead of
+reloading full lists.
+
+**Path parameters**
+
+| Name | Type |
+|---|---|
+| `storeId` | `string` |
+
+**Query parameters**
+
+| Name | Type | Default | Notes |
+|---|---|---|---|
+| `afterSequence` | `long` | `0` | Highest `sequence` the client has applied (from `alerts/active.latestSequence`, a previous call, or a `ReceiveAlert` payload). Must be ≥ 0. |
+| `limit` | `int` | `100` | 1–200. |
+| `equipmentId` | `string?` | `null` | Optional equipment filter (same rules as `alerts/active`). |
+
+**Success response** — `200` · `AlertChangesResponse`
+
+```json
+{
+  "items": [
+    { "id": "alert-9f2c", "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9", "status": "ACKNOWLEDGED", "severity": "CRITICAL", "sequence": 43 },
+    { "id": "alert-a11d", "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9", "status": "OPEN", "severity": "NON_CRITICAL", "sequence": 44 }
+  ],
+  "latestSequence": 44,
+  "hasMore": false
+}
+```
+
+(Items are full `AlertResponse` objects; shortened here.)
+
+- `hasMore: true` → the page was cut at `limit`; call again at once with `afterSequence = latestSequence`.
+- `latestSequence < afterSequence` → the server does not know your cursor (e.g. data reset): reload `alerts/active`.
+- Alerts last changed before sequencing was deployed have `sequence: 0` and are only in the full lists.
+
+**Status codes**
+
+- `200` OK
+- `400` `VALIDATION_FAILED` — negative `afterSequence` or `limit` outside 1–200
+- `401` Missing, invalid or expired credentials
+- `404` `STORE_NOT_FOUND` — store unknown or not owned by the caller
+
+## `GET /api/v1/notification-channels`
+
+**Notification channel readiness**
+
+- **Auth:** Bearer JWT (any authenticated, active user)
+- **Source:** `NotificationChannelsController.List`
+
+Tells the UI which alert channels actually reach people in this deployment, so it can warn before a manager routes
+alerts to a channel that is only logged. The answer is derived from the providers registered at startup (the same
+decision the delivery code makes) and never contains hostnames, URLs, keys or credentials. Cached privately for 60 s.
+
+| `channel` | `DELIVERED` when | otherwise |
+|---|---|---|
+| `EMAIL` | `Email:Smtp:Host` is set (SMTP sender) | `LOG_ONLY` (logging sender) |
+| `SMS` | `Notifications:Sms:GatewayUrl` is set (HTTP SMS gateway) | `LOG_ONLY` (masked log line) |
+| `DASHBOARD_PUSH` | SignalR `AlertsHub` is mapped (always in this API) | — |
+| `WEBHOOK` | the webhook dispatcher is registered (always; each route supplies its own https URL) | — |
+
+**Success response** — `200` · `NotificationChannelsResponse` (always the four channels, in this order)
+
+```json
+{
+  "items": [
+    { "channel": "EMAIL", "deliveryMode": "LOG_ONLY", "configured": false },
+    { "channel": "SMS", "deliveryMode": "LOG_ONLY", "configured": false },
+    { "channel": "DASHBOARD_PUSH", "deliveryMode": "DELIVERED", "configured": true },
+    { "channel": "WEBHOOK", "deliveryMode": "DELIVERED", "configured": true }
+  ]
+}
+```
+
+**Status codes**
+
+- `200` OK
+- `401` Missing, invalid or expired credentials

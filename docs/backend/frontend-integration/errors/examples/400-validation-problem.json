@@ -1,5 +1,5 @@
 {
-  "_description": "HTTP 400 - automatic [ApiController] model validation, e.g. POST /api/v1/stores with a missing name and an unknown property. Same envelope plus the `errors` dictionary (keys are C# member paths).",
+  "_description": "HTTP 400 - automatic [ApiController] model validation, e.g. POST /api/v1/stores with a missing name and an unknown property. Same envelope plus the `errors` dictionary (keys are C# member paths). `errors` holds field codes; the original messages are under `errorMessages`.",
   "_status": 400,
   "_contentType": "application/problem+json",
   "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
@@ -9,6 +9,15 @@
   "instance": "/api/v1/stores",
   "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
   "errors": {
+    "Name": [
+      "REQUIRED"
+    ],
+    "$.ownerUserId": [
+      "UNKNOWN_MEMBER"
+    ]
+  },
+  "errorCode": "VALIDATION_FAILED",
+  "errorMessages": {
     "Name": [
       "The Name field is required."
     ],

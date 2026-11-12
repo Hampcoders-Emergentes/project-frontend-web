@@ -357,7 +357,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
     "days": 1.5,
     "kwh": 12.5,
     "cost": 120.5,
-    "averageDailyKwh": 12.5
+    "averageDailyKwh": 12.5,
+    "sampleCount": 2016
   },
   "period2": {
     "fromUtc": "2026-03-14T15:30:00Z",
@@ -365,7 +366,8 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
     "days": 1.5,
     "kwh": 12.5,
     "cost": 120.5,
-    "averageDailyKwh": 12.5
+    "averageDailyKwh": 12.5,
+    "sampleCount": 2016
   },
   "kwhDifference": 12.5,
   "costDifference": 120.5,
@@ -381,9 +383,15 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
       "period1Cost": 120.5,
       "period2Cost": 120.5,
       "kwhChangePercent": 12.5,
-      "costChangePercent": 120.5
+      "costChangePercent": 120.5,
+      "dataQuality": "SUFFICIENT",
+      "sampleCount": 1008,
+      "minimumSamples": 2
     }
-  ]
+  ],
+  "dataQuality": "SUFFICIENT",
+  "sampleCount": 2016,
+  "minimumSamples": 2
 }
 ```
 
@@ -391,6 +399,11 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
 
 - `200` OK
 - `401` Missing, invalid or expired credentials
+
+**Data quality.** `dataQuality` is `INSUFFICIENT_DATA` when either period has fewer than `minimumSamples` (2) power
+samples; `sampleCount` is the smaller of the two periods' `sampleCount`. A zero consumption or a ±100% change with
+`INSUFFICIENT_DATA` reflects missing telemetry, not real consumption: show "not enough data" instead of the numbers.
+Each `equipment` row carries the same three fields for that equipment (its less-observed period).
 
 ## `GET /api/v1/stores/{storeId}/analytics/off-hours-consumption`
 
@@ -687,8 +700,18 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
         "startUtc": "2026-03-14T15:30:00Z",
         "endUtc": "2026-03-14T15:30:00Z",
         "reason": "Customer request"
-      }
+      },
+      "dataQuality": "SUFFICIENT",
+      "sampleCount": 845,
+      "minimumSamples": 30
     }
+  ],
+  "dataQuality": "INSUFFICIENT_DATA",
+  "sampleCount": 12,
+  "minimumSamples": 30,
+  "equipmentDataQuality": [
+    { "equipmentId": "equipment-9a8b7c6d5e4f30211203f4e5d6c7b8a9", "equipmentName": "Fryer 1", "dataQuality": "SUFFICIENT", "sampleCount": 845, "minimumSamples": 30 },
+    { "equipmentId": "equipment-1b2c3d4e5f60718293a4b5c6d7e8f901", "equipmentName": "Walk-in freezer", "dataQuality": "INSUFFICIENT_DATA", "sampleCount": 12, "minimumSamples": 30 }
   ]
 }
 ```
@@ -697,6 +720,13 @@ Date/time query values are ISO 8601 timestamps **with explicit offset** (`Z` or 
 
 - `200` OK
 - `401` Missing, invalid or expired credentials
+
+**Data quality.** Each equipment needs `minimumSamples` (30) *running* samples (current above the running floor) in the
+window before it is analysed. `dataQuality` is `SUFFICIENT` only when the store has equipment and every one of them
+reached it; `sampleCount` is the running-sample count of the least-observed equipment. With `INSUFFICIENT_DATA` an empty
+`predictions` list means "cannot tell", **not** "healthy": use `equipmentDataQuality` to show which equipment lacks
+telemetry. Each `predictions` row also carries `dataQuality` (always `SUFFICIENT` there), `sampleCount` (= `runningSamples`)
+and `minimumSamples`. `insufficientDataEquipmentIds` is kept for backward compatibility.
 
 ## `GET /api/v1/technician-metrics/{technicianId}`
 

@@ -1,0 +1,12 @@
+{
+  "_description": "HTTP 409 - POST /api/v1/stores/{storeId}/compliance/reports/generate (or .../analytics/reports) while the same report is still being generated for this caller and store.",
+  "_status": 409,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.10",
+  "title": "Conflict",
+  "status": 409,
+  "detail": "A report for this store is already being generated. Retry when it finishes.",
+  "instance": "/api/v1/stores/store-3e1f0c9a8b7d4c5e9a1b2c3d4e5f6a7b/compliance/reports/generate",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
+  "errorCode": "REPORT_IN_PROGRESS"
+}

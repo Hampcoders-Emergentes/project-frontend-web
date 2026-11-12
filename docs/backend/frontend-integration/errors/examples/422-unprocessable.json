@@ -9,5 +9,6 @@
   "instance": "/api/v1/service-assignments/execute",
   "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
   "requestId": "req-5e6f7a8b",
-  "assigned": false
+  "assigned": false,
+  "errorCode": "BUSINESS_RULE_VIOLATED"
 }

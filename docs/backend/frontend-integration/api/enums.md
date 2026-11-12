@@ -20,7 +20,7 @@ Request bodies are parsed case-insensitively for property *names*; string *value
 | Enum | Values | Notes |
 |---|---|---|
 | `AccessRole` (JWT claims `access_role`, `role`; `UserResponse.role`, `StaffUserResponse.accessRole`) | `User`, `Admin`, `SuperAdmin`, `Maker`, `FieldManager` | Public sign-up accepts only `User`. Staff roles are created via `POST /staff-users`. |
-| `EUserStatus` (not serialized; enforced by middleware) | `Active`, `Suspended`, `PendingVerification` | Anything other than `Active` → 403 (`detail`: `The account is not active.`). |
+| `EUserStatus` (not serialized; enforced by middleware) | `Active`, `Suspended`, `PendingVerification` | Anything other than `Active` → 403 with `errorCode: "ACCOUNT_NOT_ACTIVE"`. |
 
 ## Profiles
 
@@ -100,6 +100,7 @@ Request bodies are parsed case-insensitively for property *names*; string *value
 | Alert `anomalyType` | `CURRENT_LEAKAGE`, `OVERCURRENT`, `VOLTAGE_SAG`, `SHORT_CIRCUIT_RISK`, `OVERVOLTAGE`, `OVERCONSUMPTION`, `LOW_POWER_FACTOR`, `ABNORMAL_FREQUENCY`, `CONNECTION_LOST`, `UNUSUAL_CONSUMPTION`, `MOISTURE_HAZARD`, `MANUAL_REPORT` |
 | Alert `source` | `TELEMETRY`, `MANUAL_REPORT` |
 | Manual report `category` | `ABNORMAL_NOISE`, `SPARKS`, `BURNING_SMELL`, `OVERHEATING`, `FLICKERING_LIGHTS`, `SMOKE`, `OTHER` |
+| Notification channel readiness `deliveryMode` (`GET /notification-channels`) | `DELIVERED`, `LOG_ONLY` |
 
 ## Store management
 
@@ -128,6 +129,7 @@ Request bodies are parsed case-insensitively for property *names*; string *value
 | `format` on `GET …/analytics/consumption/report` | `csv` only (anything else → 400 `Unsupported format. Supported: csv.`) |
 | `format` on `POST …/analytics/reports` (`GenerateEnergyReportRequest.format`) | `csv` or `pdf` (else 400 `format must be csv or pdf.`) |
 | `dayOfWeek` (opening hours) | English day names (`Monday` … `Sunday`) |
+| `dataQuality` (`MaintenancePredictionsResponse`, `EquipmentDataQualityResponse`, `ConsumptionComparisonResponse`) | `SUFFICIENT`, `INSUFFICIENT_DATA` |
 | Budget `status` (`BudgetStatusResponse.status`) | `NO_BUDGET` when no target is configured, otherwise a server-computed state with an `isWarning` boolean (read `isWarning` rather than matching the string) |
 
 ## Subscriptions
@@ -139,3 +141,14 @@ Request bodies are parsed case-insensitively for property *names*; string *value
 | Subscription `status` | `ACTIVE`, `GRACE_PERIOD`, `CANCELLED_PENDING`, `DEGRADED`, `PENDING_INSTALLATION`, `CANCELLED_REFUNDED` |
 | Payment `status` | `SUCCEEDED`, `FAILED`, `REFUNDED` |
 | Contact request `status` (`ContactRequestReceiptResponse`, `ContactRequestStatusResponse`, `ContactRequestResponse`) | `RECEIVED` (stored), `NOTIFIED` (sales inbox emailed) |
+
+## Error codes
+
+Every error body carries `errorCode` (UPPER_SNAKE_CASE); field-level `errors` values are codes too. Full catalogue
+and statuses: [`../errors/error-contract.md`](../errors/error-contract.md#3-error-codes).
+
+| Vocabulary | Values |
+|---|---|
+| `errorCode` — status defaults | `VALIDATION_FAILED` (400), `UNAUTHENTICATED` (401), `FORBIDDEN` (403), `RESOURCE_NOT_FOUND` (404), `METHOD_NOT_ALLOWED` (405), `CONFLICT` (409), `PAYLOAD_TOO_LARGE` (413), `UNSUPPORTED_MEDIA_TYPE` (415), `BUSINESS_RULE_VIOLATED` (422), `RATE_LIMITED` (429), `INTERNAL_ERROR` (500), `UPSTREAM_FAILURE` (502), `SERVICE_UNAVAILABLE` (503), `REQUEST_FAILED` (other) |
+| `errorCode` — specific | `EMAIL_ALREADY_REGISTERED` (400), `PASSWORD_REJECTED` (400), `ACCOUNT_NOT_ACTIVE` (403), `STORE_NOT_FOUND` (404), `STALE_STATE` (409), `REPORT_IN_PROGRESS` (409) |
+| `errors[field][]` | `REQUIRED`, `INVALID`, `INVALID_FORMAT`, `INVALID_EMAIL`, `TOO_SHORT`, `TOO_LONG`, `OUT_OF_RANGE`, `MISMATCH`, `UNKNOWN_MEMBER`, `EMAIL_ALREADY_REGISTERED`, `PASSWORDS_DO_NOT_MATCH`, `PASSWORD_LENGTH`, `ROLE_NOT_ALLOWED` |

@@ -44,9 +44,30 @@ export interface HasMorePageResponse<T> {
 }
 
 /**
+ * Stable machine-readable error codes (`errorCode` member of every error). Branch on these, never on `detail`.
+ * New codes may be added; treat an unknown code like the default code of its HTTP status.
+ * See errors/error-contract.md for the status each one comes with.
+ */
+export type ErrorCode =
+  // status defaults
+  | 'VALIDATION_FAILED' | 'UNAUTHENTICATED' | 'FORBIDDEN' | 'RESOURCE_NOT_FOUND' | 'METHOD_NOT_ALLOWED' | 'CONFLICT'
+  | 'PAYLOAD_TOO_LARGE' | 'UNSUPPORTED_MEDIA_TYPE' | 'BUSINESS_RULE_VIOLATED' | 'RATE_LIMITED' | 'INTERNAL_ERROR'
+  | 'UPSTREAM_FAILURE' | 'SERVICE_UNAVAILABLE' | 'REQUEST_FAILED'
+  // specific
+  | 'EMAIL_ALREADY_REGISTERED' | 'PASSWORD_REJECTED' | 'ACCOUNT_NOT_ACTIVE' | 'STORE_NOT_FOUND' | 'STALE_STATE'
+  | 'REPORT_IN_PROGRESS';
+
+/** Values of the field-level `errors` map. */
+export type FieldErrorCode =
+  | 'REQUIRED' | 'INVALID' | 'INVALID_FORMAT' | 'INVALID_EMAIL' | 'TOO_SHORT' | 'TOO_LONG' | 'OUT_OF_RANGE' | 'MISMATCH'
+  | 'UNKNOWN_MEMBER' | 'EMAIL_ALREADY_REGISTERED' | 'PASSWORDS_DO_NOT_MATCH' | 'PASSWORD_LENGTH' | 'ROLE_NOT_ALLOWED';
+
+/**
  * The single error envelope (RFC 7807, `application/problem+json`) of every 4xx/5xx response.
- * `errors` is present on validation failures only; other members of a structured domain error (e.g. `requestId`,
- * `assigned` on a failed matching) are kept as extensions.
+ * `errorCode` is always present. `errors` (field -> code list) is present on validation failures only, with the
+ * original English messages under `errorMessages` when the server had free text for a field. Other members of a
+ * structured domain error (e.g. `requestId`, `assigned` on a failed matching) are kept as extensions.
+ * `detail` is sanitized English text for display/logging only.
  */
 export interface ProblemDetailsResponse {
   type: string;
@@ -55,7 +76,11 @@ export interface ProblemDetailsResponse {
   detail: string;
   instance: string;
   traceId: string;
-  errors?: Record<string, string[]>;
+  errorCode: ErrorCode | (string & {});
+  errors?: Record<string, (FieldErrorCode | (string & {}))[]>;
+  errorMessages?: Record<string, string[]>;
+  /** 429 and 503 only: same value as the Retry-After header. */
+  retryAfterSeconds?: number;
   [extension: string]: unknown;
 }
 
@@ -66,6 +91,8 @@ export const RESPONSE_HEADERS = {
   /** "true" when an idempotent POST returned the stored first response. */
   idempotentReplayed: 'Idempotent-Replayed',
   location: 'Location',
+  /** Seconds to wait after a 429 (always sent with RATE_LIMITED). */
+  retryAfter: 'Retry-After',
 } as const;
 
 /** Real-time event names pushed on the SignalR hub /hubs/alerts (see integrations/signalr-alerts-hub.md). */
@@ -78,6 +105,18 @@ export interface ActiveAlertsResponse {
   openNonCritical: number;
   hasCriticalLeakage: boolean;
   items: AlertResponse[];
+  /** Store change sequence this snapshot is consistent with; pass it as afterSequence to GET .../alerts/changes. */
+  latestSequence: number;
+}
+
+/** GET /api/v1/stores/{storeId}/alerts/changes?afterSequence={seq}&limit={1..200} */
+export interface AlertChangesResponse {
+  /** Current state of each alert created or changed after afterSequence, ordered by sequence (one entry per alert). */
+  items: AlertResponse[];
+  /** Cursor for the next call. Lower than the afterSequence you sent => your cursor is unknown: reload full lists. */
+  latestSequence: number;
+  /** Page cut at `limit`: call again immediately with latestSequence. */
+  hasMore: boolean;
 }
 
 export interface ActiveAnomalySummaryResponse {
@@ -125,6 +164,8 @@ export interface AlertResponse {
   resolvedByUserId: string | null;
   resolvedAtUtc: string /* ISO 8601 UTC */ | null;
   resolutionNotes: string | null;
+  /** Store-wide change sequence of this alert's latest change (strictly increasing per store; 0 = changed before sequencing). */
+  sequence: number;
 }
 
 export interface AnomalyResponse {
@@ -338,7 +379,15 @@ export interface ConsumptionComparisonResponse {
   costChangePercent: number | null;
   averageDailyKwhChangePercent: number | null;
   equipment: EquipmentComparisonResponse[];
+  /** INSUFFICIENT_DATA when either period has fewer than minimumSamples samples (changes then reflect missing telemetry). */
+  dataQuality: DataQuality;
+  /** Samples of the period with fewer samples. */
+  sampleCount: number;
+  /** Samples each period needs (2: energy is integrated between consecutive samples). */
+  minimumSamples: number;
 }
+
+export type DataQuality = 'SUFFICIENT' | 'INSUFFICIENT_DATA';
 
 export type ContactRequestStatus = 'RECEIVED' | 'NOTIFIED';
 
@@ -483,6 +532,11 @@ export interface EquipmentComparisonResponse {
   period2Cost: number;
   kwhChangePercent: number | null;
   costChangePercent: number | null;
+  /** INSUFFICIENT_DATA when this equipment has fewer than minimumSamples samples in either period. */
+  dataQuality: DataQuality;
+  /** Samples of this equipment in its less-observed period. */
+  sampleCount: number;
+  minimumSamples: number;
 }
 
 export interface EquipmentConsumptionResponse {
@@ -698,6 +752,11 @@ export interface MaintenancePredictionResponse {
   recentFluctuationIndex: number | null;
   findings: WearFindingResponse[];
   recommendedWindow: RepairWindowResponse | null;
+  /** Always SUFFICIENT on a prediction row (equipment below the minimum gets no row; see equipmentDataQuality). */
+  dataQuality: DataQuality;
+  /** Same as runningSamples. */
+  sampleCount: number;
+  minimumSamples: number;
 }
 
 export interface MaintenancePredictionsResponse {
@@ -708,6 +767,40 @@ export interface MaintenancePredictionsResponse {
   analysedEquipment: number;
   insufficientDataEquipmentIds: string[];
   predictions: MaintenancePredictionResponse[];
+  /**
+   * SUFFICIENT only when the store has equipment and all of it reached minimumSamples. With INSUFFICIENT_DATA an empty
+   * `predictions` list means "cannot tell", not "healthy".
+   */
+  dataQuality: DataQuality;
+  /** Running samples of the least-observed equipment (0 when the store has no equipment). */
+  sampleCount: number;
+  /** Running samples each equipment needs before it is analysed (30). */
+  minimumSamples: number;
+  equipmentDataQuality: EquipmentDataQualityResponse[];
+}
+
+export interface EquipmentDataQualityResponse {
+  equipmentId: string;
+  equipmentName: string;
+  dataQuality: DataQuality;
+  /** Running samples (equipment switched on) in the window. */
+  sampleCount: number;
+  minimumSamples: number;
+}
+
+export type NotificationChannel = 'EMAIL' | 'SMS' | 'DASHBOARD_PUSH' | 'WEBHOOK';
+export type NotificationDeliveryMode = 'DELIVERED' | 'LOG_ONLY';
+
+/** GET /api/v1/notification-channels — always the four channels, in this order: EMAIL, SMS, DASHBOARD_PUSH, WEBHOOK. */
+export interface NotificationChannelsResponse {
+  items: NotificationChannelResponse[];
+}
+
+export interface NotificationChannelResponse {
+  channel: NotificationChannel;
+  /** LOG_ONLY: nothing is sent, the message is only written to the server log. */
+  deliveryMode: NotificationDeliveryMode;
+  configured: boolean;
 }
 
 export interface MatchingQueueResponse {
@@ -902,6 +995,8 @@ export interface PeriodConsumptionResponse {
   kwh: number;
   cost: number;
   averageDailyKwh: number;
+  /** Power samples captured inside the period (all equipment). */
+  sampleCount: number;
 }
 
 export interface PhotoResponse {

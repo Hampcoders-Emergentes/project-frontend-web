@@ -1,0 +1,17 @@
+{
+  "_description": "HTTP 400 - POST /api/v1/auth/sign-up with an email that already has an account. Status stays 400 for backward compatibility; branch on errorCode.",
+  "_status": 400,
+  "_contentType": "application/problem+json",
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "The email address is already registered.",
+  "instance": "/api/v1/auth/sign-up",
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
+  "errorCode": "EMAIL_ALREADY_REGISTERED",
+  "errors": {
+    "email": [
+      "EMAIL_ALREADY_REGISTERED"
+    ]
+  }
+}

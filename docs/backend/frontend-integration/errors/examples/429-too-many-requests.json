@@ -1,5 +1,5 @@
 {
-  "_description": "HTTP 429 - POST /api/v1/contact-requests. Per-IP limiter (5 requests / 10 minutes): detail 'Too many requests. Please try again later.'; per-email daily quota (Subscriptions:DemoRequests:MaxRequestsPerEmailPerDay, default 3): this detail.",
+  "_description": "HTTP 429 - any throttled call. Global /api limiter or the contact-form policy: detail 'Too many requests. Please try again later.', Retry-After = seconds until the window resets; per-email daily quota on POST /api/v1/contact-requests: this detail, Retry-After: 86400. The Retry-After header is always present and equals retryAfterSeconds.",
   "_status": 429,
   "_contentType": "application/problem+json",
   "type": "https://tools.ietf.org/html/rfc6585#section-4",
@@ -7,5 +7,10 @@
   "status": 429,
   "detail": "Too many requests from this email address today. Please try again tomorrow.",
   "instance": "/api/v1/contact-requests",
-  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00"
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-00",
+  "_headers": {
+    "Retry-After": "86400"
+  },
+  "errorCode": "RATE_LIMITED",
+  "retryAfterSeconds": 86400
 }
